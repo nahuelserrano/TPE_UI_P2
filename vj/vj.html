@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Peg solitaire: Lilo y Stich</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+    <body>
+        <div class="container">
+            <!-- Breadcrumb Navigation -->
+            <div class="breadcrumb">
+                <a href="#">Juegos</a>
+                <span>></span>
+                <a href="#">Puzzle</a>
+                <span>></span>
+                <span>Peg solitaire: Lilo y stich</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1>Peg solitaire: Lilo y Stich</h1>
+
+            <!-- Game Container -->
+            <div class="game-container">
+                <!-- Game Image -->
+                <div class="game-image">
+                    <img src="../imagenes/stich-vj-ejecucion.jpeg" alt="Stitch Peg Solitaire">
+                </div>
+
+                <!-- Game Info -->
+                <div class="game-info">
+                    <h2>Peg Solitaire</h2>
+                    <p class="game-description">
+                        ¿Listo para una aventura emocionante?
+                    </p>
+                    <p class="game-description">
+                        Ayuda a Stitch a saltar todas las fichas.
+                    </p>
+                    <button class="play-button" onclick="startGame()">JUGAR</button>
+                    <p class="click-to-start">Haz click en jugar para empezar</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn">
+                    <span class="icon">👍</span>
+                    <span>Me gusta</span>
+                </button>
+                <button class="action-btn">
+                    <span class="icon">🔗</span>
+                    <span>Compartir</span>
+                </button>
+            </div>
+
+            <!-- Advertisement Banner -->
+            <div class="ad-banner">
+                <div class="ad-label">Anuncio</div>
+                <button class="ad-skip">✕</button>
+                <img src="" alt="Coca-Cola Advertisement">
+            </div>
+
+            <!-- Featured Games Section -->
+            <div class="featured-games-section">
+                <h2 class="featured-games-title">JUEGOS DESTACADOS</h2>
+                <div class="cards-container">
+                    <div class="mini-card">
+                        <img src="" alt="Game 1">
+                        <div class="mini-card-overlay">
+                            <span class="mini-card-title">Game Title</span>
+                        </div>
+                    </div>
+                    <div class="mini-card">
+                        <img src="" alt="Game 2">
+                        <div class="mini-card-overlay">
+                            <span class="mini-card-title">Game Title</span>
+                        </div>
+                    </div>
+                    <div class="mini-card">
+                        <img src="" alt="Game 3">
+                        <div class="mini-card-overlay">
+                            <span class="mini-card-title">Game Title</span>
+                        </div>
+                    </div>
+                    <div class="mini-card">
+                        <img src="" alt="Game 4">
+                        <div class="mini-card-overlay">
+                            <span class="mini-card-title">Game Title</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Section -->
+            <section class="main-content">
+
+                <!-- Description Section -->
+                <section class="content-section description-section">
+                    <div class="section-header">
+                        <span class="section-icon">📄</span>
+                        <h3 class="section-title">DESCRIPCIÓN</h3>
+                    </div>
+                    <div class="section-content">
+                        <p class="section-text">
+                            ¡Aloha! Stitch está en una nueva misión: resolver el Peg Solitaire. Tu objetivo es ayudarlo a saltar fichas y limpiar el tablero hasta que quede solo una. Pero cuidado: cada movimiento cuenta, ¡piensa bien tu estrategia para que Stitch no se meta en problemas intergalácticos!
+                        </p>
+                    </div>
+                </section>
+
+                <!-- How to Play Section -->
+                <section class="content-section howtoplay-section">
+                    <div class="section-header">
+                        <span class="section-icon">🎮</span>
+                        <h3 class="section-title">COMO JUGAR</h3>
+                    </div>
+                    <div class="section-content">
+                        <p class="section-text section-intro">
+                            Para jugar a Peg Solitaire, un clásico rompecabezas de lógica, y estrategia que pondrá a prueba tu mente.
+                        </p>
+                        <p class="section-text section-intro">
+                            Las reglas en esencia son simples, ¡pero ganar es todo un desafío con vapor fuerte al tablero!
+                        </p>
+
+                        <!-- Objective -->
+                        <div class="instruction-block">
+                            <div class="instruction-header">
+                                <span class="instruction-icon">🎯</span>
+                                <h4 class="instruction-title">Objetivo</h4>
+                            </div>
+                            <p class="instruction-text">
+                                El objetivo del juego es tener solo una única canica sobre el tablero. Debes eliminar las canicas saltando unas sobre otras, hasta que quede solamente una ficha en el tablero.
+                            </p>
+                        </div>
+
+                        <!-- How to Move -->
+                        <div class="instruction-block">
+                            <div class="instruction-header">
+                                <span class="instruction-icon">↔️</span>
+                                <h4 class="instruction-title">Cómo mover</h4>
+                            </div>
+                            <ul class="instruction-list">
+                                <li class="instruction-item">Elige una ficha y salta sobre otra adyacente (arriba, abajo, izquierda o derecha).</li>
+                                <li class="instruction-item">Detrás que debe haber espacio.</li>
+                                <li class="instruction-item">Al saltar, la ficha sobre la que saltaste es eliminada.</li>
+                            </ul>
+                        </div>
+
+                        <!-- How to Win -->
+                        <div class="instruction-block">
+                            <div class="instruction-header">
+                                <span class="instruction-icon">🏆</span>
+                                <h4 class="instruction-title">Cómo ganar</h4>
+                            </div>
+                            <ul class="instruction-list">
+                                <li class="instruction-item">Ganas si logras dejar solo UNA ficha en el tablero.</li>
+                                <li class="instruction-item">Pista: los verdaderos maestros terminan dejando la ficha en el centro del tablero.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Multimedia Section -->
+                <section class="content-section multimedia-section">
+                    <div class="section-header">
+                        <span class="section-icon">▶️</span>
+                        <h3 class="section-title">MULTIMEDIA</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="media-grid">
+                            <div class="media-item">
+                                <img src="" alt="Media 1" class="media-image">
+                            </div>
+                            <div class="media-item">
+                                <img src="" alt="Media 2" class="media-image">
+                            </div>
+                            <div class="media-item">
+                                <img src="" alt="Media 3" class="media-image">
+                            </div>
+                            <div class="media-item">
+                                <img src="" alt="Media 4" class="media-image">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Comments Section -->
+                <section class="content-section comments-section">
+                    <div class="section-header">
+                        <span class="section-icon">💬</span>
+                        <h3 class="section-title">COMENTARIOS</h3>
+                    </div>
+                    <div class="section-content">
+                        <!-- Comment Counter -->
+                        <div class="comment-counter">
+                            <span class="counter-icon">💬</span>
+                            <span class="counter-number">76</span>
+                        </div>
+
+                        <!-- Comment Input -->
+                        <div class="comment-input-container">
+                            <div class="user-avatar">
+                                <img src="" alt="User Avatar" class="avatar-image">
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" class="comment-input" placeholder="Escribe un comentario...">
+                                <button class="submit-comment-btn">➤</button>
+                            </div>
+                        </div>
+
+                        <!-- Comments List -->
+                        <div class="comments-list">
+                            <!-- Comment Item 1 -->
+                            <div class="comment-item">
+                                <div class="comment-avatar">
+                                    <img src="" alt="MasterXD" class="avatar-image">
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-username">MasterXD</span>
+                                        <span class="comment-time">12 me gusta</span>
+                                        <button class="like-btn">👍</button>
+                                    </div>
+                                    <p class="comment-text">Este juego está nashe</p>
+                                </div>
+                            </div>
+
+                            <!-- Comment Item 2 -->
+                            <div class="comment-item">
+                                <div class="comment-avatar">
+                                    <img src="" alt="hbmxzxma" class="avatar-image">
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-username">hbmxzxma</span>
+                                        <span class="comment-time">12 me gusta</span>
+                                        <button class="like-btn">👍</button>
+                                    </div>
+                                    <p class="comment-text">Este juego está nashe</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+        </div>
+
+    <script src="/script.js"></script>
+    </body>
+</html>
