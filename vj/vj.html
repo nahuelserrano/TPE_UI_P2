@@ -45,14 +45,14 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="action-btn like-btn">
+                <button class="action-btn like-game-btn">
                     <span class="btn-text">Me gusta</span>
                     <svg class="icon" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M9 2H5v2H3v2H1v6h2v2h2v2h2v2h2v2h2v2h2v-2h2v-2h2v-2h2v-2h2v-2h2V6h-2V4h-2V2h-4v2h-2v2h-2V4H9V2zm0 2v2h2v2h2V6h2V4h4v2h2v6h-2v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5v-2H3V6h2V4h4z" fill="currentColor"/>
                     </svg>
                 </button>
                 <div class="action-divider"></div>
-                <button class="action-btn share-btn">
+                <button class="action-btn share-game-btn">
                     <span class="btn-text">Compartir</span>
                     <svg class="icon" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z" fill="currentColor"/>
@@ -83,6 +83,12 @@
                     </div>
                     <div class="mini-card">
                         <img src="../imagenes/stich-vj-ejecucion.jpeg" alt="Game 3">
+                        <div class="mini-card-overlay">
+                            <span class="mini-card-title">Game Title</span>
+                        </div>
+                    </div>
+                    <div class="mini-card">
+                        <img src="../imagenes/stich-vj-ejecucion.jpeg" alt="Game 4">
                         <div class="mini-card-overlay">
                             <span class="mini-card-title">Game Title</span>
                         </div>
@@ -124,12 +130,14 @@
                     </div>
                     <hr class="section-line">
                     <div class="section-content">
-                        <p class="section-text section-intro">
-                            Para jugar a Peg Solitaire, un clásico rompecabezas de lógica, y estrategia que pondrá a prueba tu mente.
-                        </p>
-                        <p class="section-text section-intro">
-                            Las reglas en esencia son simples, ¡pero ganar es todo un desafío con vapor fuerte al tablero!
-                        </p>
+                        <div class="instruction-block">
+                            <p class="section-text section-intro">
+                                Para jugar a Peg Solitaire, un clásico rompecabezas de lógica, y estrategia que pondrá a prueba tu mente.
+                            </p>
+                            <p class="section-text section-intro">
+                                Las reglas en esencia son simples, ¡pero ganar es todo un desafío con vapor fuerte al tablero!
+                            </p>
+                        </div>
 
                         <!-- Objective -->
                         <div class="instruction-block">
@@ -207,19 +215,22 @@
                         <div class="comment-input-container">
                             <div class="comment-input-header">
                                 <div class="user-avatar">
-                                    <img src="" alt="User Avatar" class="avatar-image">
+                                    <!-- poné la ruta de tu avatar -->
+                                    <img src="img/avatar.png" alt="Tu avatar" class="avatar-image">
                                 </div>
                                 <span class="current-user-name">Tú</span>
                             </div>
+
                             <div class="input-wrapper">
                                 <input type="text" class="comment-input" placeholder="Escribe un comentario...">
-                                <button class="submit-comment-btn">
+                                <button class="submit-comment-btn" aria-label="Enviar comentario" title="Enviar">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                                     </svg>
                                 </button>
                             </div>
                         </div>
+                        <br>
 
                         <!-- Comments List -->
                         <div class="comments-list">
