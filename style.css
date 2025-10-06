@@ -341,10 +341,12 @@ body.drawer-open{ overflow: hidden; }
     background: linear-gradient(135deg, var(--header-main) 0%, var(--header-dark) 100%);
     padding: 30px 20px; color:#fff;
     border-top:1px solid rgba(255,255,255,.15);
+    height: 50%;
 }
 .footer-inner{
     display:flex; flex-wrap:wrap; gap:20px; justify-content:space-between;
     max-width:1200px; margin:auto;
+    height:100%;
 }
 .footer-box{
     flex:1; min-width:220px;

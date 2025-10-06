@@ -4,9 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Header ALLGAMES</title>
-
-
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 <div id="loading-screen">
@@ -17,19 +15,14 @@
 <header class="site-header">
     <div class="bar">
         <div class="inner">
-
-            <!-- Hamburguesa -->
             <button id="menuBtn" class="icon-btn" aria-label="Abrir menú">
-             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
                      stroke-linecap="round">
                     <path d="M3 6h18M3 12h18M3 18h18"/>
                 </svg>
             </button>
-
-            <!-- Centro: Marca + Buscador + Link -->
             <div class="center">
                 <a class="brand" href="#"><span class="s">A</span><span>LLGAME</span><span class="s">S</span></a>
-
                 <div class="search-wrap">
                     <form class="search" role="search" aria-label="Buscar juegos" onsubmit="event.preventDefault()">
                         <input type="search" placeholder="Buscar..."/>
@@ -42,11 +35,8 @@
             </span>
                     </form>
                 </div>
-
                 <a class="saved" href="#guardados">JUEGOS GUARDADOS</a>
             </div>
-
-            <!-- Avatar -->
             <div class="avatar" title="Perfil">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -54,27 +44,20 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </div>
-
         </div>
     </div>
 </header>
-<!-- Overlay -->
 <div id="backdrop" class="backdrop" hidden></div>
-
-<!-- Drawer / Menú lateral -->
 <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="drawer-header">
         <span class="drawer-logo">ALLGAME<span class="s">S</span></span>
         <button id="drawerClose" class="drawer-close" aria-label="Cerrar menú">
-            <!-- X -->
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
                 <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
         </button>
     </div>
-
     <hr class="drawer-sep" />
-
     <nav class="drawer-nav">
         <a href="#nuevos">⭐ Nuevos</a>
         <a href="#destacados">▶ Destacados</a>
@@ -83,80 +66,59 @@
     </nav>
 </aside>
 
-<!-- Carrusel chico (Destacados) -->
 <section class="carousel carousel--sm">
-    <div class="carousel-title">JUEGOS DESTACADOS</div>
-
+    <div class="carousel-title">CLÁSICOS DE SIEMPRE</div>
     <button class="nav prev" aria-label="Anterior">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 18l-6-6 6-6"></path>
         </svg>
     </button>
-
-
     <div class="carousel-track">
-        <!-- Card 1 -->
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
+            <img src="/imagenes/left4dead.net_left-4-dead_" alt="Left 4 Dead"/>
             <span class="game-title">LEFT 4 DEAD</span>
         </article>
-
-        <!-- Card 2 -->
         <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
+            <img src="/imagenes/eternalDarknes.jpeg" alt="Eternal Darkness"/>
             <span class="game-title">ETERNAL DARKNESS</span>
         </article>
-
-        <!-- Card 3 -->
         <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
+            <img src="/imagenes/sanAndreas.jpeg" alt="GTA San Andreas"/>
             <span class="game-title">SAN ANDREAS</span>
         </article>
-
-        <!-- Card 4 -->
         <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
+            <img src="/imagenes/budokai.jpeg" alt="Dragon Ball Z Budokai 3"/>
+            <span class="game-title">BUDOKAI 3</span>
         </article>
-
-        <!-- Card 5 -->
         <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
+            <img src="/imagenes/Retro%20Review_%20Contra_%20Hard%20Corps_.jpeg" alt="Contra Hard Corps"/>
             <span class="game-title">HARD CORPS</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
+            <img src="/imagenes/residenevil.jpeg" alt="Resident Evil 4"/>
+            <span class="game-title">RESIDENT EVIL 4</span>
         </article>
-
-        <!-- Card 2 -->
         <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
+            <img src="/imagenes/silentHill.jpeg" alt="Silent Hill 2"/>
+            <span class="game-title">SILENT HILL 2</span>
         </article>
-
-        <!-- Card 3 -->
         <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
+            <img src="/imagenes/Max%20Payne.jpeg" alt="Max Payne"/>
+            <span class="game-title">MAX PAYNE</span>
         </article>
-
-        <!-- Card 4 -->
         <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
+            <img src="/imagenes/ocarinaoftime.jpeg" alt="Ocarina of Time"/>
+            <span class="game-title">OCARINA OF TIME</span>
         </article>
-
     </div>
-
     <button class="nav next" aria-label="Siguiente">
-        <!-- Flecha derecha -->
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e7ecf7" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18l6-6-6-6"></path>
         </svg>
     </button>
 </section>
+
 <section class="carousel carousel--lg">
     <div class="carousel-title">JUEGOS NUEVOS</div>
     <button class="nav prev" aria-label="Anterior">
@@ -164,266 +126,149 @@
             <path d="M15 18l-6-6 6-6"></path>
         </svg>
     </button>
-
-
     <div class="carousel-track">
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
-        </article>
-
-        <!-- Card 5 -->
-        <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/eldenring.jpeg" alt="Elden Ring"/>
+            <span class="game-title">ELDEN RING</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
+            <img src="/imagenes/BALDUR'S%20GATE%203.jpeg" alt="Baldur's Gate 3"/>
+            <span class="game-title">BALDUR'S GATE 3</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/HELLDIVERS%202.jpeg" alt="Helldivers 2"/>
+            <span class="game-title">HELLDIVERS 2</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
+            <img src="/imagenes/CYBERPUNK%202077.jpeg" alt="Cyberpunk 2077"/>
+            <span class="game-title">CYBERPUNK 2077</span>
         </article>
-
-        <!-- Card 2 -->
         <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
+            <img src="/imagenes/ALAN%20WAKE%202.jpeg" alt="Alan Wake 2"/>
+            <span class="game-title">ALAN WAKE 2</span>
         </article>
-
-        <!-- Card 3 -->
         <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
+            <img src="/imagenes/DIABLO%20IV.jpeg" alt="Diablo IV"/>
+            <span class="game-title">DIABLO IV</span>
         </article>
-
+        <article class="game-card">
+            <img src="/imagenes/STREET%20FIGHTER%206.jpeg" alt="Street Fighter 6"/>
+            <span class="game-title">STREET FIGHTER 6</span>
+        </article>
+        <article class="game-card">
+            <img src="/imagenes/FINAL%20FANTASY%20XVI.jpeg" alt="Final Fantasy XVI"/>
+            <span class="game-title">FINAL FANTASY XVI</span>
+        </article>
+        <article class="game-card">
+            <img src="/imagenes/HOGWARTS%20LEGACY.jpeg" alt="Hogwarts Legacy"/>
+            <span class="game-title">HOGWARTS LEGACY</span>
+        </article>
     </div>
-
     <button class="nav next" aria-label="Siguiente">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e7ecf7" stroke-width="2"
-                                                          stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 18l6-6-6-6"></path>
-    </svg></button>
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+        </svg></button>
 </section>
-<section class="carousel carousel--sm">
-    <div class="carousel-title">JUEGOS DESTACADOS</div>
 
+<section class="carousel carousel--sm">
+    <div class="carousel-title">ACLAMADOS POR LA CRÍTICA</div>
     <button class="nav prev" aria-label="Anterior">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 18l-6-6 6-6"></path>
         </svg>
     </button>
-
-
     <div class="carousel-track">
-        <!-- Card 1 -->
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
-        </article>
-
-        <!-- Card 5 -->
-        <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/THE%20WITCHER%203.jpeg" alt="The Witcher 3"/>
+            <span class="game-title">THE WITCHER 3</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
+            <img src="/imagenes/RED%20DEAD%202.jpeg" alt="Red Dead Redemption 2"/>
+            <span class="game-title">RED DEAD 2</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/GOD%20OF%20WAR.jpeg" alt="God of War"/>
+            <span class="game-title">GOD OF WAR</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
+            <img src="/imagenes/BLOODBORNE.jpeg" alt="Bloodborne"/>
+            <span class="game-title">BLOODBORNE</span>
         </article>
-
-        <!-- Card 2 -->
         <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
+            <img src="/imagenes/HALF-LIFE%202.jpeg" alt="Half-Life 2"/>
+            <span class="game-title">HALF-LIFE 2</span>
         </article>
-
-        <!-- Card 3 -->
         <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
+            <img src="/imagenes/PORTAL%202.jpeg" alt="Portal 2"/>
+            <span class="game-title">PORTAL 2</span>
         </article>
-
+        <article class="game-card">
+            <img src="/imagenes/BIOSHOCK.jpeg" alt="BioShock"/>
+            <span class="game-title">BIOSHOCK</span>
+        </article>
+        <article class="game-card">
+            <img src="/imagenes/MASS%20EFFECT%202.jpeg" alt="Mass Effect 2"/>
+            <span class="game-title">MASS EFFECT 2</span>
+        </article>
+        <article class="game-card">
+            <img src="/imagenes/HADES.jpeg" alt="Hades"/>
+            <span class="game-title">HADES</span>
+        </article>
     </div>
-
     <button class="nav next" aria-label="Siguiente">
-        <!-- Flecha derecha -->
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e7ecf7" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18l6-6-6-6"></path>
         </svg>
     </button>
 </section>
-<section class="carousel carousel--sm">
-    <div class="carousel-title">JUEGOS DESTACADOS</div>
 
+<section class="carousel carousel--sm">
+    <div class="carousel-title">POPULARES MULTIJUGADOR</div>
     <button class="nav prev" aria-label="Anterior">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 18l-6-6 6-6"></path>
         </svg>
     </button>
-
-
     <div class="carousel-track">
-        <!-- Card 1 -->
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
-        </article>
-
-        <!-- Card 5 -->
-        <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/MINECRAFT.jpeg" alt="Minecraft"/>
+            <span class="game-title">MINECRAFT</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
+            <img src="/imagenes/FORTNITE.jpeg" alt="Fortnite"/>
+            <span class="game-title">FORTNITE</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-5.jpg" alt="Hard Corps"/>
-            <span class="game-title">HARD CORPS</span>
+            <img src="/imagenes/APEX%20LEGENDS.jpeg" alt="Apex Legends"/>
+            <span class="game-title">APEX LEGENDS</span>
         </article>
         <article class="game-card">
-            <img src="img/juego-1.jpg" alt="Left 4 Dead"/>
-            <span class="game-title">LEFT 4 DEAD</span>
+            <img src="/imagenes/VALORANT.jpeg" alt="Valorant"/>
+            <span class="game-title">VALORANT</span>
         </article>
-
-        <!-- Card 2 -->
         <article class="game-card">
-            <img src="img/juego-2.jpg" alt="Eternal Darkness"/>
-            <span class="game-title">ETERNAL DARKNESS</span>
+            <img src="/imagenes/GENSHIN%20IMPACT.jpeg" alt="Genshin Impact"/>
+            <span class="game-title">GENSHIN IMPACT</span>
         </article>
-
-        <!-- Card 3 -->
         <article class="game-card">
-            <img src="img/juego-3.jpg" alt="GTA San Andreas"/>
-            <span class="game-title">SAN ANDREAS</span>
+            <img src="/imagenes/WARZONE.jpeg" alt="Warzone"/>
+            <span class="game-title">WARZONE</span>
         </article>
-
-        <!-- Card 4 -->
         <article class="game-card">
-            <img src="img/juego-4.jpg" alt="Dragon Ball Z"/>
-            <span class="game-title">DRAGON BALL Z</span>
+            <img src="/imagenes/ROCKET%20LEAGUE.jpeg" alt="Rocket League"/>
+            <span class="game-title">ROCKET LEAGUE</span>
         </article>
-
+        <article class="game-card">
+            <img src="/imagenes/STARDEW%20VALLEY.jpeg" alt="Stardew Valley"/>
+            <span class="game-title">STARDEW VALLEY</span>
+        </article>
+        <article class="game-card">
+            <img src="/imagenes/SEA%20OF%20THIEVES.jpeg" alt="Sea of Thieves"/>
+            <span class="game-title">SEA OF THIEVES</span>
+        </article>
     </div>
-
     <button class="nav next" aria-label="Siguiente">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18l6-6-6-6"></path>
@@ -433,8 +278,6 @@
 
 <footer class="site-footer">
     <div class="footer-inner">
-
-        <!-- Redes Sociales -->
         <div class="footer-box">
             <h3>REDES SOCIALES:</h3>
             <ul class="socials">
@@ -443,19 +286,14 @@
                 <li><span>🎮</span> Twitch — <a href="#">/allgames.oficial</a></li>
             </ul>
         </div>
-
-        <!-- Soporte -->
         <div class="footer-box">
             <h3>SOPORTE: (+54 9) 0800 239 469</h3>
             <p>CONTACTO: <a href="mailto:ALLGAMES.sup@gmail.com">ALLGAMES.sup@gmail.com</a></p>
         </div>
-
-        <!-- Quienes somos -->
         <div class="footer-box">
             <h3>QUIENES SOMOS:</h3>
             <p>Somos una plataforma pensada para que disfrutes de los mejores juegos online en un solo lugar.</p>
         </div>
-
     </div>
 </footer>
 <script src="loader.js" defer></script>
