@@ -30,7 +30,9 @@
 }
 
 /* Reset mínimo */
-*{ box-sizing: border-box; }
+*{
+    box-sizing: border-box;
+}
 
 html, body{ height:100%; }
 
@@ -41,6 +43,10 @@ body{
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, p{
+    margin: 0;
 }
 
 h1{
@@ -57,6 +63,10 @@ h3 {
 
 h4 {
     font-size: 1.25rem;
+}
+
+p {
+    font-size: 1rem;
 }
 
 /* =====================
@@ -494,7 +504,6 @@ body.drawer-open{ overflow: hidden; }
 /* Botón base */
 .action-btn {
     background: transparent;
-    text-wrap: nowrap;
     border: none;
     color: white;
     font-size: 16px;
@@ -502,10 +511,14 @@ body.drawer-open{ overflow: hidden; }
     padding: 4px;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 4px;
     transition: transform 0.3s ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.action-btn span {
+    text-wrap: nowrap;
 }
 
 /* Estilo para iconos SVG */
@@ -629,6 +642,7 @@ body.drawer-open{ overflow: hidden; }
     object-fit: cover;
 }
 
+/* Ocultar overlay por defecto */
 .mini-card-overlay {
     position: absolute;
     bottom: 0;
@@ -636,29 +650,41 @@ body.drawer-open{ overflow: hidden; }
     right: 0;
     padding: 10px;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Mostrar overlay al hacer hover en la card */
+.mini-card:hover .mini-card-overlay {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .mini-card-title {
     font-size: 14px;
-    color: #ffffff;
+    color: var(--accent);
 }
+
 
 /* Main Content Section */
 .main-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 12px;
 }
 
 .content-section {
     border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .section-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 20px;
 }
 
 .section-icon {
@@ -698,15 +724,13 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .instruction-title {
-    font-size: 14px;
     font-weight: bold;
-    color: #ffffff;
+    color: var(--text);
 }
 
 .instruction-text {
-    font-size: 14px;
     line-height: 1.6;
-    color: #e2e8f0;
+    color: var(--text);
 }
 
 .instruction-list {
@@ -715,10 +739,9 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .instruction-item {
-    font-size: 14px;
+    font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 8px;
-    color: #e2e8f0;
+    color: var(--text);
 }
 
 .instruction-item::before {
