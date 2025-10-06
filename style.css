@@ -21,15 +21,19 @@
     --game-font-button: 'Freddoka one', sans-serif;
     --game-font-text: 'Baloo 2', sans-serif;
 
-    --secondary-color-light: #11BFEE;
+
+    --secondary-color-light: #025B79;
     --primary-color-dark: #022B49;
+    --primary-color-light: #11BFEE;
     --gradient-vj: linear-gradient(90deg, var(--secondary-color-light), var(--primary-color-dark));
 
 }
 
 /* Reset mínimo */
 *{ box-sizing: border-box; }
+
 html, body{ height:100%; }
+
 body{
     margin:0;
     background: var(--page-bg);
@@ -37,6 +41,22 @@ body{
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+h1{
+    font-size: 2.5rem;
+}
+
+h2{
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
 }
 
 /* =====================
@@ -395,19 +415,18 @@ body.drawer-open{ overflow: hidden; }
 
 /* Game Container */
 .game-container {
-    height: 800px;
-    background-color: #1a202c;
-    /*border-radius: 12px;*/
-    padding: 40px;
+    height: 700px;
+    background: linear-gradient(var(--primary-color-dark), var(--secondary-color-light));
+    padding: 118px;
     display: flex;
-    /*gap: 60px;*/
     margin-bottom: 30px;
+    align-items: center;
 }
 
 .game-image {
     flex-shrink: 0;
-    width: 350px;
-    height: 280px;
+    width: 620px;
+    height: 500px;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -439,19 +458,20 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .play-button {
-    background-color: #00d4ff;
-    color: #ffffff;
-    font-size: 24px;
+    background-color: var(--primary-color-light);
+    color: #dddddd;
+    font-size: 48px;
     font-weight: bold;
-    padding: 15px 60px;
+    font-family: var(--game-font-button), serif;
+    padding: 18px;
     border: none;
-    border-radius: 50px;
+    border-radius: 15px;
     cursor: pointer;
     margin: 20px 0;
 }
 
 .play-button:hover {
-    background-color: #00b8e6;
+    background-color: var(--primary-color-dark);
 }
 
 .click-to-start {
@@ -459,25 +479,80 @@ body.drawer-open{ overflow: hidden; }
     color: #a0aec0;
 }
 
-/* Action Buttons */
+/* Contenedor de botones */
 .action-buttons {
     display: flex;
-    margin-bottom: 30px;
+    align-items: center;
+    background: var(--primary-color-dark);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 24px;
+    gap: 10px;
+    width: fit-content;
 }
 
+/* Botón base */
 .action-btn {
-    background-color: var(--primary-color-dark);
-    color: #ffffff;
-    padding: 10px 20px;
+    background: transparent;
+    text-wrap: nowrap;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 4px;
+    transition: transform 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+/* Estilo para iconos SVG */
+.icon {
+    width: 22px;
+    height: 20px;
+    fill: currentColor; /* Hereda el color del botón */
+}
+
+.like-btn .icon {
+    fill: #FF0004;
+}
+
+.share-btn .icon {
+    fill: var(--primary-color-light);
+}
+
+/* Opcional: Efecto hover más oscuro */
+.like-btn:hover .icon {
+    fill: #cc0003;
+}
+
+.share-btn:hover .icon {
+    filter: brightness(1.2); /* Más brillante en hover */
+}
+
+/* Línea divisoria */
+.action-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 0 8px;
+}
+
+/* ANIMACIÓN HOVER SIMPLE */
 .action-btn:hover {
-    background-color: #4a5568;
+    transform: translateY(-2px);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-btn:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 /* Advertisement Banner */
@@ -499,8 +574,8 @@ body.drawer-open{ overflow: hidden; }
 
 .ad-label {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    bottom: 0;
+    left: 0;
     background-color: #ffc107;
     color: #000000;
     padding: 4px 10px;
@@ -572,7 +647,7 @@ body.drawer-open{ overflow: hidden; }
 .main-content {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 24px;
 }
 
 .content-section {
@@ -591,8 +666,8 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .section-title {
-    font-size: 16px;
     font-weight: bold;
+    margin: 0;
     color: #ffffff;
 }
 
@@ -672,30 +747,52 @@ body.drawer-open{ overflow: hidden; }
 }
 
 /* Comments Section */
-.comment-counter {
+.comments-section .section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    /*border-bottom: 1px solid var(--border-color);*/
 }
 
-.counter-icon {
-    font-size: 18px;
+.comments-section .section-icon {
+    font-size: 22px;
+}
+
+.comments-section .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.container-comments{
+    width: 60%;
+}
+
+.comment-counter {
+    display: none; /* El contador parece estar integrado en el header según la imagen */
 }
 
 .comment-input-container {
     display: flex;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 25px;
 }
 
+.comment-input-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    background-color: #4a5568;
+    /*background-color: var(--border-color);*/
     flex-shrink: 0;
 }
 
@@ -705,90 +802,129 @@ body.drawer-open{ overflow: hidden; }
     object-fit: cover;
 }
 
+.current-user-name {
+    font-size: 13px;
+    /*color: var(--text-primary);*/
+    font-weight: 500;
+}
+
 .input-wrapper {
-    flex: 1;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    background-color: #e8e9eb;
+    border-radius: 20px;
+    padding: 0 8px 0 16px;
+    gap: 8px;
 }
 
 .comment-input {
     flex: 1;
-    background-color: #2d3748;
-    border: 1px solid #4a5568;
-    border-radius: 6px;
-    padding: 10px 15px;
-    color: #ffffff;
-    font-size: 14px;
+    background-color: transparent;
+    border: none;
+    padding: 12px 0;
+    color: #1a202c;
+    font-size: 13px;
+    outline: none;
 }
 
 .comment-input::placeholder {
-    color: #718096;
+    color: #6b7280;
+    font-style: italic;
 }
 
 .submit-comment-btn {
-    background-color: #00d4ff;
+    background-color: transparent;
     border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    color: #ffffff;
-    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #1a202c;
+    font-size: 16px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.submit-comment-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Comments List */
 .comments-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
 .comment-item {
     display: flex;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background-color: #4a5160;
+    border-radius: 8px;
 }
 
 .comment-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    background-color: #4a5568;
+    /*background-color: var(--border-color);*/
     flex-shrink: 0;
-}
-
-.comment-content {
-    flex: 1;
 }
 
 .comment-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.comment-user-info {
+    display: flex;
+    align-items: center;
     gap: 10px;
-    margin-bottom: 5px;
 }
 
 .comment-username {
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
 }
 
-.comment-time {
+.comment-likes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
-    color: #a0aec0;
+    color: var(--text);
 }
 
 .like-btn {
     background: none;
     border: none;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
-    margin-left: auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    filter: grayscale(1);
+    opacity: 0.7;
+}
+
+.like-btn:hover {
+    filter: grayscale(0);
+    opacity: 1;
 }
 
 .comment-text {
-    font-size: 14px;
-    color: #e2e8f0;
-    line-height: 1.6;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    font-style: italic;
+    padding-left: 46px;
 }
