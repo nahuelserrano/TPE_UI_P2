@@ -754,13 +754,16 @@ body.drawer-open{ overflow: hidden; }
 
 /* Multimedia Section */
 .media-grid {
+    width: 1200px;
     display: grid;
+    justify-items: center;
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    gap: 8px;
 }
 
 .media-item {
-    height: 120px;
+    height: 260px;
+    width: 260px;
     border-radius: 8px;
     overflow: hidden;
     background-color: #2d3748;
@@ -1020,4 +1023,17 @@ body.drawer-open{ overflow: hidden; }
     border: none;
     background-color: var(--primary-color-light);
     margin: 0 ;
+}
+
+/* Estilos para iconos SVG en section headers */
+.section-icon svg {
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+.instruction-icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
 }
