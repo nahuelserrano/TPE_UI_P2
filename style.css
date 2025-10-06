@@ -28,6 +28,11 @@
     --gradient-vj: linear-gradient(90deg, var(--secondary-color-light), var(--primary-color-dark));
 
 }
+:root{
+    --panel: #2b364d;                 /* fondo del bloque */
+    --stroke: rgba(255,255,255,.25);  /* trazo fino */
+    --text: #e7ecf7;                  /* texto claro */
+}
 
 /* Reset mínimo */
 *{ box-sizing: border-box; }
@@ -776,157 +781,138 @@ body.drawer-open{ overflow: hidden; }
     display: none; /* El contador parece estar integrado en el header según la imagen */
 }
 
-.comment-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 25px;
+.comment-input-container{
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 14px;
+    max-width: 900px; /* opcional */
 }
 
-.comment-input-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.comment-input-header{
+    display:flex; align-items:center; gap:10px;
+    padding: 2px 0 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,.18);
 }
 
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    overflow: hidden;
-    /*background-color: var(--border-color);*/
-    flex-shrink: 0;
+.user-avatar{
+    width:42px; height:42px; border-radius:50%;
+    overflow:hidden; flex-shrink:0;
+    border: 1px solid rgba(255,255,255,.15);
+    background:#1a2436; /* fallback si no hay imagen */
+}
+.avatar-image{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.current-user-name{
+    font-size:14px; font-weight:600;
 }
 
-.avatar-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+
+.input-wrapper{
+    margin-top:12px;
+    display:flex; align-items:center; gap:10px;
+    background:#e8e9eb;
+    border-radius: 22px;
+    padding: 8px 10px 8px 16px;
 }
 
-.current-user-name {
-    font-size: 13px;
-    /*color: var(--text-primary);*/
-    font-weight: 500;
+.comment-input{
+    flex:1; border:0; outline:0;
+    background:transparent;
+    color:#0f172a; font-size:14px;
 }
-
-.input-wrapper {
-    display: flex;
-    align-items: center;
-    background-color: #e8e9eb;
-    border-radius: 20px;
-    padding: 0 8px 0 16px;
-    gap: 8px;
+.comment-input::placeholder{ color:#6b7280; font-style:italic; }
+.submit-comment-btn{
+    width:34px; height:34px;
+    border:1px solid rgba(0,0,0,.15);
+    background: transparent;
+    color:#111827; border-radius:50%;
+    display:grid; place-items:center;
+    cursor:pointer;
+    transition: background .2s, transform .08s, box-shadow .2s;
 }
-
-.comment-input {
-    flex: 1;
-    background-color: transparent;
-    border: none;
-    padding: 12px 0;
-    color: #1a202c;
-    font-size: 13px;
-    outline: none;
+.submit-comment-btn:hover{
+    background: rgba(0,0,0,.06);
+    box-shadow: 0 0 0 4px rgba(255,255,255,.06) inset;
 }
-
-.comment-input::placeholder {
-    color: #6b7280;
-    font-style: italic;
-}
-
-.submit-comment-btn {
-    background-color: transparent;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    color: #1a202c;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 0;
-}
-
-.submit-comment-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
+.submit-comment-btn:active{ transform: scale(.96); }
 
 /* Comments List */
-.comments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* ====== COMMENTS – estilo tarjeta como la imagen ====== */
+.comments-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
 }
 
-.comment-item {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px;
-    background-color: #4a5160;
+/* Tarjeta del comentario */
+.comment-item{
+    background: var(--panel);
+    border: 1px solid var(--stroke);           /* borde fino claro */
     border-radius: 8px;
+    padding: 12px;
 }
 
-.comment-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    overflow: hidden;
-    /*background-color: var(--border-color);*/
-    flex-shrink: 0;
+/* Cabecera (avatar + usuario | likes) */
+.comment-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding: 2px 2px 10px 2px;
 }
 
-.comment-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+/* Usuario (avatar + nombre) */
+.comment-user-info{
+    display:flex; align-items:center; gap:10px;
+}
+.comment-avatar{
+    width:42px; height:42px; border-radius:50%;
+    overflow:hidden; flex-shrink:0;
+    border:1px solid rgba(255,255,255,.18);
+    background:#1a2436;
+}
+.comment-avatar .avatar-image{ width:100%; height:100%; object-fit:cover; display:block; }
+.comment-username{
+    font-size:14px; font-weight:600; color:var(--text);
 }
 
-.comment-user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* Likes a la derecha */
+.comment-likes{
+    display:flex; align-items:center; gap:8px;
 }
-
-.comment-username {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-}
-
-.comment-likes {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text);
-}
-
-.like-btn {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    filter: grayscale(1);
-    opacity: 0.7;
-}
-
-.like-btn:hover {
-    filter: grayscale(0);
-    opacity: 1;
-}
-
-.comment-text {
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.5;
+.comment-likes span{
+    font-size:13px;
+    color: rgba(255,255,255,.75);
     font-style: italic;
-    padding-left: 46px;
+}
+
+/* Botón "me gusta" cuadrado con borde */
+.like-btn{
+    width:28px; height:28px;
+    border:1px solid var(--stroke);
+    border-radius:6px;
+    background:transparent;
+    color:var(--text);
+    display:grid; place-items:center;
+    padding:0; cursor:pointer;
+    transition: background .2s ease, border-color .2s ease, transform .08s ease;
+    line-height:1;
+    filter:none; opacity:1;                    /* anula estilos previos */
+}
+.like-btn:hover{
+    background: rgba(255,255,255,.08);
+    border-color:#9ec0ff;
+}
+.like-btn:active{ transform: scale(.96); }
+
+/* Texto del comentario (cuerpo) */
+.comment-text{
+    margin:0;
+    padding: 10px 2px 6px 2px;
+    border-top: 1px solid rgba(255,255,255,.25);  /* línea divisoria */
+    font-size:14px;
+    color: var(--text);
+    font-style: italic;
 }
