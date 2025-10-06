@@ -27,6 +27,7 @@
     --primary-color-light: #11BFEE;
     --gradient-vj: linear-gradient(90deg, var(--secondary-color-light), var(--primary-color-dark));
 
+
 }
 :root{
     --panel: #2b364d;                 /* fondo del bloque */
@@ -41,7 +42,7 @@ html, body{ height:100%; }
 
 body{
     margin:0;
-    background: var(--page-bg);
+    background:rgba(43, 54, 77, 1) ;
     color: var(--text);
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -815,16 +816,18 @@ body.drawer-open{ overflow: hidden; }
     background:#e8e9eb;
     border-radius: 22px;
     padding: 8px 10px 8px 16px;
+    height: 2.5em;
 }
 
 .comment-input{
     flex:1; border:0; outline:0;
     background:transparent;
     color:#0f172a; font-size:14px;
+
 }
 .comment-input::placeholder{ color:#6b7280; font-style:italic; }
 .submit-comment-btn{
-    width:34px; height:34px;
+    width:27px; height:27px;
     border:1px solid rgba(0,0,0,.15);
     background: transparent;
     color:#111827; border-radius:50%;
@@ -915,4 +918,88 @@ body.drawer-open{ overflow: hidden; }
     font-size:14px;
     color: var(--text);
     font-style: italic;
+}
+/* ===== Footer responsive ===== */
+
+/* Corrige el alto forzado que había en el CSS anterior */
+.site-footer{ height:auto; }
+
+/* Layout base en grid para que colapse bonito */
+.footer-inner{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Cajas */
+.footer-box{
+    min-width: 0;              /* evita overflow en móviles */
+    border-radius: 10px;
+    border: 1px dashed rgba(255,255,255,.25);
+    padding: 14px;
+    background: transparent;   /* mantenemos el fondo del gradiente del footer */
+}
+
+.footer-box h3{
+    margin: 0 0 10px;
+    font-size: clamp(13px, 2.8vw, 14px);
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.footer-box p,
+.footer-box li{
+    font-size: clamp(13px, 3.2vw, 14px);
+    line-height: 1.6;
+}
+
+/* Social list accesible en touch */
+.socials{ list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.socials li{
+    display: flex; align-items: center; gap: 8px;
+    min-height: 36px;   /* buen target táctil */
+}
+.socials li span{ width: 18px; text-align: center; }
+
+.footer-box a{
+    color:#e7ecf7; text-decoration: none;
+    border-radius: 8px; padding: 2px 4px;
+    transition: color .2s ease, background .2s ease;
+}
+.footer-box a:hover{ color:#5ab4ff; background: rgba(255,255,255,.06); }
+
+/* Teléfono en soporte más “tap-friendly” */
+.footer-phone{
+    color: var(--accent);
+    padding: 2px 6px; border-radius: 6px;
+}
+
+/* ——— Breakpoints ——— */
+
+/* Tablets (≈≤ 900px): 2 columnas */
+@media (max-width: 900px){
+    .footer-inner{
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 16px;
+    }
+}
+
+/* Móviles (≤ 640px): 1 columna + respiración extra */
+@media (max-width: 640px){
+    .site-footer{
+        padding: 24px 14px calc(24px + env(safe-area-inset-bottom, 0));
+    }
+    .footer-inner{
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .footer-box{
+        padding: 12px;
+        border-radius: 8px;
+        border-color: rgba(255,255,255,.22); /* un poco menos intenso en móvil */
+    }
+    .socials li{ min-height: 40px; }
 }
