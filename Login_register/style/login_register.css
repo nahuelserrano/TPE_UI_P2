@@ -92,9 +92,11 @@ label.input_titel{
 
 .input_container input.small{
  width: 12.5vw;
- margin: 0 0.7vw;
 }
 
+.samll_input_container{
+    padding: 0 0.7vw 0;
+}
 
 .input_container input:hover{
     box-shadow: 0px 0px 0px 2px #797979 inset;
