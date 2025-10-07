@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Login_register/style/login_register.css">
+    <!-- HTML en el <head> -->
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">   
+    <title>Document</title>
+</head>
+<body class="general_conatiner">
+    <main class=" container register_container">
+        <div class="section_titel"><span>r</span>egistrat<span>e</span></div>
+
+        <form id="form" class="form_group" action="">
+
+            <div class="input_container">
+                <label class="input_titel" for="">Nombre <span class="required-signal">*</span></label>
+                <input class="small" name="" type="text" required placeholder="Ej. juan">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Apellido <span class="required-signal">*</span></label>
+                <input class="small" name="" type="text" required placeholder="Ej. Perez">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Apodo</label>
+                <input class="normal" name="" type="text" placeholder="Ej. master98">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Edad <span class="required-signal">*</span></label>
+                <input class="normal" name="" type="text" required placeholder="Ej. 38">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Correo <span class="required-signal">*</span></label>
+                <input class="normal" name="" type="text" required placeholder="ej. ejemplo@gmail.com">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Contraseña <span class="required-signal">*</span></label>
+                <input class="normal" name="" type="text" required placeholder="Minimo 8 caracteres">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="input_container">
+                <label class="input_titel" for="">Repetir Contraseña <span class="required-signal">*</span></label>
+                <input class="normal" name="" type="text" required placeholder="Vuelve a escribir tu contraseña">
+                <div class="error_dialog hidden"></div>
+            </div>
+
+            <div class="capcha">
+                <img src="/Login_register/img/reCAPTCHA.jpg" alt="">
+            </div>
+
+            <div class="btn_submit_conainer">
+                <button id="actionButton" class="btn btn-ingrezar">Registrate</button>
+            </div>
+
+        </form>
+
+        <div class="espaciador">
+            <div class="espaciador-linea"></div>
+            <div class="espaciador-letra">o</div>
+            <div class="espaciador-linea"></div>
+        </div>
+
+        <div class="otras_formas"> 
+            
+            <div class="btn_submit_conainer">
+                <a href="/home/index.html">
+                    <button class="btn btn-google">
+                        <img class="btn-img" src="/Login_register/img/search.png" alt="">Ingresa con google
+                    </button>
+                </a>
+            </div>
+            
+            <div class="btn_submit_conainer">
+                <a href="/home/index.html">
+                <button class="btn btn-facebook"> 
+                    <img class="btn-img" src="/Login_register/img/facebook (2).png" alt="">Ingresa con facebook
+                </button>
+                </a>
+            </div>
+        </div>
+
+        <div class="redireccion">
+            <p>¿Ya tienes una cuenta? <a href="/Login_register/Login/login.html">ingresa</a> </p>
+        </div>
+
+    </main>
+</body>
+
+<script src="/Login_register/js/succesRegisterLogin.js"></script>
+</html>
