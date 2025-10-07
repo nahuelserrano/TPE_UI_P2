@@ -577,7 +577,7 @@ body.drawer-open{ overflow: hidden; }
 /* Advertisement Banner */
 .ad-banner {
     width: 100%;
-    height: 100px;
+    height: 150px;
     background-color: #1a202c;
     border-radius: 8px;
     margin-bottom: 40px;
@@ -649,12 +649,14 @@ body.drawer-open{ overflow: hidden; }
 
 /* Ocultar overlay por defecto */
 .mini-card-overlay {
+    display: flex;
+    justify-content: center;
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     padding: 10px;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 80%, transparent);
     opacity: 0;
     transform: translateY(100%);
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -814,6 +816,7 @@ body.drawer-open{ overflow: hidden; }
     border: 1px solid rgba(255,255,255,.15);
     background:#1a2436; /* fallback si no hay imagen */
 }
+
 .avatar-image{ width:100%; height:100%; object-fit:cover; display:block; }
 
 .current-user-name{
