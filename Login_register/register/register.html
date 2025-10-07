@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/Login_register/style/login_register.css">
+    <title>Sing in</title>
     <!-- HTML en el <head> -->
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">   
@@ -15,13 +16,13 @@
 
         <form id="form" class="form_group" action="">
 
-            <div class="input_container">
+            <div class=" samll_input_container input_container">
                 <label class="input_titel" for="">Nombre <span class="required-signal">*</span></label>
                 <input class="small" name="" type="text" required placeholder="Ej. juan">
                 <div class="error_dialog hidden"></div>
             </div>
 
-            <div class="input_container">
+            <div class=" samll_input_container input_container">
                 <label class="input_titel" for="">Apellido <span class="required-signal">*</span></label>
                 <input class="small" name="" type="text" required placeholder="Ej. Perez">
                 <div class="error_dialog hidden"></div>
@@ -56,6 +57,7 @@
                 <input class="normal" name="" type="text" required placeholder="Vuelve a escribir tu contraseña">
                 <div class="error_dialog hidden"></div>
             </div>
+            <div class="aclaracion"> Los campos con el signo naranja (<span class="required-signal">*</span>) son obligatorios</div>
 
             <div class="capcha">
                 <img src="/Login_register/img/reCAPTCHA.jpg" alt="">
@@ -66,6 +68,7 @@
             </div>
 
         </form>
+        
 
         <div class="espaciador">
             <div class="espaciador-linea"></div>
@@ -95,6 +98,7 @@
         <div class="redireccion">
             <p>¿Ya tienes una cuenta? <a href="/Login_register/Login/login.html">ingresa</a> </p>
         </div>
+        
 
     </main>
 </body>
