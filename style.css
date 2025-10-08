@@ -283,6 +283,11 @@ body.drawer-open{ overflow: hidden; }
     z-index: 5;
     transition: background .2s ease, border-color .2s ease, transform .1s ease, box-shadow .2s ease;
 }
+.game-card .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
 .nav svg{
     width: 60%; height: 60%;
     display:block;
