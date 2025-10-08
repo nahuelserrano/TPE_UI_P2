@@ -14,7 +14,7 @@ form.addEventListener("submit", (event)=>{
         button.classList.add("success");
 
         setTimeout(()=>{
-            window.location.href = "/home/index.html"
+            window.location.href = "../../index.html"
         },500)
     },1000)
 
