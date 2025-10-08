@@ -9,7 +9,43 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixelarticons@1.8.1/fonts/pixelart-icons-font.min.css">
     </head>
     <body>
-        <div class="container">
+    <header class="site-header">
+        <div class="bar">
+            <div class="inner">
+                <button id="menuBtn" class="icon-btn" aria-label="Abrir menú">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
+                         stroke-linecap="round">
+                        <path d="M3 6h18M3 12h18M3 18h18"/>
+                    </svg>
+                </button>
+                <div class="center">
+                    <a class="brand" href="#"><span class="s">A</span><span>LLGAME</span><span class="s">S</span></a>
+                    <div class="search-wrap">
+                        <form class="search" role="search" aria-label="Buscar juegos" onsubmit="event.preventDefault()">
+                            <input type="search" placeholder="Buscar..."/>
+                            <span class="magnifier" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M21 21l-4.3-4.3"></path>
+              </svg>
+            </span>
+                        </form>
+                    </div>
+                    <a class="saved" href="#guardados">JUEGOS GUARDADOS</a>
+                </div>
+                <div class="avatar" title="Perfil">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 21a8 8 0 1 0-16 0"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
             <!-- Breadcrumb Navigation -->
             <div class="breadcrumb">
                 <a href="/home">Juegos</a>
@@ -20,7 +56,7 @@
             </div>
 
             <!-- Main Title -->
-            <h1>Peg solitaire: Lilo y Stich</h1>
+            <h1 class="vj-title">Peg solitaire: Lilo y Stich</h1>
 
             <!-- Game Container -->
             <div class="game-container">
@@ -47,15 +83,15 @@
             <div class="action-buttons">
                 <button class="action-btn like-game-btn">
                     <span class="btn-text">Me gusta</span>
-                    <svg class="icon" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M9 2H5v2H3v2H1v6h2v2h2v2h2v2h2v2h2v2h2v-2h2v-2h2v-2h2v-2h2v-2h2V6h-2V4h-2V2h-4v2h-2v2h-2V4H9V2zm0 2v2h2v2h2V6h2V4h4v2h2v6h-2v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5v-2H3V6h2V4h4z" fill="currentColor"/>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 2H5v2H3v2H1v6h2v2h2v2h2v2h2v2h2v2h2v-2h2v-2h2v-2h2v-2h2v-2h2V6h-2V4h-2V2h-4v2h-2v2h-2V4H9V2zm0 2v2h2v2h2V6h2V4h4v2h2v6h-2v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5v-2H3V6h2V4h4z"/>
                     </svg>
                 </button>
                 <div class="action-divider"></div>
                 <button class="action-btn share-game-btn">
                     <span class="btn-text">Compartir</span>
                     <svg class="icon" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z" fill="currentColor"/>
+                        <path d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z"/>
                     </svg>
                 </button>
             </div>
@@ -144,7 +180,9 @@
                         <div class="instruction-block">
                             <div class="instruction-header">
                                 <span class="instruction-icon">
-                                   <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/> </svg>
+                                   <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                       <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/>
+                                   </svg>
                                 </span>
                                 <h4 class="instruction-title">Objetivo</h4>
                             </div>
@@ -158,7 +196,9 @@
                         <div class="instruction-block">
                             <div class="instruction-header">
                                 <span class="instruction-icon">
-                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/> </svg>
+                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 3 12 18">
+                                        <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/>
+                                    </svg>
                                 </span>
                                 <h4 class="instruction-title">Cómo mover</h4>
                             </div>
@@ -173,7 +213,7 @@
                         <div class="instruction-block">
                             <div class="instruction-header">
                                 <span class="instruction-icon">
-                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/> </svg>
+                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 2 12 21"> <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/> </svg>
                                 </span>
                                 <h4 class="instruction-title">Cómo ganar</h4>
                             </div>
@@ -204,8 +244,13 @@
                             <div class="media-item">
                                 <img src="../imagenes/Stich%20Elvis%202.jpeg" alt="Media 2" class="media-image">
                             </div>
-                            <div class="media-item media-video">
+                            <div class="media-item media-item-video">
                                 <img src="../imagenes/LyS%203%20video.webp" alt="Media 3" class="media-image media-video">
+                                <div class="play-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
                             </div>
                             <div class="media-item">
                                 <img src="../imagenes/LyS%20jugando%204.jpg" alt="Media 4" class="media-image">
@@ -290,10 +335,66 @@
                 </section>
 
             </section>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner" role="contentinfo">
+
+            <section class="footer-box" aria-labelledby="rrss">
+                <h3 id="rrss">REDES SOCIALES:</h3>
+                <ul class="socials">
+                    <li>
+                        <span aria-hidden="true">📷</span>
+                        Instagram — <a href="#" rel="noopener">@allgames.oficial</a>
+                    </li>
+                    <li>
+                        <span aria-hidden="true">🎵</span>
+                        TikTok — <a href="#" rel="noopener">@allgames.oficial</a>
+                    </li>
+                    <li>
+                        <span aria-hidden="true">🎮</span>
+                        Twitch — <a href="#" rel="noopener">/allgames.oficial</a>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="footer-box" aria-labelledby="soporte">
+                <h3 id="soporte">SOPORTE: <a class="footer-phone" href="tel:0800239469">0800 239 469</a></h3>
+                <p>CONTACTO: <a href="mailto:ALLGAMES.sup@gmail.com">ALLGAMES.sup@gmail.com</a></p>
+            </section>
+
+            <section class="footer-box" aria-labelledby="qs">
+                <h3 id="qs">QUIENES SOMOS:</h3>
+                <p>Somos una plataforma pensada para que disfrutes de los mejores juegos online en un solo lugar.</p>
+            </section>
+
         </div>
-<!--        <script src="/script.js"></script>-->
-        <script src="https://unpkg.com/simple-design-system"></script>
-        <script src="https://unpkg.com/feather-icons"></script>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.2,  // Se activa cuando el 20% del elemento es visible
+                rootMargin: '0px 0px -50px 0px'  // Detecta un poco antes de entrar
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        // Opcional: dejar de observar después de animar
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observar items de multimedia
+            const mediaItems = document.querySelectorAll('.media-item');
+            mediaItems.forEach(item => observer.observe(item));
+
+            // Observar mini-cards de juegos destacados
+            const miniCards = document.querySelectorAll('.mini-card');
+            miniCards.forEach(card => observer.observe(card));
+        });
+    </script>
 
     </body>
 </html>
