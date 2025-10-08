@@ -4,12 +4,16 @@ margin: 0;
 padding: 0;
 }
 
-body.general_conatiner{
-    background-image:
-    url(/Login_register/img/photo-1511512578047-dfb367046420.jpeg);
+/* Ajustes para compatibilidad con header/footer */
+body.general_conatiner {
+    min-height: calc(100vh - 64px); /* Resta la altura del header */
+}
 
-    background-repeat:no-repeat;
-    background-size:cover;
+/* Wrapper para centrar el contenido entre header y footer */
+div.general_conatiner {
+    background-image: url(/Login_register/img/photo-1511512578047-dfb367046420.jpeg);
+    background-repeat: no-repeat;
+    background-size: cover;
     background-blend-mode: multiply;
     display: flex;
     justify-content: center;
@@ -17,21 +21,21 @@ body.general_conatiner{
     color: rgb(231, 236, 247);
     font-family: 'inter', -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     font-size: 0.875rem;
-    min-height: 100vh;
-}
-
-body.general_conatiner::before {
-  content: "";
-  position: fixed;
-  inset: 0; 
-  background-color:rgba(43, 54, 77, 0.9); 
-  z-index: 0;
-
-  
-}
-body.general_conatiner *{
+    min-height: calc(100vh - 64px);
     position: relative;
-    z-index:1 ;
+}
+
+div.general_conatiner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(43, 54, 77, 0.9);
+    z-index: 0;
+}
+
+div.general_conatiner * {
+    position: relative;
+    z-index: 1;
 }
 
 main.container{
