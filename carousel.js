@@ -9,158 +9,284 @@
 
         if (!track || !prev || !next || cards.length === 0) return;
 
-        // ===== VERIFICAR SI ESTE CARRUSEL DEBE TENER EFECTO =====
+        // ===== IDENTIFICAR CARRUSEL DESTACADO =====
         const isFeaturedCarousel = carousel.id === 'carousel-featured';
 
-        // ===== CONFIGURACIÓN =====
+        // ===== ESTADO DE NAVEGACIÓN =====
+        let currentIndex = 0;
         let isScrolling = false;
-        let scrollTimeout = null;
 
-        // ===== FUNCIÓN: Calcular desplazamiento CORRECTO =====
-        function getStep() {
-            // Obtener el ancho de una card incluyendo el gap
-            const trackStyles = getComputedStyle(track);
-            const gap = parseFloat(trackStyles.columnGap || trackStyles.gap) || 18;
+        // ===== ESTADO DE DRAG =====
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        let velocity = 0;
+        let lastX = 0;
+        let lastTime = 0;
 
-            // Obtener el ancho real de una card
-            const firstCard = cards[0];
-            if (!firstCard) return 300;
-
-            const cardWidth = firstCard.getBoundingClientRect().width;
-
-            // Retornar ancho + gap para desplazamiento preciso
-            return cardWidth + gap;
+        // ===== HABILITAR SCROLL SNAP SI ES EL CARRUSEL DESTACADO =====
+        if (isFeaturedCarousel) {
+            track.style.scrollSnapType = 'x mandatory';
+            cards.forEach(card => {
+                card.style.scrollSnapAlign = 'center';
+                card.style.scrollSnapStop = 'always';
+            });
         }
 
-        // ===== FUNCIÓN: Actualizar estado de botones =====
-        function updateButtons() {
-            const maxScroll = track.scrollWidth - track.clientWidth;
-
-            // Considerar un pequeño margen de error (2px)
-            const isAtStart = track.scrollLeft <= 2;
-            const isAtEnd = track.scrollLeft >= maxScroll - 2;
-
-            prev.disabled = isAtStart;
-            next.disabled = isAtEnd;
-        }
-
-        // ===== FUNCIÓN: Aplicar efecto Coverflow (SIN BLUR) =====
-        function applyCoverflowEffect() {
-            // Solo aplicar si es el carrusel destacado
-            if (!isFeaturedCarousel) return;
-
-            // Obtener el centro del track (viewport del carrusel)
+        // ===== FUNCIÓN: Obtener índice de la card más cercana al centro =====
+        function getClosestCardIndex() {
             const trackRect = track.getBoundingClientRect();
             const trackCenter = trackRect.left + trackRect.width / 2;
+
+            let closestIndex = 0;
+            let minDistance = Infinity;
+
+            cards.forEach((card, index) => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenter = cardRect.left + cardRect.width / 2;
+                const distance = Math.abs(cardCenter - trackCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestIndex = index;
+                }
+            });
+
+            return closestIndex;
+        }
+
+        // ===== FUNCIÓN: Scroll a índice específico =====
+        function scrollToIndex(index) {
+            const targetIndex = Math.max(0, Math.min(index, cards.length - 1));
+            const targetCard = cards[targetIndex];
+            if (!targetCard) return;
+
+            targetCard.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest'
+            });
+
+            currentIndex = targetIndex;
+        }
+
+        // ===== FUNCIÓN: Actualizar botones =====
+        function updateButtons() {
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            const scrollLeft = track.scrollLeft;
+
+            prev.disabled = scrollLeft <= 2;
+            next.disabled = scrollLeft >= maxScroll - 2;
+
+            if (isFeaturedCarousel) {
+                prev.disabled = currentIndex <= 0;
+                next.disabled = currentIndex >= cards.length - 1;
+            }
+        }
+
+        // ===== FUNCIÓN: Aplicar efecto Coverflow CON ANIMACIÓN =====
+        function applyCoverflowEffect() {
+            if (!isFeaturedCarousel) return;
+
+            const trackRect = track.getBoundingClientRect();
+            const trackCenter = trackRect.left + trackRect.width / 2;
+
+            let closestCard = null;
+            let minDistance = Infinity;
 
             cards.forEach((card) => {
                 const cardRect = card.getBoundingClientRect();
                 const cardCenter = cardRect.left + cardRect.width / 2;
-
-                // Calcular distancia del centro
                 const distanceFromCenter = Math.abs(cardCenter - trackCenter);
 
-                // Normalizar distancia (0 = centro, 1 = borde)
+                if (distanceFromCenter < minDistance) {
+                    minDistance = distanceFromCenter;
+                    closestCard = card;
+                }
+
+                // Cálculos de efectos
                 const maxDistance = trackRect.width / 2;
                 const normalizedDistance = Math.min(distanceFromCenter / maxDistance, 1);
 
-                // ===== EFECTOS VISUALES (SIN BLUR) =====
-
-                // 1. ESCALA: 1.0 en centro → 0.8 en bordes
+                // Efectos visuales
                 const minScale = 0.8;
                 const scale = 1 - (normalizedDistance * (1 - minScale));
 
-                // 2. OPACIDAD: 1.0 en centro → 0.5 en bordes
                 const minOpacity = 0.5;
                 const opacity = 1 - (normalizedDistance * (1 - minOpacity));
 
-                // 3. BRILLO: Normal en centro → oscurecido en bordes
-                const maxDarkness = 0.6; // 60% de brillo en bordes
+                const maxDarkness = 0.6;
                 const brightness = 1 - (normalizedDistance * (1 - maxDarkness));
 
-                // ===== APLICAR TRANSFORMACIONES =====
+                // ===== APLICAR CON TRANSICIONES =====
+                // Las transiciones CSS se encargan de la animación suave
                 card.style.transform = `scale(${scale})`;
                 card.style.opacity = opacity;
-                card.style.filter = `brightness(${brightness})`; // Brillo en vez de blur
+                card.style.filter = `brightness(${brightness})`;
 
-                // ===== CLASE 'ACTIVE' =====
-                // Card está en el centro si distance < 15% del máximo
-                if (normalizedDistance < 0.15) {
-                    card.classList.add('active');
-                } else {
-                    card.classList.remove('active');
-                }
+                // Remover clase active de todas
+                card.classList.remove('active');
             });
+
+            // Agregar clase active SOLO a la más cercana
+            if (closestCard) {
+                closestCard.classList.add('active');
+            }
         }
 
-        // ===== FUNCIÓN: Navegación suave con callback =====
-        function smoothScroll(direction) {
-            if (isScrolling) return; // Prevenir múltiples clicks rápidos
+        // ===== DRAG: Inicio =====
+        function handleDragStart(e) {
+            isDragging = true;
+            track.style.scrollSnapType = 'none'; // Desactivar snap durante drag
+            track.style.cursor = 'grabbing';
+            track.style.userSelect = 'none';
 
-            isScrolling = true;
-            const step = getStep();
-            const scrollAmount = direction === 'next' ? step : -step;
+            // Guardar posición inicial
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            scrollLeft = track.scrollLeft;
 
-            track.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
+            // Para calcular velocidad
+            lastX = startX;
+            lastTime = Date.now();
+            velocity = 0;
 
-            // Resetear flag después de la animación
+            // Prevenir selección de texto
+            e.preventDefault();
+        }
+
+        // ===== DRAG: Movimiento =====
+        function handleDragMove(e) {
+            if (!isDragging) return;
+
+            const x = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            const walk = (x - startX) * 2.5; // Multiplicador para sensibilidad
+            track.scrollLeft = scrollLeft - walk;
+
+            // Calcular velocidad para inercia
+            const now = Date.now();
+            const dt = now - lastTime;
+            if (dt > 0) {
+                velocity = (x - lastX) / dt;
+            }
+            lastX = x;
+            lastTime = now;
+        }
+
+        // ===== DRAG: Fin =====
+        function handleDragEnd() {
+            if (!isDragging) return;
+
+            isDragging = false;
+            track.style.cursor = 'grab';
+            track.style.userSelect = '';
+
+            // Reactivar scroll snap
+            if (isFeaturedCarousel) {
+                track.style.scrollSnapType = 'x mandatory';
+            }
+
+            // Inercia: si la velocidad es alta, continuar el movimiento
+            if (Math.abs(velocity) > 0.5) {
+                const inertiaDistance = velocity * 200; // Factor de inercia
+                track.scrollBy({
+                    left: -inertiaDistance,
+                    behavior: 'smooth'
+                });
+            }
+
+            // Después de la inercia, el snap centrará automáticamente
             setTimeout(() => {
-                isScrolling = false;
-            }, 400); // Duración de scroll smooth
+                if (isFeaturedCarousel) {
+                    currentIndex = getClosestCardIndex();
+                    applyCoverflowEffect();
+                }
+                updateButtons();
+            }, 300);
         }
 
-        // ===== EVENTOS DE NAVEGACIÓN =====
+        // ===== EVENTOS DE DRAG =====
+        // Mouse
+        track.addEventListener('mousedown', handleDragStart);
+        track.addEventListener('mousemove', handleDragMove);
+        track.addEventListener('mouseup', handleDragEnd);
+        track.addEventListener('mouseleave', handleDragEnd);
+
+        // Touch (móviles)
+        track.addEventListener('touchstart', handleDragStart, { passive: false });
+        track.addEventListener('touchmove', handleDragMove, { passive: false });
+        track.addEventListener('touchend', handleDragEnd);
+
+        // Estilo de cursor
+        track.style.cursor = 'grab';
+
+        // ===== NAVEGACIÓN CON BOTONES =====
         prev.addEventListener('click', () => {
-            smoothScroll('prev');
+            if (isScrolling) return;
+            isScrolling = true;
+
+            if (isFeaturedCarousel) {
+                scrollToIndex(currentIndex - 1);
+            } else {
+                const step = cards[0].getBoundingClientRect().width +
+                    (parseFloat(getComputedStyle(track).gap) || 18);
+                track.scrollBy({ left: -step, behavior: 'smooth' });
+            }
+
+            setTimeout(() => { isScrolling = false; }, 600);
         });
 
         next.addEventListener('click', () => {
-            smoothScroll('next');
+            if (isScrolling) return;
+            isScrolling = true;
+
+            if (isFeaturedCarousel) {
+                scrollToIndex(currentIndex + 1);
+            } else {
+                const step = cards[0].getBoundingClientRect().width +
+                    (parseFloat(getComputedStyle(track).gap) || 18);
+                track.scrollBy({ left: step, behavior: 'smooth' });
+            }
+
+            setTimeout(() => { isScrolling = false; }, 600);
         });
 
         // ===== NAVEGACIÓN CON TECLADO =====
         track.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                smoothScroll('next');
+                next.click();
             }
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                smoothScroll('prev');
+                prev.click();
             }
         });
 
-        // ===== EVENTO: Durante el scroll =====
+        // ===== EVENTO: Durante scroll =====
+        let scrollTimeout = null;
         track.addEventListener('scroll', () => {
-            // Aplicar efecto coverflow si corresponde
             if (isFeaturedCarousel) {
-                applyCoverflowEffect();
+                applyCoverflowEffect(); // ← Esto anima las cards durante scroll
             }
-
-            // Actualizar botones
             updateButtons();
 
-            // Debounce: limpiar timeout anterior
             clearTimeout(scrollTimeout);
-
-            // Actualizar nuevamente después de que termine el scroll
             scrollTimeout = setTimeout(() => {
-                updateButtons();
                 if (isFeaturedCarousel) {
+                    currentIndex = getClosestCardIndex();
                     applyCoverflowEffect();
                 }
+                updateButtons();
             }, 150);
         }, { passive: true });
 
-        // ===== EVENTO: Redimensionar ventana =====
+        // ===== EVENTO: Resize =====
         let resizeTimeout = null;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 if (isFeaturedCarousel) {
+                    scrollToIndex(currentIndex);
                     applyCoverflowEffect();
                 }
                 updateButtons();
@@ -169,6 +295,7 @@
 
         // ===== INICIALIZACIÓN =====
         if (isFeaturedCarousel) {
+            scrollToIndex(0);
             applyCoverflowEffect();
         }
         updateButtons();

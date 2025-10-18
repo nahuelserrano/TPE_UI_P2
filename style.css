@@ -1200,43 +1200,69 @@ body.drawer-open{ overflow: hidden; }
 }
 
 /* =============================================
-   EFECTO COVERFLOW - Solo JUEGOS NUEVOS
+   ANIMACIONES CARRUSEL
    ============================================= */
 
-/* Transiciones suaves SOLO para el carrusel destacado */
+/* Transiciones para las cards del carrusel destacado */
 #carousel-featured .game-card {
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), /* efecto "bounce" suave */
-    opacity 0.5s ease,
-    filter 0.5s ease,
-    box-shadow 0.5s ease;
+    /* Estas transiciones se aplican durante el scroll */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    opacity 0.3s ease,
+    filter 0.3s ease,
+    box-shadow 0.3s ease;
     transform-origin: center center;
     will-change: transform, opacity, filter;
 }
 
-/* Card activa (central) - estilos especiales */
+/* Al hacer drag, reducir la duración para respuesta inmediata */
+#carousel-featured .carousel-track[style*="cursor: grabbing"] .game-card {
+    transition-duration: 0.1s;
+}
+
+/* Animación más dramática al soltar (snap) */
+#carousel-featured .carousel-track:not([style*="cursor: grabbing"]) .game-card {
+    transition-duration: 0.5s;
+}
+
+/* Cursor de arrastre */
+#carousel-featured .carousel-track {
+    cursor: grab;
+}
+
+#carousel-featured .carousel-track:active {
+    cursor: grabbing;
+}
+
+/* Prevenir selección de texto durante drag */
+#carousel-featured .carousel-track.dragging {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Card activa con transiciones mejoradas */
 #carousel-featured .game-card.active {
-    /* Sombra más dramática + borde brillante */
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6),
     0 0 0 4px rgba(17, 191, 238, 0.5),
     0 0 30px rgba(17, 191, 238, 0.3);
     z-index: 10;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.5s ease,
+    filter 0.5s ease,
+    box-shadow 0.5s ease;
 }
 
-/* Efecto hover SOLO en la card activa */
+/* Hover con animación */
 #carousel-featured .game-card.active:hover {
     transform: translateY(-10px) scale(1.05) !important;
-    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.7),
-    0 0 0 5px rgba(17, 191, 238, 0.7),
-    0 0 50px rgba(17, 191, 238, 0.5);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Desactivar hover en cards no activas */
 #carousel-featured .game-card:not(.active):hover {
     transform: translateY(-4px) scale(0.82) !important;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
 }
 
-/* Título de la card activa con efecto glow */
+/* Animación de pulso en el título */
 #carousel-featured .game-card.active .game-title {
     font-size: 16px;
     letter-spacing: 0.08em;
@@ -1246,7 +1272,6 @@ body.drawer-open{ overflow: hidden; }
     animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Animación de pulso en el título */
 @keyframes pulse-glow {
     0%, 100% {
         text-shadow: 0 2px 10px rgba(0, 0, 0, 1),
@@ -1258,33 +1283,4 @@ body.drawer-open{ overflow: hidden; }
         0 0 35px rgba(255, 225, 0, 0.7),
         0 0 50px rgba(255, 225, 0, 0.5);
     }
-}
-
-/* Indicador visual: línea debajo del carrusel destacado */
-#carousel-featured::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 3px;
-    background: linear-gradient(
-            90deg,
-            transparent,
-            var(--primary-color-light),
-            transparent
-    );
-    border-radius: 2px;
-    box-shadow: 0 0 15px rgba(17, 191, 238, 0.5);
-}
-
-/* Mejorar el track del carrusel destacado */
-#carousel-featured .carousel-track {
-    padding: 20px 0; /* espacio extra arriba/abajo para la sombra de la card activa */
-}
-
-/* Los demás carruseles mantienen su estilo normal */
-.carousel:not(#carousel-featured) .game-card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
 }
