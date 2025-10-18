@@ -118,8 +118,7 @@
                 const maxDarkness = 0.6;
                 const brightness = 1 - (normalizedDistance * (1 - maxDarkness));
 
-                // ===== APLICAR CON TRANSICIONES =====
-                // Las transiciones CSS se encargan de la animación suave
+                card.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s ease, filter 1s ease';
                 card.style.transform = `scale(${scale})`;
                 card.style.opacity = opacity;
                 card.style.filter = `brightness(${brightness})`;
