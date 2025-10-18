@@ -241,8 +241,14 @@ body.drawer-open{ overflow: hidden; }
     position:relative; z-index:1;
     display:flex; gap:var(--gap);
     overflow-x:auto; scroll-behavior:smooth;
+    padding: 8px 0;
     -ms-overflow-style:none; scrollbar-width:none;
 }
+
+.carousel--lg .carousel-track{
+    padding: 24px 0;
+}
+
 .carousel-track::-webkit-scrollbar{ display:none; }
 
 .game-card{
@@ -252,6 +258,7 @@ body.drawer-open{ overflow: hidden; }
     box-shadow:0 6px 14px rgba(0,0,0,.25);
     transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
 }
+
 .game-card img{ width:100%; height:100%; object-fit:cover; display:block; }
 .game-card::after{
     content:""; position:absolute; inset:0;
@@ -320,6 +327,7 @@ body.drawer-open{ overflow: hidden; }
     --ratio: 16/10;
     --arrow: 40px;
     --pad-x: 52px;
+    --margin-y: 8px;
 }
 .carousel--lg{
     --card-w: 500px;
@@ -327,6 +335,7 @@ body.drawer-open{ overflow: hidden; }
     --arrow: 50px;
     --pad-x: 64px;
     --gap: 24px;
+    --margin-y: 24px;
 }
 
 /* Responsive */
