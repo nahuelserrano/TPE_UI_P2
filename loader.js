@@ -12,7 +12,7 @@
     const setPct = (n) => { pct.textContent = `${n}%`; };
 
     function tick() {
-        const n = Math.min(100, Math.round((loaded / total) * 100));
+        const n = Math.min(100, Math.round((loaded / total) * 700));
         setPct(n);
         if (n >= 100) hide();
     }
@@ -21,7 +21,7 @@
         // Quita el loader con una transición
         scr.classList.add('is-hidden');
         // opcional: retirarlo del DOM luego de la animación
-        setTimeout(() => scr.remove(), 450);
+        setTimeout(() => scr.remove(), 5000);
     }
 
     // Contabiliza imágenes ya listas
