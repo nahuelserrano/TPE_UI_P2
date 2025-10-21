@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Peg solitaire: Lilo y Stich</title>
+        <title>Broka</title>
         <link rel="stylesheet" type="text/css" href="../style.css">
 
     </head>
@@ -70,31 +70,35 @@
                 <span> > </span>
                 <a href="#">Puzzle</a>
                 <span> > </span>
-                <span>Peg solitaire: Lilo y stich</span>
+                <span>Peg solitaire: BROKA</span>
             </div>
 
             <!-- Main Title -->
-            <h1 class="vj-title">Peg solitaire: Lilo y Stich</h1>
+            <h1 class="vj-title">Peg solitaire: BROKA</h1>
 
             <!-- Game Container -->
             <div class="game-container">
                 <!-- Game Image -->
-                <div class="game-image">
-                    <img src="../imagenes/stich-vj-ejecucion.jpeg" alt="Stitch Peg Solitaire">
+                <div class="welcome-screen" id="welcome-screen">
+                    <h2>¡Bienvenido a Blocka!</h2>
+                    <p>
+                        Rota las piezas de la imagen hasta formar la imagen completa.<br>
+                        <strong>Click izquierdo:</strong> Rotar a la izquierda<br>
+                        <strong>Click derecho:</strong> Rotar a la derecha
+                    </p>
+                    <button class="primary" id="start-button">Comenzar Juego</button>
                 </div>
 
-                <!-- Game Info -->
-                <div class="game-info">
-                    <h2>Peg Solitaire</h2>
-                    <p class="game-description">
-                        ¿Listo para una aventura emocionante?
-                    </p>
-                    <p class="game-description">
-                        Ayuda a Stitch a saltar todas las fichas.
-                    </p>
-                    <button class="play-button" onclick="startGame()">JUGAR</button>
-                    <p class="click-to-start">Haz click en jugar para empezar</p>
+                <div class="game-content" id="game-content">
+                    <canvas id="game-canvas" width="300" height="360"></canvas>
+
+                    <div class="controls">
+                        <button id="reset-button">Reiniciar Nivel</button>
+                        <button id="menu-button">Volver al Menú</button>
+                    </div>
                 </div>
+
+            </div>
             </div>
 
             <!-- Action Buttons -->
@@ -116,7 +120,7 @@
             <!-- Advertisement Banner -->
             <div class="ad-banner">
                 <div class="ad-label">Anuncio</div>
-                <img src="../imagenes/ad-coca-cola.webp" alt="Coca-Cola Advertisement">
+                <img src="../../interfasesParte3/TPE-IU-3/vj/images/ad-coca-cola.webp" alt="Coca-Cola Advertisement">
             </div>
 
             <!-- Main Content Section -->
@@ -125,18 +129,21 @@
                 <!-- Description Section -->
                 <section class="content-section description-section">
                     <div class="section-header">
-                        <span class="section-icon">
-                             <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M20 5H4v2h16V5zm-8 4H4v2h8V9zm8 4v2H4v-2h16zm-8 4H4v2h8v-2z" fill="currentColor"/> </svg>
-                        </span>
+        <span class="section-icon">
+            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M20 5H4v2h16V5zm-8 4H4v2h8V9zm8 4v2H4v-2h16zm-8 4H4v2h8v-2z" fill="currentColor"/>
+            </svg>
+        </span>
                         <h3 class="section-title">DESCRIPCIÓN</h3>
                     </div>
                     <hr class="section-line">
                     <div class="section-content">
                         <p class="section-text">
-                            ¡Aloha! Stitch está en una nueva misión: resolver el Peg Solitaire. Tu objetivo es ayudarlo a saltar fichas y limpiar el tablero hasta que quede solo una.
+                            Broka es un juego de rompecabezas en el que debes reconstruir una imagen que fue dividida en varias piezas desordenadas.
+                            Mové los bloques hasta formar la imagen original.
                         </p>
                         <p class="section-text">
-                             Pero cuidado: cada movimiento cuenta, ¡piensa bien tu estrategia para que Stitch no se meta en problemas intergalácticos!
+                            Poné a prueba tu lógica, observación y memoria visual, ¡y tratá de completarlo en el menor tiempo posible!
                         </p>
                     </div>
                 </section>
@@ -144,70 +151,75 @@
                 <!-- How to Play Section -->
                 <section class="content-section howtoplay-section">
                     <div class="section-header">
-                        <span class="section-icon">
-                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M2 5h20v14H2V5zm18 12V7H4v10h16zM8 9h2v2h2v2h-2v2H8v-2H6v-2h2V9zm6 0h2v2h-2V9zm4 4h-2v2h2v-2z" fill="currentColor"/> </svg>
-                        </span>
-                        <h3 class="section-title">COMO JUGAR</h3>
+        <span class="section-icon">
+            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M2 5h20v14H2V5zm18 12V7H4v10h16zM8 9h2v2h2v2h-2v2H8v-2H6v-2h2V9zm6 0h2v2h-2V9zm4 4h-2v2h2v-2z" fill="currentColor"/>
+            </svg>
+        </span>
+                        <h3 class="section-title">CÓMO JUGAR</h3>
                     </div>
                     <hr class="section-line">
                     <div class="section-content">
                         <div class="instruction-block">
                             <p class="section-text section-intro">
-                                Para jugar a Peg Solitaire, un clásico rompecabezas de lógica, y estrategia que pondrá a prueba tu mente.
+                                Broka es un rompecabezas de imágenes donde cada partida comienza con una foto dividida en varios bloques.
                             </p>
                             <p class="section-text section-intro">
-                                Las reglas en esencia son simples, ¡pero ganar es todo un desafío con vapor fuerte al tablero!
+                                Las piezas están mezcladas al azar y tu misión es ordenarlas moviéndolas hasta reconstruir la imagen completa.
                             </p>
                         </div>
 
                         <!-- Objective -->
                         <div class="instruction-block">
                             <div class="instruction-header">
-                                <span class="instruction-icon">
-                                   <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                       <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/>
-                                   </svg>
-                                </span>
+                <span class="instruction-icon">
+                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/>
+                    </svg>
+                </span>
                                 <h4 class="instruction-title">Objetivo</h4>
                             </div>
                             <p class="instruction-text">
-                                Tu misión es eliminar todas las fichas del tablero saltando unas sobre otras… hasta quedarte con una sola.
-                                Bonus: si terminas con la última ficha en el centro, eres un maestro del Peg Solitaire.
+                                El objetivo es rearmar la imagen original moviendo los bloques desordenados.
+                                Cada pieza debe quedar en su posición correcta para completar el rompecabezas.
                             </p>
                         </div>
 
                         <!-- How to Move -->
                         <div class="instruction-block">
                             <div class="instruction-header">
-                                <span class="instruction-icon">
-                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 3 12 18">
-                                        <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/>
-                                    </svg>
-                                </span>
+                <span class="instruction-icon">
+                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 3 12 18">
+                        <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/>
+                    </svg>
+                </span>
                                 <h4 class="instruction-title">Cómo mover</h4>
                             </div>
                             <ul class="instruction-list">
-                                <li class="instruction-item">Elige una ficha y salta sobre otra adyacente (arriba, abajo, izquierda o derecha).</li>
-                                <li class="instruction-item">Detrás que debe haber espacio.</li>
-                                <li class="instruction-item">Al saltar, la ficha sobre la que saltaste es eliminada.</li>
+                                <li class="instruction-item">Seleccioná una pieza y movela hacia el espacio vacío adyacente.</li>
+                                <li class="instruction-item">Solo podés mover piezas en línea recta (arriba, abajo, izquierda o derecha).</li>
+                                <li class="instruction-item">Continuá moviendo las piezas hasta que todas estén en su posición correcta.</li>
                             </ul>
                         </div>
 
                         <!-- How to Win -->
                         <div class="instruction-block">
                             <div class="instruction-header">
-                                <span class="instruction-icon">
-                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 2 12 21"> <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/> </svg>
-                                </span>
+                <span class="instruction-icon">
+                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 2 12 21">
+                        <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/>
+                    </svg>
+                </span>
                                 <h4 class="instruction-title">Cómo ganar</h4>
                             </div>
                             <ul class="instruction-list">
-                                <li class="instruction-item">Ganas si logras dejar solo UNA ficha en el tablero.</li>
-                                <li class="instruction-item">Pista: los verdaderos maestros terminan dejando la ficha en el centro del tablero.</li>
+                                <li class="instruction-item">Ganas cuando todas las piezas están colocadas en su lugar correcto formando la imagen original.</li>
+                                <li class="instruction-item">Bonus: completá el rompecabezas en el menor tiempo posible para convertirte en un maestro de Broka.</li>
                             </ul>
                         </div>
                     </div>
                 </section>
+
 
                 <!-- Multimedia Section -->
                 <section class="content-section multimedia-section">
@@ -416,5 +428,7 @@
         });
     </script>
     <script src="/menu.js" defer></script>
+    <script src="Game.js"></script>
+
     </body>
 </html>

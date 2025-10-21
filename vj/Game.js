@@ -53,8 +53,11 @@ function drawGame() {
     // 2. Dibujar las piezas
     drawPieces();
 
+    if (!gameWon) {
     // 3. Aplicar filtro
     filtro();
+    }
+
 }
 
 // ===== DIBUJAR PIEZAS (modificado para usar GAME_OFFSET_Y) =====
@@ -82,6 +85,7 @@ function drawPieces(){
 function iniciarTemporizador() {
     tiempoInicio = Date.now();
     tiempoActual = 0;
+
 
     timerInterval = setInterval(() => {
         if (!gameWon) {
@@ -266,9 +270,9 @@ function checkWinCondition() {
     if (isSolved) {
         gameWon = true;
         detenerTemporizador(); // ← Detener temporizador
-
         setTimeout(() => {
-            drawGame(); // Redibujar sin filtro
+            // Redibujar sin filtro
+            drawGame();
 
             // Overlay de victoria
             context.fillStyle = "rgba(0, 0, 0, 0.6)";
@@ -278,6 +282,7 @@ function checkWinCondition() {
             context.textAlign = "center";
             context.fillText("¡Ganaste!", BLOCKA_WIDTH / 2, canvas.height / 2);
             context.fillText("avanzando...", BLOCKA_WIDTH / 2, canvas.height / 2 + 40);
+            context.restore();
 
             nivel++;
             setTimeout(startLevel, 2000);
