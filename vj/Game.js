@@ -6,7 +6,7 @@ const resetBtn = document.getElementById('reset-button');
 const menuBtn = document.getElementById('menu-button');
 const welcomeScreen = document.getElementById('welcome-screen');
 const gameContent = document.getElementById('game-content');
-
+let timeOut = 20;
 // ===== CONSTANTES DEL JUEGO =====
 const BLOCKA_WIDTH = 300;   // Área de juego (piezas)
 const BLOCKA_HEIGHT = 300;  // Área de juego (piezas)
@@ -20,14 +20,14 @@ hashMap.set(8, {x: 4, y: 2});
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
-    "images/ocarinaoftime.jpeg",
-    "images/Peg hawaiano 1.png",
-    "images/PORTAL 2.jpeg",
-    "images/RED DEAD 2.jpeg",
-    "images/STREET FIGHTER 6.jpeg",
-    "images/THE WITCHER 3.jpeg",
-    "images/VALORANT.jpeg",
-    "images/WARZONE.jpeg"
+    "./../imagenes/PORTAL 2.jpeg",
+    "./../imagenes/Peg hawaiano 1.png",
+    "../imagenes/PORTAL 2.jpeg",
+    "../imagenes/RED DEAD 2.jpeg",
+    "../imagenes/STREET FIGHTER 6.jpeg",
+    "../imagenes/THE WITCHER 3.jpeg",
+    "../imagenes/VALORANT.jpeg",
+    "../imagenes/WARZONE.jpeg"
 ];
 
 let nivel = 0;
@@ -90,8 +90,12 @@ function iniciarTemporizador() {
     timerInterval = setInterval(() => {
         if (!gameWon) {
             tiempoActual = Math.floor((Date.now() - tiempoInicio) / 1000);
-            drawGame(); // Redibujar todo para actualizar el tiempo
-        }
+            if (tiempoActual===timeOut){
+                loseGame();
+            }else{
+                drawGame(); // Redibujar todo para actualizar el tiempo
+            }
+            }
     }, 1000);
 }
 
@@ -103,6 +107,7 @@ function detenerTemporizador() {
 }
 
 function formatearTiempo(segundos) {
+    if (!juegoActivo) {return "----"}
     const minutos = Math.floor(segundos / 60);
     const segs = segundos % 60;
     return `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
@@ -197,11 +202,12 @@ function startLevel() {
         return;
     }
 
-    image.src = images[nivel];
+
     image.onload = function () {
         initializePuzzle();
         juegoActivo = true; // Activar el juego
     };
+    image.src = images[nivel];
 }
 
 function initializePuzzle(){
@@ -233,7 +239,7 @@ function initializePuzzle(){
         }
     }
 
-    drawGame(); // ← NUEVA FUNCIÓN QUE DIBUJA TODO
+    drawGame();
 }
 
 function onCanvasClick(event) {
@@ -256,7 +262,7 @@ function onCanvasClick(event) {
 
     if (clickedPiece) {
         clickedPiece.rotation += Math.PI / 2;
-        drawGame(); // ← Usar drawGame en lugar de drawPieces + filtro
+        drawGame();
         checkWinCondition();
     }
 }
@@ -269,11 +275,10 @@ function checkWinCondition() {
 
     if (isSolved) {
         gameWon = true;
-        detenerTemporizador(); // ← Detener temporizador
+        detenerTemporizador(); //Detiene temporizador
         setTimeout(() => {
             // Redibujar sin filtro
             drawGame();
-
             // Overlay de victoria
             context.fillStyle = "rgba(0, 0, 0, 0.6)";
             context.fillRect(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
@@ -288,6 +293,20 @@ function checkWinCondition() {
             setTimeout(startLevel, 2000);
         }, 100);
     }
+}
+function loseGame() {
+    setTimeout( () =>{
+    juegoActivo = false;
+        context.fillStyle = "rgba(0, 0, 0, 0.6)";
+        context.fillRect(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
+        context.fillStyle = "white";
+        context.font = "bold 40px 'Helvetica Neue'";
+        context.textAlign = "center";
+        context.fillText("¡perdiste!", BLOCKA_WIDTH / 2, canvas.height / 2);
+        context.fillText("comenzando de 0", BLOCKA_WIDTH / 2, canvas.height / 2 + 40);
+        setTimeout(startLevel, 2000);
+        nivel=0;
+    }, 100);
 }
 
 
