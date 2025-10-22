@@ -11,7 +11,7 @@ const gameContent = document.getElementById('game-content');
 const BLOCKA_SIZE = 300;
 const INFO_HEIGHT = 60;
 const GAME_OFFSET_Y = INFO_HEIGHT;
-const TIME_LIMIT = 60;
+let TIME_LIMIT = 60;
 const hashMap = new Map();
 
 hashMap.set(4, {x: 2, y: 2});
@@ -322,7 +322,7 @@ function mostrarJuego() {
     gameContent.classList.add('active');
 }
 
-/* ==================================================================================
+/*
    EVENT LISTENERS
 
    Flujo de ejecución con async/await:
@@ -335,7 +335,7 @@ function mostrarJuego() {
 
    Sin 'await', todas las funciones se ejecutarían simultáneamente causando
    race conditions y bugs visuales.
-   ================================================================================== */
+  */
 
 startBtn.addEventListener('click', async () => {
     mostrarJuego();
@@ -464,6 +464,9 @@ async function checkWinCondition() {
     if (isSolved) {
         gameWon = true;
         detenerTemporizador();
+
+        if (TIME_LIMIT>10)
+            TIME_LIMIT-= 5;
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
