@@ -350,6 +350,7 @@ startBtn.addEventListener('click', async () => {
 menuBtn.addEventListener('click', () => {
     mostrarBienvenida();
     nivel = 0;
+    TIME_LIMIT = 60;
     gameWon = false;
     juegoActivo = false;
     imagenSeleccionada = null;
@@ -496,7 +497,7 @@ async function checkWinCondition() {
 async function loseGame() {
     juegoActivo = false;
     detenerTemporizador();
-
+    TIME_LIMIT = 60;
     await new Promise(resolve => setTimeout(resolve, 100));
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
