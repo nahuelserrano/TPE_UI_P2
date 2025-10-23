@@ -17,9 +17,9 @@ const VUELTAS_DE_RULETA = 3;
 
 // Configuraciones con piezas CUADRADAS
 // formato: {x: columnas, y: filas}
-hashMap.set(4, {x: 2, y: 2});  // 2x2 = 4 piezas (300x300)
-hashMap.set(6, {x: 2, y: 3});  // 2x3 = 6 piezas (300x450)
-hashMap.set(8, {x: 2, y: 4});  // 3x3 = 9 piezas (300x300)
+hashMap.set(4, {x: 2, y: 2});  // 2x2 = 4 piezas
+hashMap.set(6, {x: 2, y: 3});  // 2x3 = 6 piezas
+hashMap.set(8, {x: 2, y: 4});  // 3x3 = 8 piezas
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
@@ -38,7 +38,7 @@ let nivel = 0;
 let gameWon = false;
 let juegoActivo = false;
 let pieces = [];
-let tileCount = 4; // Cambia esto a 4, 6 o 8 para probar diferentes configuraciones
+let tileCount = 4;
 let imagenSeleccionada = null;
 let ruletaActiva = false;
 
@@ -53,62 +53,6 @@ let timerInterval = null;
 
 // ===== IMAGEN =====
 const image = new Image();
-let imageMetadata = {
-    width: 0,
-    height: 0,
-    aspectRatio: 1,
-    isPortrait: false
-};
-
-/* ==================================================================================
-   SISTEMA DE OBJECT-FIT: COVER
-   ==================================================================================
-
-   Implementa la lógica de CSS object-fit: cover en canvas:
-   - La imagen cubre completamente el área sin deformarse
-   - Se mantiene el aspect ratio original
-   - Se recorta lo que excede (centrado)
-
-   Parámetros:
-   - imgWidth/imgHeight: dimensiones originales de la imagen
-   - canvasWidth/canvasHeight: dimensiones del área a cubrir
-
-   Retorna: {sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight}
-   - s* = source (área de la imagen a usar)
-   - d* = destination (área del canvas donde dibujar)
-   ================================================================================== */
-
-function calculateObjectFitCover(imgWidth, imgHeight, canvasWidth, canvasHeight) {
-    const imgAspect = imgWidth / imgHeight;
-    const canvasAspect = canvasWidth / canvasHeight;
-
-    let sx, sy, sWidth, sHeight;
-
-    if (imgAspect > canvasAspect) {
-        // Imagen más ancha: recortar los lados
-        sHeight = imgHeight;
-        sWidth = imgHeight * canvasAspect;
-        sx = (imgWidth - sWidth) / 2;
-        sy = 0;
-    } else {
-        // Imagen más alta: recortar arriba/abajo
-        sWidth = imgWidth;
-        sHeight = imgWidth / canvasAspect;
-        sx = 0;
-        sy = (imgHeight - sHeight) / 2;
-    }
-
-    return {
-        sx: sx,
-        sy: sy,
-        sWidth: sWidth,
-        sHeight: sHeight,
-        dx: 0,
-        dy: 0,
-        dWidth: canvasWidth,
-        dHeight: canvasHeight
-    };
-}
 
 /* ==================================================================================
    ACTUALIZACIÓN DE DIMENSIONES DEL CANVAS
@@ -175,13 +119,17 @@ async function ejecutarRuleta() {
 
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    let indiceGanador;
+    let indiceImagenSelec;
 
+    /*
+        Se hacen 3 vueltas, por defecto 2 completas
+        y en la última se decide la imagen seleccionada
+    */
     for (let vuelta = 0; vuelta < VUELTAS_DE_RULETA; vuelta++) {
         let fin;
         if (vuelta === VUELTAS_DE_RULETA - 1) {
-            fin = Math.floor(Math.random() * thumbnails.length);
-            indiceGanador = fin === 0 ? 0 : fin - 1;
+            fin = Math.floor(Math.random() * thumbnails.length); // fin = imagen seleccionada
+            indiceImagenSelec = fin;
         } else {
             fin = thumbnails.length;
         }
@@ -200,7 +148,7 @@ async function ejecutarRuleta() {
         }
     }
 
-    imagenSeleccionada = images[indiceGanador];
+    imagenSeleccionada = images[indiceImagenSelec];
 
     context.fillStyle = "#4CAF50";
     context.font = "bold 24px 'Baloo 2', sans-serif";
@@ -234,24 +182,11 @@ function dibujarThumbnail(thumbnailData) {
     }
 }
 
-// Carga la imagen y guarda sus metadatos
+// Carga una imagen y retorna una promesa
 function loadImage(src) {
     return new Promise((resolve, reject) => {
-        image.onload = () => {
-            // Guardar metadatos de la imagen
-            imageMetadata.width = image.naturalWidth;
-            imageMetadata.height = image.naturalHeight;
-            imageMetadata.aspectRatio = image.naturalWidth / image.naturalHeight;
-            imageMetadata.isPortrait = imageMetadata.aspectRatio < 1;
-
-            console.log(`Imagen cargada: ${imageMetadata.width}x${imageMetadata.height}, aspect: ${imageMetadata.aspectRatio.toFixed(2)}, portrait: ${imageMetadata.isPortrait}`);
-
-            resolve(image);
-        };
-        image.onerror = (e) => {
-            console.error('Error cargando imagen:', src, e);
-            reject(e);
-        };
+        image.onload = () => resolve(image);
+        image.onerror = (e) => reject(e);
         image.src = src;
     });
 }
@@ -266,57 +201,47 @@ function drawGame() {
     }
 }
 
-/* ==================================================================================
-   DRAW PIECES
-   ==================================================================================
-
-   Cambios principales:
-   1. Calcula el área de recorte usando calculateObjectFitCover
-   2. Aplica el recorte a cada pieza individualmente
-   3. Las piezas son siempre cuadradas (PIECE_SIZE × PIECE_SIZE)
-   ================================================================================== */
-
+/**
+ * Dibuja todas las piezas del puzzle en el canvas
+ * Cada pieza:
+ * - Toma un pedazo de la imagen original
+ * - Lo rota según su estado actual
+ * - Lo dibuja en su posición del canvas
+ */
 function drawPieces() {
     const config = hashMap.get(tileCount);
-    const horizontal = config.x;
-    const vertical = config.y;
+    const horizontal = config.x;  // Columnas
+    const vertical = config.y;    // Filas
 
-    // Las piezas son siempre cuadradas
-    const parteWidth = PIECE_SIZE;
-    const parteHeight = PIECE_SIZE;
+    // Calcular tamaño de cada pieza en la imagen original
+    const anchoOriginalPieza = image.width / horizontal;
+    const altoOriginalPieza = image.height / vertical;
 
-    // Calcular cómo recortar la imagen para que cubra el área completa
-    const coverData = calculateObjectFitCover(
-        imageMetadata.width,
-        imageMetadata.height,
-        BLOCKA_WIDTH,
-        BLOCKA_HEIGHT
-    );
-
-    // Tamaño de cada pieza en la imagen fuente (después del recorte)
-    const sourcePieceWidth = coverData.sWidth / horizontal;
-    const sourcePieceHeight = coverData.sHeight / vertical;
-
-    pieces.forEach((piece, index) => {
+    pieces.forEach((piece) => {
         context.save();
 
-        // Calcular posición de la pieza en la grilla
-        const gridX = Math.floor((piece.dx) / PIECE_SIZE);
-        const gridY = Math.floor((piece.dy - GAME_OFFSET_Y) / PIECE_SIZE);
+        // Calcular qué pieza es (su posición en la grilla)
+        const columna = Math.floor(piece.dx / PIECE_SIZE);
+        const fila = Math.floor((piece.dy - GAME_OFFSET_Y) / PIECE_SIZE);
 
-        // Calcular área de la imagen fuente para esta pieza
-        const pieceSx = coverData.sx + (gridX * sourcePieceWidth);
-        const pieceSy = coverData.sy + (gridY * sourcePieceHeight);
+        // Calcular de dónde recortar la imagen original
+        const recorteX = columna * anchoOriginalPieza;
+        const recorteY = fila * altoOriginalPieza;
 
-        // Aplicar transformaciones de rotación
-        context.translate(piece.dx + parteWidth/2, piece.dy + parteHeight/2);
+        // Mover el origen al centro de la pieza para rotarla
+        context.translate(
+            piece.dx + PIECE_SIZE / 2,
+            piece.dy + PIECE_SIZE / 2
+        );
         context.rotate(piece.rotation);
 
-        // Dibujar la pieza con el recorte correcto
+        // Dibujar la pieza rotada
         context.drawImage(
             image,
-            pieceSx, pieceSy, sourcePieceWidth, sourcePieceHeight,  // Source
-            -parteWidth/2, -parteHeight/2, parteWidth, parteHeight  // Destination
+            recorteX, recorteY,                    // Desde dónde recortar
+            anchoOriginalPieza, altoOriginalPieza, // Cuánto recortar
+            -PIECE_SIZE / 2, -PIECE_SIZE / 2,      // Dónde dibujar (centrado)
+            PIECE_SIZE, PIECE_SIZE                 // Tamaño final
         );
 
         context.restore();
