@@ -8,15 +8,18 @@ const welcomeScreen = document.getElementById('welcome-screen');
 const gameContent = document.getElementById('game-content');
 
 // ===== CONSTANTES DEL JUEGO =====
-const BLOCKA_SIZE = 300;
+const PIECE_SIZE = 150; // Tamaño base de cada pieza cuadrada
 const INFO_HEIGHT = 60;
 const GAME_OFFSET_Y = INFO_HEIGHT;
 let TIME_LIMIT = 60;
 const hashMap = new Map();
+const VUELTAS_DE_RULETA = 3;
 
-hashMap.set(4, {x: 2, y: 2});
-hashMap.set(6, {x: 3, y: 2});
-hashMap.set(8, {x: 4, y: 2});
+// Configuraciones con piezas CUADRADAS
+// formato: {x: columnas, y: filas}
+hashMap.set(4, {x: 2, y: 2});  // 2x2 = 4 piezas (300x300)
+hashMap.set(6, {x: 2, y: 3});  // 2x3 = 6 piezas (300x450)
+hashMap.set(8, {x: 2, y: 4});  // 3x3 = 9 piezas (300x300)
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
@@ -35,9 +38,13 @@ let nivel = 0;
 let gameWon = false;
 let juegoActivo = false;
 let pieces = [];
-let tileCount = 4;
+let tileCount = 4; // Cambia esto a 4, 6 o 8 para probar diferentes configuraciones
 let imagenSeleccionada = null;
 let ruletaActiva = false;
+
+// ===== VARIABLES DE DIMENSIONES DINÁMICAS =====
+let BLOCKA_WIDTH = 300;
+let BLOCKA_HEIGHT = 300;
 
 // ===== TEMPORIZADOR =====
 let tiempoInicio = 0;
@@ -46,40 +53,82 @@ let timerInterval = null;
 
 // ===== IMAGEN =====
 const image = new Image();
+let imageMetadata = {
+    width: 0,
+    height: 0,
+    aspectRatio: 1,
+    isPortrait: false
+};
+
+/* ==================================================================================
+   SISTEMA DE OBJECT-FIT: COVER
+   ==================================================================================
+
+   Implementa la lógica de CSS object-fit: cover en canvas:
+   - La imagen cubre completamente el área sin deformarse
+   - Se mantiene el aspect ratio original
+   - Se recorta lo que excede (centrado)
+
+   Parámetros:
+   - imgWidth/imgHeight: dimensiones originales de la imagen
+   - canvasWidth/canvasHeight: dimensiones del área a cubrir
+
+   Retorna: {sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight}
+   - s* = source (área de la imagen a usar)
+   - d* = destination (área del canvas donde dibujar)
+   ================================================================================== */
+
+function calculateObjectFitCover(imgWidth, imgHeight, canvasWidth, canvasHeight) {
+    const imgAspect = imgWidth / imgHeight;
+    const canvasAspect = canvasWidth / canvasHeight;
+
+    let sx, sy, sWidth, sHeight;
+
+    if (imgAspect > canvasAspect) {
+        // Imagen más ancha: recortar los lados
+        sHeight = imgHeight;
+        sWidth = imgHeight * canvasAspect;
+        sx = (imgWidth - sWidth) / 2;
+        sy = 0;
+    } else {
+        // Imagen más alta: recortar arriba/abajo
+        sWidth = imgWidth;
+        sHeight = imgWidth / canvasAspect;
+        sx = 0;
+        sy = (imgHeight - sHeight) / 2;
+    }
+
+    return {
+        sx: sx,
+        sy: sy,
+        sWidth: sWidth,
+        sHeight: sHeight,
+        dx: 0,
+        dy: 0,
+        dWidth: canvasWidth,
+        dHeight: canvasHeight
+    };
+}
+
+/* ==================================================================================
+   ACTUALIZACIÓN DE DIMENSIONES DEL CANVAS
+   ==================================================================================
+
+   Ajusta el tamaño del canvas según la configuración de piezas para que todas
+   sean cuadradas de PIECE_SIZE × PIECE_SIZE
+   ================================================================================== */
+
+function updateCanvasDimensions() {
+    const config = hashMap.get(tileCount);
+    BLOCKA_WIDTH = config.x * PIECE_SIZE;
+    BLOCKA_HEIGHT = config.y * PIECE_SIZE;
+
+    canvas.width = BLOCKA_WIDTH;
+    canvas.height = BLOCKA_HEIGHT + INFO_HEIGHT;
+}
 
 /* ==================================================================================
    MANEJO DE ASINCRONÍA: Promises, async/await y sleep
-   ==================================================================================
-
-   JavaScript es single-threaded (un solo hilo de ejecución). Para operaciones que
-   toman tiempo (cargar imágenes, esperar delays), usamos ASINCRONÍA.
-
-   1. PROMISE:
-      - Es un objeto que representa el resultado eventual de una operación asíncrona
-      - Tiene 3 estados: pending (pendiente), fulfilled (cumplida), rejected (rechazada)
-      - Sintaxis: new Promise((resolve, reject) => { ... })
-
-   2. async/await:
-      - 'async' convierte una función en asíncrona (siempre retorna una Promise)
-      - 'await' pausa la ejecución de la función async hasta que la Promise se resuelva
-      - IMPORTANTE: await SOLO funciona dentro de funciones async
-
-   3. sleep (delay):
-      - Función helper que crea una Promise que se resuelve después de X milisegundos
-      - Uso: await sleep(1000) pausa la ejecución por 1 segundo
-      - Equivalente a setTimeout pero con sintaxis más limpia usando await
-
-   Ejemplo del flujo:
-
-   async function ejemplo() {
-       console.log('Inicio');                    // Se ejecuta inmediatamente
-       await sleep(1000);                        // PAUSA aquí por 1 segundo
-       console.log('Después de 1 segundo');      // Se ejecuta después del delay
-       await cargarImagen();                     // PAUSA hasta que la imagen cargue
-       console.log('Imagen cargada');            // Se ejecuta cuando termine la carga
-   }
-
-   Sin await, todo se ejecutaría inmediatamente sin esperar, causando errores.
    ================================================================================== */
 
 // ===== RULETA =====
@@ -90,14 +139,10 @@ async function ejecutarRuleta() {
     const x = canvas.width / images.length;
     const thumbnails = [];
 
-    // Cargar cada thumbnail de forma secuencial
-    // await dentro del loop asegura que cada imagen se carga antes de continuar
     for (let i = 0; i < images.length; i++) {
         const imagen = new Image();
         imagen.src = images[i];
 
-        // Promise que se resuelve cuando la imagen termina de cargar
-        // Si falla (onerror), igual resuelve para no bloquear el flujo
         await new Promise((resolve, reject) => {
             imagen.onload = resolve;
             imagen.onerror = () => {
@@ -122,23 +167,19 @@ async function ejecutarRuleta() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = "#333";
-    context.font = "bold 20px 'Helvetica Neue'";
+    context.font = "bold 18px 'Baloo 2', sans-serif";
     context.textAlign = "center";
     context.fillText("Seleccionando imagen...", canvas.width / 2, canvas.height / 2 - 40);
 
     thumbnails.forEach(thumb => dibujarThumbnail(thumb));
 
-    // sleep: función que retorna una Promise que se resuelve después de 'ms' milisegundos
-    // await sleep(X) pausa la ejecución por X milisegundos
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const cantVueltas = 3;
     let indiceGanador;
 
-    // Animación: cada 'await sleep' pausa antes de continuar al siguiente frame
-    for (let vuelta = 0; vuelta < cantVueltas; vuelta++) {
+    for (let vuelta = 0; vuelta < VUELTAS_DE_RULETA; vuelta++) {
         let fin;
-        if (vuelta === cantVueltas - 1) {
+        if (vuelta === VUELTAS_DE_RULETA - 1) {
             fin = Math.floor(Math.random() * thumbnails.length);
             indiceGanador = fin === 0 ? 0 : fin - 1;
         } else {
@@ -146,13 +187,15 @@ async function ejecutarRuleta() {
         }
 
         for (let i = 0; i < fin; i++) {
-            thumbnails.forEach(t => t.isSelected = false);
+            for (let j = 0; j < thumbnails.length; j++) {
+                thumbnails[j].isSelected = false;
+            }
+
             thumbnails[i].isSelected = true;
 
             context.clearRect(0, y - 5, canvas.width, 40);
             thumbnails.forEach(thumb => dibujarThumbnail(thumb));
 
-            // Pausa de 100ms entre cada frame de animación
             await sleep(100);
         }
     }
@@ -160,10 +203,9 @@ async function ejecutarRuleta() {
     imagenSeleccionada = images[indiceGanador];
 
     context.fillStyle = "#4CAF50";
-    context.font = "bold 24px 'Helvetica Neue'";
+    context.font = "bold 24px 'Baloo 2', sans-serif";
     context.fillText("¡Imagen seleccionada!", canvas.width / 2, canvas.height / 2 + 20);
 
-    // Esperar 1.5 segundos antes de continuar
     await sleep(1500);
 
     ruletaActiva = false;
@@ -192,11 +234,20 @@ function dibujarThumbnail(thumbnailData) {
     }
 }
 
-// Retorna una Promise que se resuelve cuando la imagen se carga completamente
-// Uso: await loadImage(url) pausa hasta que la imagen esté lista
+// Carga la imagen y guarda sus metadatos
 function loadImage(src) {
     return new Promise((resolve, reject) => {
-        image.onload = () => resolve(image);
+        image.onload = () => {
+            // Guardar metadatos de la imagen
+            imageMetadata.width = image.naturalWidth;
+            imageMetadata.height = image.naturalHeight;
+            imageMetadata.aspectRatio = image.naturalWidth / image.naturalHeight;
+            imageMetadata.isPortrait = imageMetadata.aspectRatio < 1;
+
+            console.log(`Imagen cargada: ${imageMetadata.width}x${imageMetadata.height}, aspect: ${imageMetadata.aspectRatio.toFixed(2)}, portrait: ${imageMetadata.isPortrait}`);
+
+            resolve(image);
+        };
         image.onerror = (e) => {
             console.error('Error cargando imagen:', src, e);
             reject(e);
@@ -215,21 +266,59 @@ function drawGame() {
     }
 }
 
-function drawPieces() {
-    const horizontal = hashMap.get(tileCount).x;
-    const vertical = hashMap.get(tileCount).y;
-    const parteWidth = BLOCKA_SIZE / horizontal;
-    const parteHeight = BLOCKA_SIZE / vertical;
+/* ==================================================================================
+   DRAW PIECES
+   ==================================================================================
 
-    pieces.forEach(piece => {
+   Cambios principales:
+   1. Calcula el área de recorte usando calculateObjectFitCover
+   2. Aplica el recorte a cada pieza individualmente
+   3. Las piezas son siempre cuadradas (PIECE_SIZE × PIECE_SIZE)
+   ================================================================================== */
+
+function drawPieces() {
+    const config = hashMap.get(tileCount);
+    const horizontal = config.x;
+    const vertical = config.y;
+
+    // Las piezas son siempre cuadradas
+    const parteWidth = PIECE_SIZE;
+    const parteHeight = PIECE_SIZE;
+
+    // Calcular cómo recortar la imagen para que cubra el área completa
+    const coverData = calculateObjectFitCover(
+        imageMetadata.width,
+        imageMetadata.height,
+        BLOCKA_WIDTH,
+        BLOCKA_HEIGHT
+    );
+
+    // Tamaño de cada pieza en la imagen fuente (después del recorte)
+    const sourcePieceWidth = coverData.sWidth / horizontal;
+    const sourcePieceHeight = coverData.sHeight / vertical;
+
+    pieces.forEach((piece, index) => {
         context.save();
+
+        // Calcular posición de la pieza en la grilla
+        const gridX = Math.floor((piece.dx) / PIECE_SIZE);
+        const gridY = Math.floor((piece.dy - GAME_OFFSET_Y) / PIECE_SIZE);
+
+        // Calcular área de la imagen fuente para esta pieza
+        const pieceSx = coverData.sx + (gridX * sourcePieceWidth);
+        const pieceSy = coverData.sy + (gridY * sourcePieceHeight);
+
+        // Aplicar transformaciones de rotación
         context.translate(piece.dx + parteWidth/2, piece.dy + parteHeight/2);
         context.rotate(piece.rotation);
+
+        // Dibujar la pieza con el recorte correcto
         context.drawImage(
             image,
-            piece.sx, piece.sy, parteWidth, parteHeight,
-            -parteWidth/2, -parteHeight/2, parteWidth, parteHeight
+            pieceSx, pieceSy, sourcePieceWidth, sourcePieceHeight,  // Source
+            -parteWidth/2, -parteHeight/2, parteWidth, parteHeight  // Destination
         );
+
         context.restore();
     });
 }
@@ -238,7 +327,6 @@ function iniciarTemporizador() {
     tiempoInicio = Date.now();
     tiempoActual = 0;
 
-    // Prevenir inicio si la ruleta está ejecutándose
     if (ruletaActiva) {
         return;
     }
@@ -278,17 +366,17 @@ function drawInfo() {
     if (ruletaActiva) return;
 
     context.fillStyle = "#f0f0f0";
-    context.fillRect(0, 0, BLOCKA_SIZE, INFO_HEIGHT);
+    context.fillRect(0, 0, BLOCKA_WIDTH, INFO_HEIGHT);
 
     context.strokeStyle = "#333";
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(0, INFO_HEIGHT);
-    context.lineTo(BLOCKA_SIZE, INFO_HEIGHT);
+    context.lineTo(BLOCKA_WIDTH, INFO_HEIGHT);
     context.stroke();
 
     context.fillStyle = "#333";
-    context.font = "bold 18px 'Helvetica Neue'";
+    context.font = "bold 18px 'Baloo 2', sans-serif";
     context.textAlign = "left";
 
     context.fillText("Tiempo:", 15, 30);
@@ -305,9 +393,9 @@ function drawInfo() {
 
     context.fillStyle = "#333";
     context.textAlign = "right";
-    context.fillText("Nivel:", BLOCKA_SIZE - 15, 30);
+    context.fillText("Nivel:", BLOCKA_WIDTH - 15, 30);
     context.fillStyle = "#28a745";
-    context.fillText((nivel + 1).toString(), BLOCKA_SIZE - 15, 50);
+    context.fillText((nivel + 1).toString(), BLOCKA_WIDTH - 15, 50);
 }
 
 function mostrarBienvenida() {
@@ -322,28 +410,13 @@ function mostrarJuego() {
     gameContent.classList.add('active');
 }
 
-/*
-   EVENT LISTENERS
-
-   Flujo de ejecución con async/await:
-
-   1. Usuario hace click en Start
-   2. mostrarJuego() ejecuta sincronicamente
-   3. await ejecutarRuleta() PAUSA aquí hasta que la ruleta termine (~10 segundos)
-   4. await startLevel() PAUSA aquí hasta que la imagen cargue y el nivel inicie
-   5. Solo después de todo lo anterior, el event listener termina
-
-   Sin 'await', todas las funciones se ejecutarían simultáneamente causando
-   race conditions y bugs visuales.
-  */
-
 startBtn.addEventListener('click', async () => {
     mostrarJuego();
 
-    // Esperar a que la ruleta termine completamente
-    await ejecutarRuleta();
+    // Actualizar dimensiones del canvas antes de empezar
+    updateCanvasDimensions();
 
-    // Esperar a que el nivel se cargue e inicialice
+    await ejecutarRuleta();
     await startLevel();
 });
 
@@ -364,18 +437,28 @@ resetBtn.addEventListener('click', async () => {
 canvas.addEventListener('mousedown', onCanvasClick);
 
 async function startLevel() {
+    // Progresión automática de dificultad cada ciertos niveles
+    if (nivel < 3) {
+        tileCount = 4;  // Niveles 0-2: 4 piezas (Fácil)
+    } else if (nivel < 6) {
+        tileCount = 6;  // Niveles 3-5: 6 piezas (Medio)
+    } else {
+        tileCount = 8;  // Niveles 6+: 8 piezas (Difícil)
+    }
+
+    // Actualizar dimensiones del canvas según la nueva dificultad
+    updateCanvasDimensions();
+
     if (nivel >= images.length) {
         detenerTemporizador();
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "black";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "white";
-        context.font = "bold 30px 'Helvetica Neue'";
+        context.font = "bold 30px 'Baloo 2', sans-serif";
         context.textAlign = "center";
         context.fillText("¡Juego Completado!", canvas.width / 2, canvas.height / 2);
 
-        // new Promise + setTimeout crea un delay de 3 segundos
-        // resolve() se llama después de 3000ms, permitiendo que await continúe
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         nivel = 0;
@@ -385,10 +468,7 @@ async function startLevel() {
 
     try {
         const imagenACargar = imagenSeleccionada || images[nivel];
-
-        // await pausa hasta que loadImage() complete la carga
         await loadImage(imagenACargar);
-
         await initializePuzzle();
         juegoActivo = true;
 
@@ -406,19 +486,21 @@ async function initializePuzzle() {
     detenerTemporizador();
     iniciarTemporizador();
 
-    const horizontal = hashMap.get(tileCount).x;
-    const vertical = hashMap.get(tileCount).y;
-    const parteWidth = BLOCKA_SIZE / horizontal;
-    const parteHeight = BLOCKA_SIZE / vertical;
+    const config = hashMap.get(tileCount);
+    const horizontal = config.x;
+    const vertical = config.y;
     const rotaciones = [0, Math.PI / 2, Math.PI, Math.PI * 1.5];
 
+    // Crear piezas en la grilla
     for (let x = 0; x < horizontal; x++) {
         for (let y = 0; y < vertical; y++) {
             const piece = {
-                sx: x * parteWidth,
-                sy: y * parteHeight,
-                dx: x * parteWidth,
-                dy: y * parteHeight + GAME_OFFSET_Y,
+                // Coordenadas en la imagen (se calcularán en drawPieces con object-fit)
+                sx: x * PIECE_SIZE,
+                sy: y * PIECE_SIZE,
+                // Coordenadas en el canvas
+                dx: x * PIECE_SIZE,
+                dy: y * PIECE_SIZE + GAME_OFFSET_Y,
                 rotation: rotaciones[Math.floor(Math.random() * rotaciones.length)],
             };
             pieces.push(piece);
@@ -435,20 +517,15 @@ function onCanvasClick(event) {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    const horizontal = hashMap.get(tileCount).x;
-    const vertical = hashMap.get(tileCount).y;
-    const tileW = BLOCKA_SIZE / horizontal;
-    const tileH = BLOCKA_SIZE / vertical;
-
     const clickedPiece = pieces.find(piece =>
-        x >= piece.dx && x < piece.dx + tileW &&
-        y >= piece.dy && y < piece.dy + tileH
+        x >= piece.dx && x < piece.dx + PIECE_SIZE &&
+        y >= piece.dy && y < piece.dy + PIECE_SIZE
     );
 
     if (clickedPiece) {
         clickedPiece.rotation += Math.PI / 2;
 
-        context.clearRect(0, GAME_OFFSET_Y, BLOCKA_SIZE, BLOCKA_SIZE);
+        context.clearRect(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
         drawPieces();
 
         if (!gameWon) {
@@ -466,28 +543,30 @@ async function checkWinCondition() {
         gameWon = true;
         detenerTemporizador();
 
-        if (TIME_LIMIT>10)
-            TIME_LIMIT-= 5;
+        if (TIME_LIMIT > 10)
+            TIME_LIMIT -= 5;
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
         drawGame();
 
         context.fillStyle = "rgba(0, 0, 0, 0.6)";
-        context.fillRect(0, GAME_OFFSET_Y, BLOCKA_SIZE, BLOCKA_SIZE);
+        context.fillRect(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
         context.fillStyle = "white";
-        context.font = "bold 40px 'Helvetica Neue'";
+        context.font = "bold 40px 'Baloo 2', sans-serif";
         context.textAlign = "center";
-        context.fillText("¡Ganaste!", BLOCKA_SIZE / 2, canvas.height / 2);
-        context.fillText("avanzando...", BLOCKA_SIZE / 2, canvas.height / 2 + 40);
+        context.fillText("¡Ganaste!", BLOCKA_WIDTH / 2, canvas.height / 2);
+        context.fillText("avanzando...", BLOCKA_WIDTH / 2, canvas.height / 2 + 40);
 
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         nivel++;
 
-        // Ejecutar ruleta y ESPERAR a que termine antes de continuar
         ruletaActiva = true;
-        await ejecutarRuleta();
+
+        if(nivel !== images.length)
+            await ejecutarRuleta();
+
         ruletaActiva = false;
 
         await startLevel();
@@ -501,13 +580,13 @@ async function loseGame() {
     await new Promise(resolve => setTimeout(resolve, 100));
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
-    context.fillRect(0, GAME_OFFSET_Y, BLOCKA_SIZE, BLOCKA_SIZE);
+    context.fillRect(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
     context.fillStyle = "white";
-    context.font = "bold 40px 'Helvetica Neue'";
+    context.font = "bold 40px 'Baloo 2', sans-serif";
     context.textAlign = "center";
-    context.fillText("¡Tiempo agotado!", BLOCKA_SIZE / 2, canvas.height / 2 - 20);
-    context.font = "bold 24px 'Helvetica Neue'";
-    context.fillText("Comenzando desde nivel 1...", BLOCKA_SIZE / 2, canvas.height / 2 + 30);
+    context.fillText("¡Tiempo agotado!", BLOCKA_WIDTH / 2, canvas.height / 2 - 20);
+    context.font = "bold 24px 'Baloo 2', sans-serif";
+    context.fillText("Comenzando desde nivel 1...", BLOCKA_WIDTH / 2, canvas.height / 2 + 30);
 
     await new Promise(resolve => setTimeout(resolve, 3000));
 
@@ -521,7 +600,7 @@ async function loseGame() {
 }
 
 function filtro() {
-    const imageData = context.getImageData(0, GAME_OFFSET_Y, BLOCKA_SIZE, BLOCKA_SIZE);
+    const imageData = context.getImageData(0, GAME_OFFSET_Y, BLOCKA_WIDTH, BLOCKA_HEIGHT);
 
     for (let x = 0; x < imageData.width; x++) {
         for (let y = 0; y < imageData.height; y++) {
