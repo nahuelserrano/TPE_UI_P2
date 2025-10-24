@@ -550,9 +550,9 @@ function setPixel(imageData, x, y) {
             imageData.data[index+2] = gray;
             break;
         case 1:
-            imageData.data[index] = imageData.data[index]+50;
-            imageData.data[index+1] = imageData.data[index+1]+50;
-            imageData.data[index+2] = imageData.data[index+2]+50;
+            imageData.data[index] = Math.min(255, Math.round(r * 1.3));
+            imageData.data[index + 1] = Math.min(255, Math.round(g * 1.3));
+            imageData.data[index + 2] = Math.min(255, Math.round(b * 1.3));
             break;
         case 2:
             imageData.data[index] = 255-imageData.data[index];
@@ -560,9 +560,9 @@ function setPixel(imageData, x, y) {
             imageData.data[index+2] = 255-imageData.data[index+2];
             break;
         case 3:
-            imageData.data[index] = imageData.data[index]+50;
-            imageData.data[index+1] = imageData.data[index+1]+50;
-            imageData.data[index+2] = imageData.data[index+2]+50;
+            imageData.data[index] = Math.min(255, Math.round(r * 1.3));
+            imageData.data[index + 1] = Math.min(255, Math.round(g * 1.3));
+            imageData.data[index + 2] = Math.min(255, Math.round(b * 1.3));
             break;
         case 4:
             imageData.data[index] = gray;
@@ -575,9 +575,9 @@ function setPixel(imageData, x, y) {
             imageData.data[index+2] = 255-imageData.data[index+2];
             break;
         case 6:
-            imageData.data[index] = imageData.data[index]+50;
-            imageData.data[index+1] = imageData.data[index+1]+50;
-            imageData.data[index+2] = imageData.data[index+2]+50;
+            imageData.data[index] = Math.min(255, Math.round(r * 1.3));
+            imageData.data[index + 1] = Math.min(255, Math.round(g * 1.3));
+            imageData.data[index + 2] = Math.min(255, Math.round(b * 1.3));
             break;
         case 7:
             imageData.data[index] = gray;
