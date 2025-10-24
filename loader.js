@@ -4,8 +4,8 @@
     const pct = document.getElementById('percentage');
 
     // ===== CONFIGURACIÓN DEL LOADING =====
-    const TOTAL_TIME = 5000;        // 5 segundos en milisegundos
-    const UPDATE_INTERVAL = 50;     // Actualizar cada 50ms (suave)
+    const TOTAL_TIME = 500;        // 5 segundos en milisegundos
+    const UPDATE_INTERVAL = 5;     // Actualizar cada 50ms (suave)
     const TOTAL_STEPS = TOTAL_TIME / UPDATE_INTERVAL; // 100 pasos
     const INCREMENT = 100 / TOTAL_STEPS; // 1% por paso
 

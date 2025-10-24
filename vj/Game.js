@@ -102,7 +102,7 @@ async function ejecutarRuleta() {
             width: 30,
             height: 30,
             isSelected: false,
-            borderColor: "#4CAF50",
+            borderColor: "#11BFEE",
             borderWidth: 4
         };
         thumbnails.push(thumbnail);
@@ -110,7 +110,7 @@ async function ejecutarRuleta() {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = "#333";
+    context.fillStyle = "#11BFEE";
     context.font = "bold 18px 'Baloo 2', sans-serif";
     context.textAlign = "center";
     context.fillText("Seleccionando imagen...", canvas.width / 2, canvas.height / 2 - 40);
@@ -129,7 +129,7 @@ async function ejecutarRuleta() {
         let fin;
         if (vuelta === VUELTAS_DE_RULETA - 1) {
             fin = Math.floor(Math.random() * thumbnails.length); // fin = imagen seleccionada
-            indiceImagenSelec = fin;
+            indiceImagenSelec = fin - 1;
         } else {
             fin = thumbnails.length;
         }
@@ -150,7 +150,7 @@ async function ejecutarRuleta() {
 
     imagenSeleccionada = images[indiceImagenSelec];
 
-    context.fillStyle = "#4CAF50";
+    context.fillStyle = "#022B49";
     context.font = "bold 24px 'Baloo 2', sans-serif";
     context.fillText("¡Imagen seleccionada!", canvas.width / 2, canvas.height / 2 + 20);
 
@@ -319,7 +319,7 @@ function drawInfo() {
     context.fillStyle = "#333";
     context.textAlign = "right";
     context.fillText("Nivel:", BLOCKA_WIDTH - 15, 30);
-    context.fillStyle = "#28a745";
+    context.fillStyle = "#007bff";
     context.fillText((nivel + 1).toString(), BLOCKA_WIDTH - 15, 50);
 }
 
