@@ -23,14 +23,14 @@ hashMap.set(8, {x: 2, y: 4});  // 3x3 = 8 piezas
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
-    "../imagenes/ocarinaoftime.jpeg",
-    "../imagenes/Peg hawaiano 1.png",
-    "../imagenes/PORTAL 2.jpeg",
-    "../imagenes/RED DEAD 2.jpeg",
-    "../imagenes/STREET FIGHTER 6.jpeg",
-    "../imagenes/THE WITCHER 3.jpeg",
-    "../imagenes/VALORANT.jpeg",
-    "../imagenes/WARZONE.jpeg"
+    "../imagenes/vj/Lys Jugando 4.jpg",
+    "../imagenes/vj/LyS 3 video.webp",
+    "../imagenes/vj/Stich Elvis 2.jpeg",
+    "../imagenes/vj/stich-vj-ejecucion.jpeg",
+    "../imagenes/vj/LiloStitch-web.jpg",
+    "../imagenes/vj/ruleta2.webp",
+    "../imagenes/vj/lilo-stitch-1920581-2194132495.jpg",
+    "../imagenes/vj/LyS-ruleta.jpg",
 ];
 
 // ===== VARIABLES DE ESTADO =====
@@ -85,27 +85,38 @@ async function ejecutarRuleta() {
 
     for (let i = 0; i < images.length; i++) {
         const imagen = new Image();
-        imagen.src = images[i];
 
-        await new Promise((resolve, reject) => {
-            imagen.onload = resolve;
+        // CORRECCIÓN: Asignar handlers ANTES del src
+        const loadPromise = new Promise((resolve, reject) => {
+            imagen.onload = () => resolve(true);
             imagen.onerror = () => {
-                console.warn(`Thumbnail ${i} no cargó`);
-                resolve();
+                console.warn(`Thumbnail ${i} no cargó: ${images[i]}`);
+                resolve(false); // Retorna false si falla
             };
         });
 
-        const thumbnail = {
-            imagen: imagen,
-            x: x * i,
-            y: y,
-            width: 30,
-            height: 30,
-            isSelected: false,
-            borderColor: "#11BFEE",
-            borderWidth: 4
-        };
-        thumbnails.push(thumbnail);
+        imagen.src = images[i];
+        const cargadaCorrectamente = await loadPromise;
+
+        if (cargadaCorrectamente) {
+            const thumbnail = {
+                imagen: imagen,
+                x: x * i,
+                y: y,
+                width: 30,
+                height: 30,
+                isSelected: false,
+                borderColor: "#11BFEE",
+                borderWidth: 4
+            };
+            thumbnails.push(thumbnail);
+        }
+    }
+
+    if (thumbnails.length === 0) {
+        console.error("No se pudo cargar ninguna imagen");
+        ruletaActiva = false;
+        return images[0]; // Retornar la primera por defecto
     }
 
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -121,10 +132,6 @@ async function ejecutarRuleta() {
 
     let indiceImagenSelec;
 
-    /*
-        Se hacen 3 vueltas, por defecto 2 completas
-        y en la última se decide la imagen seleccionada
-    */
     for (let vuelta = 0; vuelta < VUELTAS_DE_RULETA; vuelta++) {
         let fin;
         if (vuelta === VUELTAS_DE_RULETA - 1) {
@@ -148,7 +155,8 @@ async function ejecutarRuleta() {
         }
     }
 
-    imagenSeleccionada = images[indiceImagenSelec];
+    // CORRECCIÓN: Usar el índice correcto del array de thumbnails
+    imagenSeleccionada = thumbnails[indiceImagenSelec].imagen.src;
 
     context.fillStyle = "#022B49";
     context.font = "bold 24px 'Baloo 2', sans-serif";
