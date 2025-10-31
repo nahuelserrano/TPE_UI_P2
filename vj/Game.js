@@ -136,7 +136,9 @@ async function ejecutarRuleta() {
         let fin;
         if (vuelta === VUELTAS_DE_RULETA - 1) {
             fin = Math.floor(Math.random() * thumbnails.length); // fin = imagen seleccionada
+            console.log("FIN: " + fin)
             indiceImagenSelec = fin - 1;
+            console.log("SELEC: " + indiceImagenSelec);
         } else {
             fin = thumbnails.length;
         }
@@ -155,7 +157,6 @@ async function ejecutarRuleta() {
         }
     }
 
-    // CORRECCIÓN: Usar el índice correcto del array de thumbnails
     imagenSeleccionada = thumbnails[indiceImagenSelec].imagen.src;
 
     context.fillStyle = "#022B49";
