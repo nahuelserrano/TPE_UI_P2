@@ -23,7 +23,7 @@ hashMap.set(8, {x: 2, y: 4});  // 3x3 = 8 piezas
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
-    "../imagenes/vj/LyS jugando 4.jpg",
+    "../imagenes/vj/lysjugandopagsolitaire.jpg",
     "../imagenes/vj/LyS 3 video.webp",
     "../imagenes/vj/Stich Elvis 2.jpeg",
     "../imagenes/vj/stich-vj-ejecucion.jpeg",
