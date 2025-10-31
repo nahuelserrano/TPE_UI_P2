@@ -135,7 +135,7 @@ async function ejecutarRuleta() {
     for (let vuelta = 0; vuelta < VUELTAS_DE_RULETA; vuelta++) {
         let fin;
         if (vuelta === VUELTAS_DE_RULETA - 1) {
-            fin = Math.floor(Math.random() * thumbnails.length); // fin = imagen seleccionada
+            fin = Math.floor(Math.random() * thumbnails.length) + 1; // fin = imagen seleccionada
             console.log("FIN: " + fin)
             indiceImagenSelec = fin - 1;
             console.log("SELEC: " + indiceImagenSelec);
