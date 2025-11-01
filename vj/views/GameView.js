@@ -63,7 +63,7 @@ class GameView {
         const startX = this.model.START_X;
         const startY = this.model.START_Y;
         const espaciado = this.model.ESPACIADO;
-        const radio = this.model.TAMAÑO_FICHA + 5;
+        const radio = this.model.TAMANIO_FICHA + 5;
 
         for (let fila = 0; fila < matriz.length; fila++) {
             for (let col = 0; col < matriz[fila].length; col++) {

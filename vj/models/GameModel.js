@@ -5,7 +5,7 @@
 class GameModel {
     constructor() {
         // Configuración del tablero
-        this.TAMAÑO_FICHA = 70;
+        this.TAMANIO_FICHA = 40;
         this.ESPACIADO = 100;
         this.START_X = 200;
         this.START_Y = 100;
@@ -78,7 +78,7 @@ class GameModel {
                     const y = this.START_Y + fila * this.ESPACIADO;
                     const imagen = this.fichasImg[contadorImg % this.fichasImg.length];
 
-                    const ficha = new Ficha(fila, col, x, y, imagen, this.TAMAÑO_FICHA);
+                    const ficha = new Ficha(fila, col, x, y, imagen, this.TAMANIO_FICHA);
                     this.fichas.push(ficha);
                     contadorImg++;
                 }

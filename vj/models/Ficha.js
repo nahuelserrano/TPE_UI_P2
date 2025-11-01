@@ -1,51 +1,59 @@
 /**
- * Clase Ficha - representa cada pieza del juego
+ * Clase Ficha - Representa una pieza del juego
+ * Responsabilidad: Almacenar datos de posición e imagen de cada ficha
  */
-export class Ficha {
-    constructor(fila, col, imagen) {
+class Ficha {
+    /**
+     * Constructor de la ficha
+     * @param {number} fila - Fila en la matriz del tablero
+     * @param {number} col - Columna en la matriz del tablero
+     * @param {number} x - Posición X en canvas
+     * @param {number} y - Posición Y en canvas
+     * @param {Image} imagen - Imagen a mostrar
+     * @param {number} radio - Radio de la ficha
+     */
+    constructor(fila, col, x, y, imagen, radio) {
         this.fila = fila;
         this.col = col;
-        this.x = START_X + col * ESPACIADO;
-        this.y = START_Y + fila * ESPACIADO;
+        this.x = x;
+        this.y = y;
         this.imagen = imagen;
-        this.radio = TAMAÑO_FICHA;
+        this.radio = radio;
+        this.seleccionada = false;
+        this.arrastrando = false;
     }
 
     /**
-     * Dibuja la ficha en el canvas
+     * Verifica si un punto está dentro de la ficha
+     * @param {number} px - Coordenada X del punto
+     * @param {number} py - Coordenada Y del punto
+     * @returns {boolean} - True si el punto está dentro
      */
-    dibujar() {
-        ctx.save();
-
-        // Crear clip circular para que la imagen sea redonda
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
-
-        // Dibujar la imagen dentro del círculo
-        ctx.drawImage(
-            this.imagen,
-            this.x - this.radio,
-            this.y - this.radio,
-            this.radio * 2,
-            this.radio * 2
+    contienePunto(px, py) {
+        const distancia = Math.sqrt(
+            Math.pow(px - this.x, 2) + Math.pow(py - this.y, 2)
         );
+        return distancia <= this.radio;
+    }
 
-        ctx.restore();
+    /**
+     * Actualiza la posición visual de la ficha (para drag)
+     * @param {number} x - Nueva posición X
+     * @param {number} y - Nueva posición Y
+     */
+    actualizarPosicion(x, y) {
+        this.x = x;
+        this.y = y;
+    }
 
-        // Borde de la ficha (efecto 3D)
-        ctx.strokeStyle = '#00CED1'; // Color cyan de Stitch
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Sombra exterior
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(this.x + 2, this.y + 2, this.radio + 2, 0, Math.PI * 2);
-        ctx.stroke();
+    /**
+     * Resetea la posición de la ficha a su celda original
+     * @param {number} startX - Coordenada X inicial del tablero
+     * @param {number} startY - Coordenada Y inicial del tablero
+     * @param {number} espaciado - Espaciado entre celdas
+     */
+    resetearPosicion(startX, startY, espaciado) {
+        this.x = startX + this.col * espaciado;
+        this.y = startY + this.fila * espaciado;
     }
 }
