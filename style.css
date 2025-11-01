@@ -476,7 +476,7 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .game-content {
-    display: none;
+    /*display: none;*/
     flex-direction: column;
     align-items: center;
 }
@@ -1359,7 +1359,7 @@ button.primary:hover {
 
 /* Game Content */
 .game-content {
-    display: none;
+    /*display: none;*/
     flex-direction: column;
     align-items: center;
     gap: 24px;
