@@ -4,7 +4,8 @@
  */
 class GameModel {
     constructor() {
-        // Configuración del tablero
+        this.celdaResaltada = null; //Almacena la celda a resaltar
+
         this.TAMANIO_FICHA = 40;
         this.ESPACIADO = 100;
         this.START_X = 200;
@@ -37,11 +38,27 @@ class GameModel {
         this.fichas = [];
         this.fichaSeleccionada = null;
     }
+    /**
+     * Establece la celda que debe ser resaltada visualmente
+     * @param {number} fila
+     * @param {number} col
+     */
+    resaltarCelda(fila, col) {
+        this.celdaResaltada = { fila, col };
+    }
+
+    /**
+     * Limpia la celda resaltada
+     */
+    limpiarResaltado() {
+        this.celdaResaltada = null;
+    }
 
     /**
      * Carga todas las imágenes necesarias
      * @param {Function} callback - Función a ejecutar cuando todas las imágenes estén cargadas
      */
+
     cargarImagenes(callback) {
         this.imagesFichas.forEach((src, index) => {
             let img = new Image();

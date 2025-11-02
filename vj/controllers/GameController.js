@@ -76,11 +76,27 @@ class GameController {
             const coords = this.obtenerCoordenadas(e);
             const ficha = this.model.fichaSeleccionada;
 
+
+
             // Actualizar posición visual
             ficha.actualizarPosicion(
                 coords.x - this.offsetX,
                 coords.y - this.offsetY
             );
+            const celdaTarget = this.model.obtenerCeldaMasCercana(coords.x, coords.y);
+            if (this.model.posicionVacia(celdaTarget.fila, celdaTarget.col)) {
+
+                //evita resaltar la celda original de la ficha)
+                if (celdaTarget.fila !== ficha.fila || celdaTarget.col !== ficha.col) {
+                    this.model.resaltarCelda(celdaTarget.fila, celdaTarget.col);
+                } else {
+                    this.model.limpiarResaltado();
+                }
+
+            } else {
+                // No es un hueco válido (o está ocupado), limpiar resaltado
+                this.model.limpiarResaltado();
+            }
 
             this.view.dibujar();
         }
@@ -100,6 +116,7 @@ class GameController {
 
             // 2. Convertir esas coordenadas (x, y) a la celda (fila, col) más cercana
             const celdaTarget = this.model.obtenerCeldaMasCercana(coords.x, coords.y);
+
             // Aquí irá la lógica de validación de movimiento (Consigna 4)
             // Por ahora, resetear la ficha a su posición original
             // 3. Validar si la celda de destino es un hueco válido Y está vacío
@@ -116,6 +133,7 @@ class GameController {
             }
             this.arrastrando = false;
             this.model.deseleccionarFicha();
+            this.model.limpiarResaltado();
             this.view.dibujar();
 
             console.log('Ficha soltada (sin validación aún)');
@@ -129,6 +147,7 @@ class GameController {
     onMouseLeave(e) {
         if (this.arrastrando) {
             this.onMouseUp(e);
+            this.model.limpiarResaltado();
         }
     }
 
