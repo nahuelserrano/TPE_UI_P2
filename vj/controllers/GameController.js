@@ -117,8 +117,6 @@ class GameController {
             this.arrastrando = false;
             this.model.deseleccionarFicha();
             this.view.dibujar();
-
-            console.log('Ficha soltada (sin validación aún)');
         }
     }
 

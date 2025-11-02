@@ -168,12 +168,52 @@ class GameModel {
 
     moverFichaA(ficha, nuevaFila, nuevaCol) {
         // 1. Actualizar la posición lógica (matriz) de la ficha
+        if (nuevaFila > ficha.fila + 2 || nuevaFila < ficha.fila - 2 ){
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+        }
+
+        if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+        }
+
+        if(ficha.col !== nuevaCol){
+            const filaAEliminar = ficha.fila;
+            if(ficha.col > nuevaCol){
+                const colAEliminar = ficha.col - 1;
+                this.eliminarFicha(filaAEliminar, colAEliminar);
+            } else {
+                const colAEliminar = ficha.col + 1;
+                this.eliminarFicha(filaAEliminar, colAEliminar);
+            }
+        } else {
+            const colAEliminar = ficha.col;
+            if(ficha.fila > nuevaFila){
+                const filaAEliminar = ficha.fila - 1;
+                this.eliminarFicha(filaAEliminar, colAEliminar);
+            } else {
+                const filaAEliminar = ficha.fila + 1;
+                this.eliminarFicha(filaAEliminar, colAEliminar);
+            }
+        }
         ficha.fila = nuevaFila;
         ficha.col = nuevaCol;
+
 
         // 2. Actualizar la posición visual (snap)
         // Reutilizamos resetearPosicion() que calcula el (x, y) exacto
         // en base a la nueva (fila, col) de la ficha.
         ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+    }
+
+    /**
+     *
+     */
+    eliminarFicha(fila, col){
+        const indice = this.fichas.findIndex(f => f.fila === fila && f.col === col);
+        if (indice !== -1) {
+            this.fichas.splice(indice, 1); // Elimina 1 elemento en esa posición
+        }
     }
 }
