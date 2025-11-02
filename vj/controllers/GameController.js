@@ -135,8 +135,6 @@ class GameController {
             this.model.deseleccionarFicha();
             this.model.limpiarResaltado();
             this.view.dibujar();
-
-            console.log('Ficha soltada (sin validación aún)');
         }
     }
 
