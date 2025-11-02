@@ -225,7 +225,19 @@ class GameModel {
             return false;
         }
 
+        if (nuevaFila === ficha.fila + 1 || nuevaFila === ficha.fila - 1 ){
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+            return false;
+        }
+
         if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+            return false;
+        }
+
+        if (nuevaCol === ficha.col + 1 || nuevaCol === ficha.col - 1 ) {
             console.log("No puedes mover ahí, límite de distancia");
             ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
@@ -236,6 +248,35 @@ class GameModel {
             ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
+
+        if(nuevaCol > ficha.col){
+            if (this.posicionVacia(ficha.fila, nuevaCol - 1)){
+                console.log("Debes saltar sobre una ficha adyacente")
+                return false
+            }
+        }
+
+        if(nuevaCol < ficha.col){
+            if (this.posicionVacia(ficha.fila, nuevaCol + 1)){
+                console.log("Debes saltar sobre una ficha adyacente")
+                return false
+            }
+        }
+
+        if (nuevaFila > ficha.fila){
+            if (this.posicionVacia(nuevaFila - 1,  ficha.col)){
+                console.log("Debes saltar sobre una ficha adyacente")
+                return false
+            }
+        }
+
+        if (nuevaFila < ficha.fila){
+            if (this.posicionVacia(nuevaFila + 1,  ficha.col)){
+                console.log("Debes saltar sobre una ficha adyacente")
+                return false
+            }
+        }
+
         return true;
     }
 
