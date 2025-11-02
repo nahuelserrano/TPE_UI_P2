@@ -82,6 +82,21 @@ class GameController {
                 coords.y - this.offsetY
             );
 
+            const celdaTarget = this.model.obtenerCeldaMasCercana(coords.x, coords.y);
+            if (this.model.posicionVacia(celdaTarget.fila, celdaTarget.col)) {
+
+                //evita resaltar la celda original de la ficha)
+                if (celdaTarget.fila !== ficha.fila || celdaTarget.col !== ficha.col) {
+                    this.model.resaltarCelda(celdaTarget.fila, celdaTarget.col);
+                } else {
+                    this.model.limpiarResaltado();
+                }
+
+            } else {
+                // No es un hueco válido (o está ocupado), limpiar resaltado
+                this.model.limpiarResaltado();
+            }
+
             this.view.dibujar();
         }
     }
@@ -124,6 +139,7 @@ class GameController {
             }
             this.arrastrando = false;
             this.model.deseleccionarFicha();
+            this.model.limpiarResaltado();
             this.view.dibujar();
         }
     }
@@ -135,6 +151,7 @@ class GameController {
     onMouseLeave(e) {
         if (this.arrastrando) {
             this.onMouseUp(e);
+            this.model.limpiarResaltado();
         }
     }
 
