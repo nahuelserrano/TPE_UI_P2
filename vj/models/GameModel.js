@@ -158,4 +158,22 @@ class GameModel {
     obtenerFichas() {
         return this.fichas;
     }
+
+    obtenerCeldaMasCercana(x, y) {
+        // Usamos Math.round para encontrar el índice de la celda más cercana
+        const col = Math.round((x - this.START_X) / this.ESPACIADO);
+        const fila = Math.round((y - this.START_Y) / this.ESPACIADO);
+        return { fila, col };
+    }
+
+    moverFichaA(ficha, nuevaFila, nuevaCol) {
+        // 1. Actualizar la posición lógica (matriz) de la ficha
+        ficha.fila = nuevaFila;
+        ficha.col = nuevaCol;
+
+        // 2. Actualizar la posición visual (snap)
+        // Reutilizamos resetearPosicion() que calcula el (x, y) exacto
+        // en base a la nueva (fila, col) de la ficha.
+        ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+    }
 }

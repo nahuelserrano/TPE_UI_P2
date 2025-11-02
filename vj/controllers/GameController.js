@@ -95,14 +95,25 @@ class GameController {
             const ficha = this.model.fichaSeleccionada;
             ficha.arrastrando = false;
 
+            // 1. Obtener las coordenadas (x, y) donde se soltó la ficha
+            const coords = this.obtenerCoordenadas(e);
+
+            // 2. Convertir esas coordenadas (x, y) a la celda (fila, col) más cercana
+            const celdaTarget = this.model.obtenerCeldaMasCercana(coords.x, coords.y);
             // Aquí irá la lógica de validación de movimiento (Consigna 4)
             // Por ahora, resetear la ficha a su posición original
-            ficha.resetearPosicion(
-                this.model.START_X,
-                this.model.START_Y,
-                this.model.ESPACIADO
-            );
-
+            // 3. Validar si la celda de destino es un hueco válido Y está vacío
+            // (Aquí es donde luego irá la lógica de "salto" de Peg Solitaire)
+            if (this.model.posicionVacia(celdaTarget.fila, celdaTarget.col)) {
+                this.model.moverFichaA(ficha, celdaTarget.fila, celdaTarget.col);
+            }
+            else{
+                ficha.resetearPosicion(
+                    this.model.START_X,
+                    this.model.START_Y,
+                    this.model.ESPACIADO
+                );
+            }
             this.arrastrando = false;
             this.model.deseleccionarFicha();
             this.view.dibujar();
