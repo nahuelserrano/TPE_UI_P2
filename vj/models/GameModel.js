@@ -167,16 +167,9 @@ class GameModel {
     }
 
     moverFichaA(ficha, nuevaFila, nuevaCol) {
-        // 1. Actualizar la posición lógica (matriz) de la ficha
-        if (nuevaFila > ficha.fila + 2 || nuevaFila < ficha.fila - 2 ){
-            console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
-        }
+        console.log("Ficha queriendo desplegarse en fila " + nuevaFila + " columna " + nuevaCol);
 
-        if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
-            console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
-        }
+        // 1. Actualizar la posición lógica (matriz) de la ficha
 
         if(ficha.col !== nuevaCol){
             const filaAEliminar = ficha.fila;
@@ -197,6 +190,7 @@ class GameModel {
                 this.eliminarFicha(filaAEliminar, colAEliminar);
             }
         }
+
         ficha.fila = nuevaFila;
         ficha.col = nuevaCol;
 
@@ -205,6 +199,27 @@ class GameModel {
         // Reutilizamos resetearPosicion() que calcula el (x, y) exacto
         // en base a la nueva (fila, col) de la ficha.
         ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+    }
+
+    sePuedeMoverFicha(ficha, nuevaFila, nuevaCol){
+        if (nuevaFila > ficha.fila + 2 || nuevaFila < ficha.fila - 2 ){
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+            return false;
+        }
+
+        if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
+            console.log("No puedes mover ahí, límite de distancia");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+            return false;
+        }
+
+        if(ficha.col !== nuevaCol && ficha.fila !== nuevaFila){
+            console.log("No puedes mover ahí, los movimientos en diagonal no son validos");
+            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
+            return false;
+        }
+        return true;
     }
 
     /**

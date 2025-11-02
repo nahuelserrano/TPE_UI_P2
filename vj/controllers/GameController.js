@@ -100,12 +100,20 @@ class GameController {
 
             // 2. Convertir esas coordenadas (x, y) a la celda (fila, col) más cercana
             const celdaTarget = this.model.obtenerCeldaMasCercana(coords.x, coords.y);
+            const nuevaFila = celdaTarget.fila;
+            const nuevaCol = celdaTarget.col;
             // Aquí irá la lógica de validación de movimiento (Consigna 4)
             // Por ahora, resetear la ficha a su posición original
             // 3. Validar si la celda de destino es un hueco válido Y está vacío
             // (Aquí es donde luego irá la lógica de "salto" de Peg Solitaire)
-            if (this.model.posicionVacia(celdaTarget.fila, celdaTarget.col)) {
-                this.model.moverFichaA(ficha, celdaTarget.fila, celdaTarget.col);
+            // console.log(this.model.posicionVacia(nuevaFila, nuevaCol))
+            // console.log(this.model.sePuedeMoverFicha(ficha, nuevaFila, nuevaCol))
+
+            if (this.model.posicionVacia(nuevaFila, nuevaCol)
+                && this.model.sePuedeMoverFicha(ficha, nuevaFila, nuevaCol)) {
+
+                console.log("Moviendo...")
+                this.model.moverFichaA(ficha, nuevaFila, nuevaCol);
             }
             else{
                 ficha.resetearPosicion(
