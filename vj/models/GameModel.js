@@ -37,7 +37,7 @@ class GameModel {
         // Estado del juego
         this.fichas = [];
         this.fichaSeleccionada = null;
-        this.TIME_LIMIT = 5; // Tiempo límite en segundos (5 minutos)
+        this.TIME_LIMIT = 300; // Tiempo límite en segundos (5 minutos)
         this.tiempoInicio = Date.now();
     }
     /**
@@ -290,6 +290,60 @@ class GameModel {
         if (indice !== -1) {
             this.fichas.splice(indice, 1); // Elimina 1 elemento en esa posición
         }
+    }
+
+
+    puedeGanar(){
+        let i = 0;
+        while(this.fichas.length > i){
+            if(this.tieneMovimientosPosibles(this.fichas[i])){
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+    /**
+     * @param {Object} ficha
+     * Verifica que la ficha tenga movimientos disponibles
+     * Revisa que tenga adyacentes y que el siguiente espacio este vacio
+     * Para poder saltar
+     */
+    tieneMovimientosPosibles(ficha){
+        let tieneMovimientoPosibles = false;
+
+         this.fichas.forEach(fichaActual => {
+            // Ficha izquierda
+            if (ficha.fila === fichaActual.fila && fichaActual.col === ficha.col - 1) {
+                if (this.posicionVacia(ficha.fila, fichaActual.col - 1)){
+                    tieneMovimientoPosibles = true;
+                    return;
+                }
+            }
+            // Ficha derecha
+            if (ficha.fila === fichaActual.fila && fichaActual.col === ficha.col + 1) {
+                if (this.posicionVacia(ficha.fila, fichaActual.col + 1)){
+                    tieneMovimientoPosibles = true;
+                    return;
+                }
+            }
+            // Ficha arriba
+            if (ficha.col === fichaActual.col && fichaActual.fila === ficha.fila - 1) {
+                if (this.posicionVacia(fichaActual.fila - 1, ficha.col)) {
+                    tieneMovimientoPosibles = true;
+                    return;
+                }
+            }
+            // Ficha abajo
+            if (ficha.col === fichaActual.col && fichaActual.fila === ficha.fila + 1) {
+                if (this.posicionVacia(fichaActual.fila + 1, ficha.col)) {
+                    tieneMovimientoPosibles = true;
+                }
+            }
+        })
+
+        return tieneMovimientoPosibles;
     }
 
     

@@ -21,6 +21,7 @@ class Ficha {
         this.radio = radio;
         this.seleccionada = false;
         this.arrastrando = false;
+        this.tamanioBorde = 4;
     }
 
     /**
@@ -33,7 +34,7 @@ class Ficha {
         const distancia = Math.sqrt(
             Math.pow(px - this.x, 2) + Math.pow(py - this.y, 2)
         );
-        return distancia <= this.radio;
+        return distancia <= this.radio + this.tamanioBorde;
     }
 
     /**

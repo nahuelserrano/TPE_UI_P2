@@ -36,14 +36,14 @@ class GameController {
 
     /**
      * Obtiene las coordenadas del mouse relativas al canvas
+     * usando las propiedades offsetX/Y.
      * @param {MouseEvent} e - Evento del mouse
      * @returns {Object} - Objeto con x e y
      */
     obtenerCoordenadas(e) {
-        const rect = this.canvas.getBoundingClientRect();
         return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
+            x: e.offsetX,
+            y: e.offsetY
         };
     }
 
@@ -189,7 +189,6 @@ class GameController {
             }
     }
 
-
     reiniciarJuego(){
         this.detenrerTemporizador();
         this.model.reiniciar();
@@ -202,5 +201,7 @@ class GameController {
         this.intervalo = null;
     }
 
-
+    puedeGanar(){
+        return this.model.puedeGanar();
+    }
 }
