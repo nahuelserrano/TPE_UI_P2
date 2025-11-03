@@ -37,6 +37,8 @@ class GameModel {
         // Estado del juego
         this.fichas = [];
         this.fichaSeleccionada = null;
+        this.TIME_LIMIT = 5; // Tiempo límite en segundos (5 minutos)
+        this.tiempoInicio = Date.now();
     }
     /**
      * Establece la celda que debe ser resaltada visualmente
@@ -289,4 +291,26 @@ class GameModel {
             this.fichas.splice(indice, 1); // Elimina 1 elemento en esa posición
         }
     }
+
+    
+    validarJuegoGanado() {
+        if (this.fichas.length === 1 && this.fichas[0].fila === 3 && this.fichas[0].col === 3) {
+            alert("¡Felicidades! Has ganado el juego.");
+        }
+    }
+
+
+    obtenerTiempoRestante() {
+        let tiempoActual = Math.floor((Date.now() - this.tiempoInicio) / 1000);
+        return this.TIME_LIMIT - tiempoActual;
+    }
+
+
+    reiniciar(){
+        this.tiempoInicio = Date.now();
+        this.inicializarFichas();
+        this.deseleccionarFicha();
+        this.limpiarResaltado();
+    }
+
 }

@@ -21,6 +21,7 @@ class GameView {
         this.limpiarCanvas();
         this.dibujarTablero();
         this.dibujarFichas();
+        this.dibujarTemporizador();
     }
 
     /**
@@ -179,5 +180,35 @@ class GameView {
             this.ctx.arc(ficha.x, ficha.y, ficha.radio + 4, 0, Math.PI * 2);
             this.ctx.stroke();
         }
+    }
+
+    dibujarTemporizador() {
+        const tiempoRestante = this.model.obtenerTiempoRestante();
+        this.ctx.fillStyle = "#333";
+        this.ctx.font = "bold 18px 'Baloo 2', sans-serif";
+        this.ctx.textAlign = "left";
+
+        this.ctx.fillText("Tiempo:", 15, 30);
+        this.ctx.fillStyle = "#007bff";
+        this.ctx.fillText(this.formatearTiempo(tiempoRestante), 15, 50);
+    }
+
+
+    formatearTiempo(segundos) {
+        const minutos = Math.floor(segundos / 60);
+        const segs = segundos % 60;
+        return   `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+    }
+
+
+    mostarMensajeFinJuego(mensaje) {
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = "white";
+        this.ctx.font = "bold 40px 'Baloo 2', sans-serif";
+        this.ctx.textAlign = "center";
+        this.ctx.fillText(mensaje, this.canvas.width / 2, this.canvas.height / 2 - 20);
+        this.ctx.font = "bold 24px 'Baloo 2', sans-serif";
+        this.ctx.fillText("Reiniciando Juego...", this.canvas.width / 2, this.canvas.height / 2 + 30);
     }
 }

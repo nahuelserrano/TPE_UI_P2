@@ -13,6 +13,8 @@ class GameController {
         this.model = model;
         this.view = view;
         this.canvas = canvas;
+        this.intervalo = null;
+        this.jueguegoActivo = true;
 
         // Estado de interacción
         this.arrastrando = false;
@@ -53,7 +55,7 @@ class GameController {
         const coords = this.obtenerCoordenadas(e);
         const ficha = this.model.obtenerFichaEnCoordenadas(coords.x, coords.y);
 
-        if (ficha) {
+        if (this.jueguegoActivo && ficha) {
             this.model.seleccionarFicha(ficha);
             this.arrastrando = true;
             ficha.arrastrando = true;
@@ -72,7 +74,7 @@ class GameController {
      * @param {MouseEvent} e - Evento del mouse
      */
     onMouseMove(e) {
-        if (this.arrastrando && this.model.fichaSeleccionada) {
+        if (this.jueguegoActivo && this.arrastrando && this.model.fichaSeleccionada) {
             const coords = this.obtenerCoordenadas(e);
             const ficha = this.model.fichaSeleccionada;
 
@@ -106,7 +108,7 @@ class GameController {
      * @param {MouseEvent} e - Evento del mouse
      */
     onMouseUp(e) {
-        if (this.arrastrando && this.model.fichaSeleccionada) {
+        if (this.jueguegoActivo && this.arrastrando && this.model.fichaSeleccionada) {
             const ficha = this.model.fichaSeleccionada;
             ficha.arrastrando = false;
 
@@ -149,7 +151,7 @@ class GameController {
      * @param {MouseEvent} e - Evento del mouse
      */
     onMouseLeave(e) {
-        if (this.arrastrando) {
+        if (this.jueguegoActivo && this.arrastrando) {
             this.onMouseUp(e);
             this.model.limpiarResaltado();
         }
@@ -160,5 +162,45 @@ class GameController {
      */
     iniciarBucle() {
         this.view.dibujar();
+        this.Temporizador();
     }
+
+
+    Temporizador(){
+        this.intervalo = setInterval(() => {
+            this.view.limpiarCanvas();
+            this.view.dibujar();
+            this.tiempoTermino();
+        }, 1000);
+
+    }
+
+
+    tiempoTermino(){
+            let tiempoRestante=this.model.obtenerTiempoRestante();
+            if(tiempoRestante<=0){
+                this.jueguegoActivo = false;
+                this.detenrerTemporizador();
+                this.view.mostarMensajeFinJuego("⏰ ¡Tiempo agotado! ¡Juego reiniciado!");
+                setTimeout(() => {  
+                    this.reiniciarJuego();
+                }, 3000);
+              
+            }
+    }
+
+
+    reiniciarJuego(){
+        this.detenrerTemporizador();
+        this.model.reiniciar();
+        this.iniciarBucle();
+        this.jueguegoActivo = true;
+    }
+
+    detenrerTemporizador(){
+        clearInterval(this.intervalo);
+        this.intervalo = null;
+    }
+
+
 }

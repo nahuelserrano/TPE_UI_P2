@@ -30,5 +30,14 @@ function inicializarJuego() {
     });
 }
 
+
+
 // Iniciar cuando el DOM esté listo
 window.addEventListener('load', inicializarJuego);
+
+// Referencia al botón de reinicio
+const resetButton = document.getElementById('reset-button');
+
+resetButton.addEventListener('click', () => {
+    gameController.reiniciarJuego();
+});
