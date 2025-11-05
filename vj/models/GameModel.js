@@ -103,8 +103,6 @@ class GameModel {
                 }
             }
         }
-
-        console.log(`🎮 ${this.fichas.length} fichas creadas`);
     }
 
     /**
@@ -223,31 +221,26 @@ class GameModel {
     sePuedeMoverFicha(ficha, nuevaFila, nuevaCol){
         if (nuevaFila > ficha.fila + 2 || nuevaFila < ficha.fila - 2 ){
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaFila === ficha.fila + 1 || nuevaFila === ficha.fila - 1 ){
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaCol === ficha.col + 1 || nuevaCol === ficha.col - 1 ) {
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if(ficha.col !== nuevaCol && ficha.fila !== nuevaFila){
             console.log("No puedes mover ahí, los movimientos en diagonal no son validos");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
