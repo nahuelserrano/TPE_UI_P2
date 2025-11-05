@@ -476,9 +476,12 @@ body.drawer-open{ overflow: hidden; }
 }
 
 .game-content {
-    /*display: none;*/
     flex-direction: column;
     align-items: center;
+}
+
+.game-contentBlocka{
+ display: none;
 }
 
 .game-content.active {
