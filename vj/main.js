@@ -12,8 +12,6 @@ let gameController;
  * Inicializa el juego completo
  */
 function inicializarJuego() {
-    console.log('🎮 Iniciando Peg Solitaire - Lilo & Stitch');
-
     // Obtener canvas
     const canvas = document.getElementById('gameCanvas');
 
@@ -26,11 +24,8 @@ function inicializarJuego() {
     gameModel.cargarImagenes(() => {
         gameModel.inicializarFichas();
         gameController.iniciarBucle();
-        console.log('✅ Juego iniciado correctamente');
     });
 }
-
-
 
 // Iniciar cuando el DOM esté listo
 window.addEventListener('load', inicializarJuego);

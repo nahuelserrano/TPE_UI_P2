@@ -6,10 +6,10 @@ class GameModel {
     constructor() {
         this.celdaResaltada = null; //Almacena la celda a resaltar
 
-        this.TAMANIO_FICHA = 40;
-        this.ESPACIADO = 100;
-        this.START_X = 200;
-        this.START_Y = 100;
+        this.TAMANIO_FICHA = 25;
+        this.ESPACIADO = 70;
+        this.START_X = 285;
+        this.START_Y = 70;
         this.USAR_IMAGEN_TABLERO = false;
 
         // Imágenes
@@ -70,12 +70,12 @@ class GameModel {
                 console.log(`Imagen ${index + 1}/${this.imagesFichas.length} cargada`);
 
                 if (this.imagenesCargadas === this.imagesFichas.length) {
-                    console.log('✅ Todas las imágenes cargadas');
+                    console.log('Todas las imágenes cargadas');
                     callback();
                 }
             };
             img.onerror = () => {
-                console.error(`❌ Error cargando imagen: ${src}`);
+                console.error(`Error cargando imagen: ${src}`);
             };
             this.fichasImg.push(img);
         });
@@ -103,8 +103,6 @@ class GameModel {
                 }
             }
         }
-
-        console.log(`🎮 ${this.fichas.length} fichas creadas`);
     }
 
     /**
@@ -223,31 +221,26 @@ class GameModel {
     sePuedeMoverFicha(ficha, nuevaFila, nuevaCol){
         if (nuevaFila > ficha.fila + 2 || nuevaFila < ficha.fila - 2 ){
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaFila === ficha.fila + 1 || nuevaFila === ficha.fila - 1 ){
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaCol > ficha.col + 2 || nuevaCol < ficha.col - 2 ) {
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if (nuevaCol === ficha.col + 1 || nuevaCol === ficha.col - 1 ) {
             console.log("No puedes mover ahí, límite de distancia");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 
         if(ficha.col !== nuevaCol && ficha.fila !== nuevaFila){
             console.log("No puedes mover ahí, los movimientos en diagonal no son validos");
-            ficha.resetearPosicion(this.START_X, this.START_Y, this.ESPACIADO);
             return false;
         }
 

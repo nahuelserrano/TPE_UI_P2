@@ -79,12 +79,36 @@ class GameView {
                     const x = startX + col * espaciado;
                     const y = startY + fila * espaciado;
 
+                    let filaCeldaResaltada;
+                    let colCeldaResaltada;
+                    let esMovimientoValido = true;
+
+                    if(this.model.celdaResaltada != null) {
+                        filaCeldaResaltada = this.model.celdaResaltada.fila;
+                        colCeldaResaltada = this.model.celdaResaltada.col;
+
+                        const ficha = this.model.fichaSeleccionada;
+
+                        if (filaCeldaResaltada !== null) {}
+                            esMovimientoValido = this.model.sePuedeMoverFicha(ficha, fila, col);
+                    }
+
                     // Comprobar si esta celda debe resaltarse
                     const esCeldaResaltada = this.model.celdaResaltada &&
-                        this.model.celdaResaltada.fila === fila &&
-                        this.model.celdaResaltada.col === col;
+                        filaCeldaResaltada === fila &&
+                        colCeldaResaltada === col;
 
-                    if (esCeldaResaltada) {
+                    if (esCeldaResaltada && !esMovimientoValido) {
+                        this.ctx.fillStyle = '#FF1111'; // Rojo
+                        this.ctx.strokeStyle = '#FF5500'; // Borde Blanco
+                        this.ctx.lineWidth = 3;
+
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, radioResaltado, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    }
+                    else if (esCeldaResaltada) {
                         // DIBUJAR HUECO RESALTADO ---
                         // (Centrado en x, y, con el radio GRANDE)
                         this.ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Amarillo
@@ -97,7 +121,7 @@ class GameView {
                         this.ctx.stroke();
 
                     } else {
-                        // --- DIBUJAR HUECO NORMAL (Tu código original) ---
+                        // --- DIBUJAR HUECO NORMAL ---
 
                         // Sombra del hueco (descentrada a propósito)
                         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
