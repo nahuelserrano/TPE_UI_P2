@@ -205,7 +205,7 @@ class GameView {
             this.ctx.stroke();
         }
     }
-
+    //dibuja el temporizador en la esquina superior izquierda
     dibujarTemporizador() {
         const tiempoRestante = this.model.obtenerTiempoRestante();
         this.ctx.fillStyle = "#333";
@@ -217,14 +217,14 @@ class GameView {
         this.ctx.fillText(this.formatearTiempo(tiempoRestante), 15, 50);
     }
 
-
+    //formatea el tiempo en minutos y segundos
     formatearTiempo(segundos) {
         const minutos = Math.floor(segundos / 60);
         const segs = segundos % 60;
         return   `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
     }
 
-
+    //muestra un mensaje de fin de juego en el centro del canvas
     mostarMensajeFinJuego(mensaje) {
         this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);

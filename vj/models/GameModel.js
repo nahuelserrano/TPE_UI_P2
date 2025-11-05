@@ -285,8 +285,8 @@ class GameModel {
         }
     }
 
-
-    puedeGanar(){
+    //verifica si hay más movimientos por hacer
+    hayMasMovimientos(){
         let i = 0;
         while(this.fichas.length > i){
             if(this.tieneMovimientosPosibles(this.fichas[i])){
@@ -342,17 +342,18 @@ class GameModel {
     
     validarJuegoGanado() {
         if (this.fichas.length === 1 && this.fichas[0].fila === 3 && this.fichas[0].col === 3) {
-            alert("¡Felicidades! Has ganado el juego.");
+            return true;
         }
+        return false;
     }
 
-
+    //devuelve el tiempo restante en segundos
     obtenerTiempoRestante() {
         let tiempoActual = Math.floor((Date.now() - this.tiempoInicio) / 1000);
         return this.TIME_LIMIT - tiempoActual;
     }
 
-
+    //reinicia las variables del juego
     reiniciar(){
         this.tiempoInicio = Date.now();
         this.inicializarFichas();

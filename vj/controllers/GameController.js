@@ -143,6 +143,8 @@ class GameController {
             this.model.deseleccionarFicha();
             this.model.limpiarResaltado();
             this.view.dibujar();
+
+            this.validarJuegoTerminado();
         }
     }
 
@@ -165,7 +167,8 @@ class GameController {
         this.Temporizador();
     }
 
-
+    //inicializa el temporizador
+    //cada segundo actualiza el canvas y verifica si el tiempo se ha terminado
     Temporizador(){
         this.intervalo = setInterval(() => {
             this.view.limpiarCanvas();
@@ -175,20 +178,16 @@ class GameController {
 
     }
 
-
+    //verifica si el tiempo se ha terminado
     tiempoTermino(){
             let tiempoRestante=this.model.obtenerTiempoRestante();
             if(tiempoRestante<=0){
                 this.jueguegoActivo = false;
                 this.detenrerTemporizador();
-                this.view.mostarMensajeFinJuego("⏰ ¡Tiempo agotado! ¡Juego reiniciado!");
-                setTimeout(() => {  
-                    this.reiniciarJuego();
-                }, 3000);
-              
+                this.mensajeFinalJuego("⏰ ¡Tiempo agotado! ¡Juego reiniciado!", 3000);
             }
     }
-
+    //reinicia el juego
     reiniciarJuego(){
         this.detenrerTemporizador();
         this.model.reiniciar();
@@ -196,12 +195,34 @@ class GameController {
         this.jueguegoActivo = true;
     }
 
+    //deteniene el intervalo del temporizador
     detenrerTemporizador(){
         clearInterval(this.intervalo);
         this.intervalo = null;
     }
+    //valida si el juego ha terminado (no hay más movimientos posibles)
+    validarJuegoTerminado(){
+        console.log("Validando juego terminado...");
+        if (!this.model.hayMasMovimientos()) {
+            console.log("Juego terminado.");
+            this.jueguegoActivo = false;
+            this.detenrerTemporizador();
+            let msj="";
+            if(this.model.validarJuegoGanado()){
+                this.mensajeFinalJuego("🎉 ¡Felicidades! ¡Has ganado!", 4000);
+            }
+            else{
+                this.mensajeFinalJuego("😞 ¡No hay más movimientos! ¡Juego reiniciado!", 3000) ;
+            }
+        }
+    }
 
-    puedeGanar(){
-        return this.model.puedeGanar();
+
+//muestra el mensaje final y reinicia el juego después de un tiempo
+    mensajeFinalJuego(mensaje, tiempoMs){
+        this.view.mostarMensajeFinJuego(mensaje);
+        setTimeout(() => {  
+            this.reiniciarJuego();
+        }, tiempoMs);
     }
 }
