@@ -6,10 +6,10 @@ class GameModel {
     constructor() {
         this.celdaResaltada = null; //Almacena la celda a resaltar
 
-        this.TAMANIO_FICHA = 40;
-        this.ESPACIADO = 100;
-        this.START_X = 200;
-        this.START_Y = 100;
+        this.TAMANIO_FICHA = 25;
+        this.ESPACIADO = 70;
+        this.START_X = 285;
+        this.START_Y = 70;
         this.USAR_IMAGEN_TABLERO = false;
 
         // Imágenes
@@ -70,12 +70,12 @@ class GameModel {
                 console.log(`Imagen ${index + 1}/${this.imagesFichas.length} cargada`);
 
                 if (this.imagenesCargadas === this.imagesFichas.length) {
-                    console.log('✅ Todas las imágenes cargadas');
+                    console.log('Todas las imágenes cargadas');
                     callback();
                 }
             };
             img.onerror = () => {
-                console.error(`❌ Error cargando imagen: ${src}`);
+                console.error(`Error cargando imagen: ${src}`);
             };
             this.fichasImg.push(img);
         });
