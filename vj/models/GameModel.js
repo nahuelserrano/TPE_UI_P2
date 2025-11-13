@@ -7,38 +7,57 @@
  * Responsabilidad: Gestionar el estado del juego, lógica de negocio y reglas
  */
 class GameModel {
-    constructor() {
-        this.celdaResaltada = null; //Almacena la celda a resaltar
+    constructor(boardId, boardSrc, pieceSrc) {
+        this.celdaResaltada = null;
 
+        // Constantes de dibujado
         this.TAMANIO_FICHA = 20;
         this.ESPACIADO = 51;
         this.START_X = 76;
         this.START_Y = 76;
         this.USAR_IMAGEN_TABLERO = true;
 
-        // Imágenes
-        this.imagesFichas = [
-            "../imagenes/vj/Stich Elvis 2.jpeg",
-            "../imagenes/vj/stich-vj-ejecucion.jpeg",
-            "../imagenes/vj/LiloStitch-web.jpg",
-            "../imagenes/vj/ruleta2.webp"
-        ];
-        this.fichasImg = [];
+        // Almacenamos las rutas seleccionadas
+        this.selectedBoardSrc = boardSrc;
+        this.selectedPieceSrc = pieceSrc;
+
+        // Instancias de Imagen
+        this.piezaImg = new Image();
         this.tableroImg = new Image();
         this.imagenesCargadas = 0;
 
-        // Matriz del tablero (1 = posición válida, 0 = fuera del tablero)
-        this.matrizTablero = [
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-            [0, 0, 0, 1, 1, 1, 0, 0, 0],
-        ];
+        // --- ¡NUEVA LÓGICA DE MATRICES! ---
+        // Almacenamos todas las matrices lógicas disponibles
+        // Usamos exactamente las matrices que tú proporcionaste.
+        const boardLayouts = {
+            "board_cross": [
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0]
+            ],
+            "board_diamond": [
+                [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                [0, 0, 1, 1, 1, 1, 1, 0, 0],
+                [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                [0, 0, 1, 1, 1, 1, 1, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 0, 0]
+            ]
+        };
+
+        // Matriz del tablero
+        // Seleccionamos la matriz correcta basándonos en el boardId que recibimos.
+        // Si por alguna razón el ID no existe, usamos "board_cross" como default.
+        this.matrizTablero = boardLayouts[boardId] || boardLayouts["board_cross"];
 
         // Estado del juego
         this.fichas = [];
@@ -46,6 +65,9 @@ class GameModel {
         this.TIME_LIMIT = 300; // Tiempo límite en segundos (5 minutos)
         this.tiempoInicio = Date.now();
     }
+
+
+
     /**
      * Establece la celda que debe ser resaltada visualmente
      * @param {number} fila
@@ -68,29 +90,31 @@ class GameModel {
      */
 
     cargarImagenes(callback) {
-        // Primero cargar la imagen del tablero
-        this.tableroImg.src = "../imagenes/vj/tablero-peg-solitaire1.png";
-        this.tableroImg.onload = () => {
-            console.log('Imagen de tablero cargada');
-            this.imagenesCargadas++;
-        };
-        this.imagesFichas.forEach((src, index) => {
-            let img = new Image();
-            img.src = src;
-            img.onload = () => {
-                this.imagenesCargadas++;
-                console.log(`Imagen ${index + 1}/${this.imagesFichas.length} cargada`);
+        let imagenesCargadas = 0;
+        const totalImagenes = 2; // Solo cargamos el tablero y la ficha elegida
 
-                if (this.imagenesCargadas === this.imagesFichas.length) {
-                    console.log('Todas las imágenes cargadas');
-                    callback();
-                }
-            };
-            img.onerror = () => {
-                console.error(`Error cargando imagen: ${src}`);
-            };
-            this.fichasImg.push(img);
-        });
+        const onImageLoad = () => {
+            imagenesCargadas++;
+            console.log(`Imagen ${imagenesCargadas}/${totalImagenes} cargada`);
+            if (imagenesCargadas === totalImagenes) {
+                console.log('Todas las imágenes seleccionadas cargadas');
+                callback();
+            }
+        };
+
+        const onImageError = (e) => {
+            console.error(`Error cargando imagen: ${e.target.src}`);
+        };
+
+        // Cargar imagen de tablero seleccionado
+        this.tableroImg.src = this.selectedBoardSrc;
+        this.tableroImg.onload = onImageLoad;
+        this.tableroImg.onerror = onImageError;
+
+        // Cargar imagen de la pieza seleccionada
+        this.piezaImg.src = this.selectedPieceSrc;
+        this.piezaImg.onload = onImageLoad;
+        this.piezaImg.onerror = onImageError;
     }
 
     /**
@@ -99,19 +123,24 @@ class GameModel {
      */
     inicializarFichas() {
         this.fichas = [];
-        let contadorImg = 0;
+
+        // Obtenemos el centro (asumiendo tableros de 9x9)
+        const centroFila = 4;
+        const centroCol = 4;
 
         for (let fila = 0; fila < this.matrizTablero.length; fila++) {
             for (let col = 0; col < this.matrizTablero[fila].length; col++) {
-                // Si es posición válida Y no es el centro
-                if (this.matrizTablero[fila][col] === 1 && !(fila === 4 && col === 4)) {
+
+                // Si es posición válida (1) Y no es el centro
+                if (this.matrizTablero[fila][col] === 1 && !(fila === centroFila && col === centroCol)) {
                     const x = this.START_X + col * this.ESPACIADO;
                     const y = this.START_Y + fila * this.ESPACIADO;
-                    const imagen = this.fichasImg[contadorImg % this.fichasImg.length];
+
+                    // Usamos la única imagen de ficha cargada
+                    const imagen = this.piezaImg;
 
                     const ficha = new Ficha(fila, col, x, y, imagen, this.TAMANIO_FICHA);
                     this.fichas.push(ficha);
-                    contadorImg++;
                 }
             }
         }

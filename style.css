@@ -1,7 +1,15 @@
 /* =========================
    AllGames – Hoja de estilos
    ========================= */
-
+.welcome-screen { display: block; text-align: center; background: #fff; padding: 20px; border-radius: 10px; }
+.game-content { display: none; } /* Oculto por defecto */
+.choice-group { margin: 25px 0; }
+.choice-group h3 { margin-bottom: 15px; color: #333; }
+.choice-group .options { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.choice-group label { cursor: pointer; border: 3px solid transparent; border-radius: 8px; padding: 5px; background: #f0f0f0; transition: all 0.2s ease; }
+.choice-group label img { width: 90px; height: 90px; object-fit: cover; border-radius: 5px; display: block; }
+.choice-group input[type="radio"] { display: none; }
+.choice-group input[type="radio"]:checked + label { border-color: #0d6efd; /* Azul brillante para selección */ background: #e0f0ff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 /* Variables de tema */
 :root{
     --page-bg: #0f1116;

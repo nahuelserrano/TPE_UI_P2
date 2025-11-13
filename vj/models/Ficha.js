@@ -9,7 +9,7 @@ class Ficha {
      * @param {number} col - Columna en la matriz del tablero
      * @param {number} x - Posición X en canvas
      * @param {number} y - Posición Y en canvas
-     * @param {Image} imagen - Imagen a mostrar
+     * @param {HTMLImageElement} imagen - Imagen a mostrar
      * @param {number} radio - Radio de la ficha
      */
     constructor(fila, col, x, y, imagen, radio) {

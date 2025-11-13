@@ -78,16 +78,49 @@
 
     <!-- Game Container -->
     <div class="game-container">
-        <!-- Game Image -->
-<!--        <div class="welcome-screen" id="welcome-screen">-->
-<!--            <h2>¡Bienvenido a Blocka: Aventura Hawaiana!</h2>-->
-<!--            <p>-->
-<!--                Ayudá a Lilo y Stitch a reconstruir sus recuerdos hawaianos. Rota las piezas hasta formar imágenes completas de sus aventuras.<br>-->
-<!--                <strong>Click izquierdo:</strong> Rotar a la izquierda<br>-->
-<!--                <strong>Click derecho:</strong> Rotar a la derecha-->
-<!--            </p>-->
-<!--            <button class="primary" id="start-button">Comenzar Juego</button>-->
-<!--        </div>-->
+        <div class="welcome-screen" id="welcome-screen">
+            <h2>¡Elige tu Aventura Hawaiana!</h2>
+            <p>
+                Selecciona tu ficha y el tablero para comenzar a jugar.
+            </p>
+
+            <div class="choice-group">
+                <h3>Elige tu Ficha</h3>
+                <div class="options">
+                    <input type="radio" id="piece1" name="piece-select" value="../imagenes/vj/Stich Elvis 2.jpeg" checked>
+                    <label for="piece1"><img src="../imagenes/vj/Stich Elvis 2.jpeg" alt="Stitch Elvis"></label>
+
+                    <input type="radio" id="piece2" name="piece-select" value="../imagenes/vj/stich-vj-ejecucion.jpeg">
+                    <label for="piece2"><img src="../imagenes/vj/stich-vj-ejecucion.jpeg" alt="Stitch Ejecución"></label>
+
+                    <input type="radio" id="piece3" name="piece-select" value="../imagenes/vj/LiloStitch-web.jpg">
+                    <label for="piece3"><img src="../imagenes/vj/LiloStitch-web.jpg" alt="Lilo y Stitch"></label>
+                </div>
+            </div>
+
+            <div class="choice-group">
+                <h3>Elige tu Tablero</h3>
+                <div class="options">
+
+                    <input type="radio" id="board1" name="board-select"
+                           value="board_cross"
+                           data-image-src="../imagenes/vj/tablero-peg-solitaire1.png"
+                           checked>
+                    <label for="board1">
+                        <img src="../imagenes/vj/tablero-peg-solitaire1.png" alt="Tablero Clásico">
+                    </label>
+
+                    <input type="radio" id="board2" name="board-select"
+                           value="board_diamond"
+                           data-image-src="../imagenes/vj/peg-tablero-2.png">
+                    <label for="board2">
+                        <img src="../imagenes/vj/peg-tablero-2.png" alt="Tablero Diamante">
+                    </label>
+                </div>
+            </div>
+
+            <button class="primary" id="start-button">Comenzar Juego</button>
+        </div>
 
         <div class="game-content" id="game-content">
             <canvas id="gameCanvas" width="550" height="550"></canvas>
