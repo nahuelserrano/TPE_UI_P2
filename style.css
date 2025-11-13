@@ -296,7 +296,7 @@ body.drawer-open{ overflow: hidden; }
     color: inherit;
 }
 .nav svg{
-    width: 60%; height: 60%;
+     height: 100%;
     display:block;
     stroke: #e7ecf7;            /* blanco suave */
     stroke-width: 2;
@@ -499,7 +499,7 @@ body.drawer-open{ overflow: hidden; }
 }
 
 button {
-    padding: 12px 24px;
+    padding: 0.5%;
     font-size: 16px;
     cursor: pointer;
     border: 1px solid #ccc;
@@ -510,7 +510,7 @@ button {
 }
 
 button:hover {
-    transform: translateY(-2px);
+    transform: translateY(0.1vw);
 }
 
 button.primary:hover {
