@@ -36,11 +36,30 @@ class GameView {
      */
     dibujarTablero() {
         if (this.model.USAR_IMAGEN_TABLERO) {
+            // CONFIGURACIÓN DEL RECORTE
+            // Estos valores los ajustás según cuánto borde blanco querés eliminar
+            const recorteIzquierdo = 40;   // píxeles a recortar desde la izquierda
+            const recorteSuperior = 40;    // píxeles a recortar desde arriba
+            const recorteDerecho = 40;     // píxeles a recortar desde la derecha
+            const recorteInferior = 40;    // píxeles a recortar desde abajo
+
+            // Área ORIGINAL de la imagen (después del recorte)
+            const sx = recorteIzquierdo;
+            const sy = recorteSuperior;
+            const sWidth = this.model.tableroImg.width - recorteIzquierdo - recorteDerecho;
+            const sHeight = this.model.tableroImg.height - recorteSuperior - recorteInferior;
+
+            // Dónde dibujarlo en el CANVAS (centrado)
+            const anchoFinal = 500;
+            const altoFinal = 500;
+            const dx = (this.canvas.width - anchoFinal) / 2;
+            const dy = (this.canvas.height - altoFinal) / 2;
+
+            // Dibujar imagen RECORTADA y centrada
             this.ctx.drawImage(
                 this.model.tableroImg,
-                0, 0,
-                this.canvas.width,
-                this.canvas.height
+                sx, sy, sWidth, sHeight,      // Recortar desde la imagen original
+                dx, dy, anchoFinal, altoFinal // Dibujar en el canvas
             );
         } else {
             this.dibujarTableroCodigo();

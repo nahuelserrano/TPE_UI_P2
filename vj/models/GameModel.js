@@ -1,4 +1,8 @@
 /**
+ * // TABLERO CON IMAGEN
+ * // ANIMACIÓN DE HINTS
+ * // POSIBILIDAD DE USAR OTRA IMAGEN
+ * // CORREGIR BUGS
  * GameModel - Modelo del juego (patrón MVC)
  * Responsabilidad: Gestionar el estado del juego, lógica de negocio y reglas
  */
@@ -6,11 +10,11 @@ class GameModel {
     constructor() {
         this.celdaResaltada = null; //Almacena la celda a resaltar
 
-        this.TAMANIO_FICHA = 25;
-        this.ESPACIADO = 70;
-        this.START_X = 285;
-        this.START_Y = 70;
-        this.USAR_IMAGEN_TABLERO = false;
+        this.TAMANIO_FICHA = 20;
+        this.ESPACIADO = 51;
+        this.START_X = 76;
+        this.START_Y = 76;
+        this.USAR_IMAGEN_TABLERO = true;
 
         // Imágenes
         this.imagesFichas = [
@@ -25,13 +29,15 @@ class GameModel {
 
         // Matriz del tablero (1 = posición válida, 0 = fuera del tablero)
         this.matrizTablero = [
-            [0, 0, 1, 1, 1, 0, 0],
-            [0, 0, 1, 1, 1, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 1, 1, 1, 0, 0],
-            [0, 0, 1, 1, 1, 0, 0]
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
         ];
 
         // Estado del juego
@@ -62,6 +68,12 @@ class GameModel {
      */
 
     cargarImagenes(callback) {
+        // Primero cargar la imagen del tablero
+        this.tableroImg.src = "../imagenes/vj/tablero-peg-solitaire1.png";
+        this.tableroImg.onload = () => {
+            console.log('Imagen de tablero cargada');
+            this.imagenesCargadas++;
+        };
         this.imagesFichas.forEach((src, index) => {
             let img = new Image();
             img.src = src;
@@ -92,7 +104,7 @@ class GameModel {
         for (let fila = 0; fila < this.matrizTablero.length; fila++) {
             for (let col = 0; col < this.matrizTablero[fila].length; col++) {
                 // Si es posición válida Y no es el centro
-                if (this.matrizTablero[fila][col] === 1 && !(fila === 3 && col === 3)) {
+                if (this.matrizTablero[fila][col] === 1 && !(fila === 4 && col === 4)) {
                     const x = this.START_X + col * this.ESPACIADO;
                     const y = this.START_Y + fila * this.ESPACIADO;
                     const imagen = this.fichasImg[contadorImg % this.fichasImg.length];
@@ -123,7 +135,7 @@ class GameModel {
      */
     posicionVacia(fila, col) {
         // Primero verificar que sea una posición válida del tablero
-        if (fila < 0 || fila >= 7 || col < 0 || col >= 7) return false;
+        if (fila < 0 || fila >= 9 || col < 0 || col >= 9) return false;
         if (this.matrizTablero[fila][col] === 0) return false;
 
         // Verificar que no haya ficha en esa posición

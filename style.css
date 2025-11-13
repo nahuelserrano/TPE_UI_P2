@@ -1390,7 +1390,7 @@ button.primary:hover {
 }
 
 .game-container{
-    background-color: var(--secondary-color-light);
+    background-image: url('imagenes/vj/LyS 3 video.webp');
 }
 
 #start-button{
