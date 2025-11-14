@@ -1399,7 +1399,11 @@ button.primary:hover {
 
 .game-container{
     background-image: url('imagenes/vj/LyS 3 video.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
+
 
 #start-button{
     display: flex;
