@@ -121,7 +121,7 @@ window.addEventListener('load', () => {
         resetButton.addEventListener('click', () => {
             if (gameController) {
                 gameController.reiniciarJuego();
-                console.log('🔄 Juego reiniciado');
+                console.log('Juego reiniciado');
             }
         });
     }

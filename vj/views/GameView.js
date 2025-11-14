@@ -55,12 +55,21 @@ class GameView {
             const dx = (this.canvas.width - anchoFinal) / 2;
             const dy = (this.canvas.height - altoFinal) / 2;
 
+            this.ctx.save();
+
+            // Crear máscara redondeada (clip)
+            this.ctx.beginPath();
+            this.ctx.roundRect(dx, dy, anchoFinal, altoFinal, 45); // radio 40px ajustable
+            this.ctx.clip();
+
             // Dibujar imagen RECORTADA y centrada
             this.ctx.drawImage(
                 this.model.tableroImg,
                 sx, sy, sWidth, sHeight,      // Recortar desde la imagen original
                 dx, dy, anchoFinal, altoFinal // Dibujar en el canvas
             );
+
+            this.ctx.restore();
         } else {
             this.dibujarTableroCodigo();
         }

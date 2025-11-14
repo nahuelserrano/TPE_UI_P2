@@ -11,14 +11,35 @@ class GameModel {
         this.celdaResaltada = null;
 
 
-        this.config = {
+        // ============================================
+        // CONFIGURACIONES POR TABLERO
+        // ============================================
+        const boardConfigs = {
+            "board_cross": {
+                TAMANIO_FICHA: 20,
+                ESPACIADO: 51,
+                START_X: 76,
+                START_Y: 76,
+            },
+            "board_diamond": {
+                TAMANIO_FICHA: 28,
+                ESPACIADO:69,           // Ajusta el espaciado
+                START_X: 72,             // Ajusta la posición inicial X
+                START_Y: 70,             // Ajusta la posición inicial Y
+            }
+        };
 
-        }
-        // Constantes de dibujado
-        this.TAMANIO_FICHA = 20;
-        this.ESPACIADO = 51;
-        this.START_X = 76;
-        this.START_Y = 76;
+        // ============================================
+        // APLICAR CONFIGURACIÓN SEGÚN EL TABLERO
+        // ============================================
+        const config = boardConfigs[boardId] || boardConfigs["board_cross"];
+
+        // Asignar valores de configuración
+        this.TAMANIO_FICHA = config.TAMANIO_FICHA;
+        this.ESPACIADO = config.ESPACIADO;
+        this.START_X = config.START_X;
+        this.START_Y = config.START_Y;
+
         this.USAR_IMAGEN_TABLERO = true;
 
         // Almacenamos las rutas seleccionadas
@@ -43,15 +64,13 @@ class GameModel {
                 [0, 0, 0, 1, 1, 1, 0, 0, 0]
             ],
             "board_diamond": [
-                [0, 0, 0, 1, 1, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 1, 1, 0, 0],
-                [0, 1, 1, 1, 1, 1, 1, 1, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [0, 1, 1, 1, 1, 1, 1, 1, 0],
-                [0, 0, 1, 1, 1, 1, 1, 0, 0],
-                [0, 0, 0, 1, 1, 1, 0, 0, 0]
+                [0, 0, 1, 1, 1, 0, 0],
+                [0, 1, 1, 1, 1, 1, 0],
+                [1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 0],
+                [0, 0, 1, 1, 1, 0, 0]
             ]
         };
 
@@ -120,27 +139,44 @@ class GameModel {
 
     /**
      * Inicializa las fichas en el tablero
-     * Coloca fichas en todas las posiciones excepto el centro (3,3)
+     * Coloca fichas en todas las posiciones válidas excepto el centro
+     * NOTA: Funciona con cualquier tamaño de matriz
      */
     inicializarFichas() {
         this.fichas = [];
 
-        // Obtenemos el centro (asumiendo tableros de 9x9)
-        const centroFila = 4;
-        const centroCol = 4;
+        // Calcular el centro dinámicamente según el tamaño de la matriz
+        const numFilas = this.matrizTablero.length;
+        const numColumnas = this.matrizTablero[0].length;
 
-        for (let fila = 0; fila < this.matrizTablero.length; fila++) {
-            for (let col = 0; col < this.matrizTablero[fila].length; col++) {
+        const centroFila = Math.floor(numFilas / 2);
+        const centroCol = Math.floor(numColumnas / 2);
 
-                // Si es posición válida (1) Y no es el centro
-                if (this.matrizTablero[fila][col] === 1 && !(fila === centroFila && col === centroCol)) {
+        // Recorrer toda la matriz
+        for (let fila = 0; fila < numFilas; fila++) {
+            for (let col = 0; col < numColumnas; col++) {
+
+                // Condiciones para colocar una ficha:
+                // 1. Debe ser una posición válida (valor = 1)
+                // 2. NO debe ser el centro
+                const esPosicionValida = this.matrizTablero[fila][col] === 1;
+                const esCentro = (fila === centroFila && col === centroCol);
+
+                if (esPosicionValida && !esCentro) {
+                    // Calcular posición visual en el canvas
                     const x = this.START_X + col * this.ESPACIADO;
                     const y = this.START_Y + fila * this.ESPACIADO;
 
-                    // Usamos la única imagen de ficha cargada
-                    const imagen = this.piezaImg;
+                    // Crear la ficha
+                    const ficha = new Ficha(
+                        fila,
+                        col,
+                        x,
+                        y,
+                        this.piezaImg,
+                        this.TAMANIO_FICHA
+                    );
 
-                    const ficha = new Ficha(fila, col, x, y, imagen, this.TAMANIO_FICHA);
                     this.fichas.push(ficha);
                 }
             }
