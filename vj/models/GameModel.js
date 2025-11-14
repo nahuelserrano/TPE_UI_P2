@@ -417,11 +417,24 @@ class GameModel {
         return tieneMovimientoPosibles;
     }
 
-    
+
+    /**
+     * Valida si el juego ha sido ganado
+     * @returns {boolean} - True si solo queda una ficha en el centro
+     */
     validarJuegoGanado() {
-        if (this.fichas.length === 1 && this.fichas[0].fila === 3 && this.fichas[0].col === 3) {
-            return true;
+        // Calcular el centro dinámicamente
+        const numFilas = this.matrizTablero.length;
+        const numColumnas = this.matrizTablero[0].length;
+        const centroFila = Math.floor(numFilas / 2);
+        const centroCol = Math.floor(numColumnas / 2);
+
+        // Verificar que solo quede 1 ficha y esté en el centro
+        if (this.fichas.length === 1) {
+            const ultimaFicha = this.fichas[0];
+            return ultimaFicha.fila === centroFila && ultimaFicha.col === centroCol;
         }
+
         return false;
     }
 
