@@ -240,9 +240,9 @@ class GameView {
         this.ctx.font = "bold 18px 'Baloo 2', sans-serif";
         this.ctx.textAlign = "left";
 
-        this.ctx.fillText("Tiempo:", 15, 30);
-        this.ctx.fillStyle = "#007bff";
-        this.ctx.fillText(this.formatearTiempo(tiempoRestante), 15, 50);
+        this.ctx.fillText("Tiempo:", 50, 60);
+        this.ctx.fillStyle ='#1E3A5F';
+        this.ctx.fillText(this.formatearTiempo(tiempoRestante), 51, 80);
     }
 
     //formatea el tiempo en minutos y segundos
