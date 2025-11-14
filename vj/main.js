@@ -15,7 +15,9 @@ let welcomeScreen;
 let gameContent;
 let startButton;
 let resetButton;
+let resetButton2;
 let menuButton;
+let menuButton2;
 
 /**
  * Inicializa el juego completo
@@ -75,8 +77,10 @@ window.addEventListener('load', () => {
     startButton = document.getElementById('start-button');
     gameContent = document.getElementById('game-content');
     resetButton = document.getElementById('reset-button');
+    resetButton2 = document.getElementById('reset-button2');
     menuButton = document.getElementById('menu-button');
-
+    menuButton2 = document.getElementById('menu-button2');
+    
     // Configurar estado inicial
     if (welcomeScreen) {
         welcomeScreen.style.display = 'block';
@@ -117,19 +121,27 @@ window.addEventListener('load', () => {
     // ============================================
     // EVENT LISTENER: BOTÓN "REINICIAR JUEGO"
     // ============================================
-    if (resetButton) {
-        resetButton.addEventListener('click', () => {
-            if (gameController) {
-                gameController.reiniciarJuego();
-                console.log('Juego reiniciado');
+    if (resetButton) resetButton.addEventListener('click', reset);
+    if (resetButton2) resetButton2.addEventListener('click', reset);
+
+    function reset(){
+        console.log('aaaa')
+         if (gameController) {
+            console.log('aaaa')
+            if(!gameController.jueguegoActivo){
+                console.log('bbbbb')
+                document.getElementById("juego-gandado").classList.add("hidden");
+                document.getElementById("controles").style.display='flex';
+                document.getElementById('gameCanvas').style.display = 'block';
             }
-        });
+            gameController.reiniciarJuego();
+            console.log('Juego reiniciado');
+        }
     }
 
     // ============================================
     // EVENT LISTENER: BOTÓN "VOLVER AL MENÚ"
     // ============================================
-    if (menuButton) {
-        menuButton.addEventListener('click', volverAlMenu);
-    }
+    if (menuButton) menuButton.addEventListener('click', volverAlMenu);
+    if(menuButton2) menuButton2.addEventListener('click', volverAlMenu);
 });

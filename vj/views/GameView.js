@@ -267,10 +267,10 @@ class GameView {
         this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = "white";
-        this.ctx.font = "bold 40px 'Baloo 2', sans-serif";
+        this.ctx.font = "bold 30px 'Baloo 2', sans-serif";
         this.ctx.textAlign = "center";
         this.ctx.fillText(mensaje, this.canvas.width / 2, this.canvas.height / 2 - 20);
-        this.ctx.font = "bold 24px 'Baloo 2', sans-serif";
+        this.ctx.font = "bold 18px 'Baloo 2', sans-serif";
         this.ctx.fillText("Reiniciando Juego...", this.canvas.width / 2, this.canvas.height / 2 + 30);
     }
 
@@ -310,4 +310,15 @@ class GameView {
     }
 }
 
+    pantallaJuegoGando(){
+    document.getElementById("juego-gandado").classList.remove("hidden");
+    document.getElementById("controles").style.display='none';
+    document.getElementById('gameCanvas').style.display = 'none';
+    }
+
+    cerraPantallagando(){
+        document.getElementById("juego-gandado").classList.add("hidden");
+        document.getElementById("controles").style.display='flex';
+        document.getElementById('gameCanvas').style.display = 'block';
+    }
 }

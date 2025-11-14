@@ -167,6 +167,7 @@ class GameController {
      * Inicia el bucle de renderizado
      */
     iniciarBucle() {
+        this.view.cerraPantallagando();
         this.view.dibujar();
         this.Temporizador();
     }
@@ -193,6 +194,7 @@ class GameController {
     }
     //reinicia el juego
     reiniciarJuego(){
+        this.view.cerraPantallagando();
         this.detenrerTemporizador();
         this.model.reiniciar();
         this.iniciarBucle();
@@ -206,14 +208,14 @@ class GameController {
     }
     //valida si el juego ha terminado (no hay más movimientos posibles)
     validarJuegoTerminado(){
-        console.log("Validando juego terminado...");
         if (!this.model.hayMasMovimientos()) {
             console.log("Juego terminado.");
+
             this.jueguegoActivo = false;
             this.detenrerTemporizador();
             let msj="";
             if(this.model.validarJuegoGanado()){
-                this.mensajeFinalJuego("🎉 ¡Felicidades! ¡Has ganado!", 4000);
+                this.view.pantallaJuegoGando();
             }
             else{
                 this.mensajeFinalJuego("😞 ¡No hay más movimientos! ¡Juego reiniciado!", 3000) ;
