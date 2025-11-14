@@ -678,7 +678,7 @@ button.primary:hover {
     height: 150px;
     background-color: #1a202c;
     border-radius: 8px;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
     position: relative;
     overflow: hidden;
 }
@@ -831,6 +831,10 @@ button.primary:hover {
 /* How to Play Section */
 .instruction-block {
     margin-bottom: 20px;
+}
+
+.instruction-block:last-child {
+    margin-bottom: 0;
 }
 
 .instruction-header {

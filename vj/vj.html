@@ -22,23 +22,23 @@
                     <form class="search" role="search" aria-label="Buscar juegos" onsubmit="event.preventDefault()">
                         <input type="search" placeholder="Buscar..."/>
                         <span class="magnifier" aria-hidden="true">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2"
-                                   stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="7"></circle>
-                                <path d="M21 21l-4.3-4.3"></path>
-                              </svg>
-                            </span>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2"
+                                       stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="7"></circle>
+                                    <path d="M21 21l-4.3-4.3"></path>
+                                  </svg>
+                                </span>
                     </form>
                 </div>
                 <a class="saved" href="#guardados">JUEGOS GUARDADOS</a>
             </div>
             <div class="avatar" title="Perfil">
                 <a href="../Login_register/Login/login.html">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 21a8 8 0 1 0-16 0"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 21a8 8 0 1 0-16 0"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                 </a>
             </div>
         </div>
@@ -64,7 +64,6 @@
 </aside>
 
 <div class="container">
-    <!-- Breadcrumb Navigation -->
     <div class="breadcrumb">
         <a href="../index.html">Juegos</a>
         <span> > </span>
@@ -73,10 +72,8 @@
         <span>Puzzle - peg solitarie: Lilo y Stitch</span>
     </div>
 
-    <!-- Main Title -->
     <h1 class="vj-title">Puzzle - peg solitarie: Lilo y Stitch</h1>
 
-    <!-- Game Container -->
     <div class="game-container">
         <div class="welcome-screen" id="welcome-screen">
             <h2>¡Elige tu Aventura Hawaiana!</h2>
@@ -131,10 +128,10 @@
         <div class="game-content" id="game-content">
             <canvas id="gameCanvas" width="550" height="550"></canvas>
 
-            <div class="juegoGandado hidden" id="juego-gandado"> 
+            <div class="juegoGandado hidden" id="juego-gandado">
                 <h2>GANASTE</h2>
                 <p>¡¡¡FELICIDADES!!!! lograste completar el juego</p>
-                
+
                 <div class="controls">
                     <button id="reset-button2" class="game-btn game-btn-primary reset-button">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -142,8 +139,7 @@
                         </svg>
                         <span>Reiniciar</span>
                     </button>
-                
-                    <!-- ESTE ES EL NUEVO BOTÓN -->
+
                     <button id="menu-button2" class="game-btn game-btn-secondary menu-button">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 12h18M3 6h18M3 18h18"/>
@@ -153,27 +149,25 @@
                 </div>
             </div>
 
-           <div class="controls" id="controles">
-               <button id="reset-button" class="game-btn game-btn-primary reset-button">
-                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                   </svg>
-                   <span>Reiniciar</span>
-               </button>
+            <div class="controls" id="controles">
+                <button id="reset-button" class="game-btn game-btn-primary reset-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                    <span>Reiniciar</span>
+                </button>
 
-               <!-- ESTE ES EL NUEVO BOTÓN -->
-               <button id="menu-button" class="game-btn game-btn-secondary menu-button">
-                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       <path d="M3 12h18M3 6h18M3 18h18"/>
-                   </svg>
-                   <span>Volver al Menú</span>
-               </button>
-           </div>
+                <button id="menu-button" class="game-btn game-btn-secondary menu-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                    <span>Volver al Menú</span>
+                </button>
+            </div>
         </div>
 
     </div>
 
-    <!-- Action Buttons -->
     <div class="action-buttons">
         <button class="action-btn like-game-btn">
             <span class="btn-text">Me gusta</span>
@@ -189,22 +183,19 @@
             </svg>
         </button>
     </div>
-    <!-- Advertisement Banner -->
     <div class="ad-banner">
         <div class="ad-label">Anuncio</div>
         <img src="../imagenes/vj/ad-coca-cola.webp" alt="Coca-Cola Advertisement">
     </div>
 
-    <!-- Main Content Section -->
-    <!-- DESCRIPCIÓN -->
     <section class="main-content">
         <section class="content-section description-section">
             <div class="section-header">
-            <span class="section-icon">
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M20 5H4v2h16V5zm-8 4H4v2h8V9zm8 4v2H4v-2h16zm-8 4H4v2h8v-2z" fill="currentColor"/>
-                </svg>
-            </span>
+                <span class="section-icon">
+                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M20 5H4v2h16V5zm-8 4H4v2h8V9zm8 4v2H4v-2h16zm-8 4H4v2h8v-2z" fill="currentColor"/>
+                    </svg>
+                </span>
                 <h3 class="section-title">DESCRIPCIÓN</h3>
             </div>
             <hr class="section-line">
@@ -218,14 +209,13 @@
             </div>
         </section>
 
-        <!-- CÓMO JUGAR -->
         <section class="content-section howtoplay-section">
             <div class="section-header">
-            <span class="section-icon">
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M2 5h20v14H2V5zm18 12V7H4v10h16zM8 9h2v2h2v2h-2v2H8v-2H6v-2h2V9zm6 0h2v2h-2V9zm4 4h-2v2h2v-2z" fill="currentColor"/>
-                </svg>
-            </span>
+                <span class="section-icon">
+                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M2 5h20v14H2V5zm18 12V7H4v10h16zM8 9h2v2h2v2h-2v2H8v-2H6v-2h2V9zm6 0h2v2h-2V9zm4 4h-2v2h2v-2z" fill="currentColor"/>
+                    </svg>
+                </span>
                 <h3 class="section-title">CÓMO JUGAR</h3>
             </div>
             <hr class="section-line">
@@ -239,14 +229,13 @@
                     </p>
                 </div>
 
-                <!-- Objetivo -->
                 <div class="instruction-block">
                     <div class="instruction-header">
-                    <span class="instruction-icon">
-                        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/>
-                        </svg>
-                    </span>
+                        <span class="instruction-icon">
+                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M6 2h10v2H6V2zM4 6V4h2v2H4zm0 12H2V6h2v12zm2 2H4v-2h2v2zm12 0H6v2h12v-2zm2-2v2h-2v-2h2zm0 0h2V8h-2v10zM12 6H8v2H6v8h2v2h8v-2h2v-4h-2v4H8V8h4V6zm2 8v-4h2V8h2V6h4V4h-2V2h-2v4h-2v2h-2v2h-4v4h4z" fill="currentColor"/>
+                            </svg>
+                        </span>
                         <h4 class="instruction-title">Objetivo</h4>
                     </div>
                     <p class="instruction-text">
@@ -254,14 +243,13 @@
                     </p>
                 </div>
 
-                <!-- Cómo mover -->
                 <div class="instruction-block">
                     <div class="instruction-header">
-                    <span class="instruction-icon">
-                        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 3 12 18">
-                            <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/>
-                        </svg>
-                    </span>
+                        <span class="instruction-icon">
+                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 3 12 18">
+                                <path d="M6 3h12v18H6V3zm2 2v4h3V5H8zm5 0v4h3V5h-3zm3 6H8v8h8v-8z" fill="currentColor"/>
+                            </svg>
+                        </span>
                         <h4 class="instruction-title">Cómo mover</h4>
                     </div>
                     <ul class="instruction-list">
@@ -271,14 +259,13 @@
                     </ul>
                 </div>
 
-                <!-- Cómo ganar -->
                 <div class="instruction-block">
                     <div class="instruction-header">
-                    <span class="instruction-icon">
-                        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 2 12 21">
-                            <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/>
-                        </svg>
-                    </span>
+                        <span class="instruction-icon">
+                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="6 2 12 21">
+                                <path d="M16 3H6v2H2v10h6V5h8v10h6V5h-4V3h-2zm4 4v6h-2V7h2zM6 13H4V7h2v6zm12 2H6v2h12v-2zm-7 2h2v2h3v2H8v-2h3v-2z" fill="currentColor"/>
+                            </svg>
+                        </span>
                         <h4 class="instruction-title">Cómo ganar</h4>
                     </div>
                     <ul class="instruction-list">
@@ -290,54 +277,50 @@
         </section>
 
         <section class="content-section multimedia-section">
-                <div class="section-header">
-                            <span class="section-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 4v16h2v-2h2v-2h2v-2h2v-2h-2v-2h-2V8H8V6H6V4zm2 4v8h2v-2h2v-2h-2V8H8z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                    <h3 class="section-title">MULTIMEDIA</h3>
-                </div>
-                <hr class="section-line">
-                <div class="section-content">
-                    <div class="media-grid">
-                        <div class="media-item">
-                            <img src="../imagenes/vj/Peg%20hawaiano%201.png" alt="Media 1" class="media-image">
-                        </div>
-                        <div class="media-item">
-                            <img src="../imagenes/vj/Stich%20Elvis%202.jpeg" alt="Media 2" class="media-image">
-                        </div>
-                        <div class="media-item media-item-video">
-                            <img src="../imagenes/vj/LyS%203%20video.webp" alt="Media 3" class="media-image media-video">
-                            <div class="play-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="media-item">
-                            <img src="../imagenes/vj/lysjugandopagsolitaire.jpg" alt="Media 4" class="media-image">
+            <div class="section-header">
+                                <span class="section-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                                        <path d="M6 4v16h2v-2h2v-2h2v-2h2v-2h-2v-2h-2V8H8V6H6V4zm2 4v8h2v-2h2v-2h-2V8H8z" fill="currentColor"/>
+                                    </svg>
+                                </span>
+                <h3 class="section-title">MULTIMEDIA</h3>
+            </div>
+            <hr class="section-line">
+            <div class="section-content">
+                <div class="media-grid">
+                    <div class="media-item">
+                        <img src="../imagenes/vj/Peg%20hawaiano%201.png" alt="Media 1" class="media-image">
+                    </div>
+                    <div class="media-item">
+                        <img src="../imagenes/vj/Stich%20Elvis%202.jpeg" alt="Media 2" class="media-image">
+                    </div>
+                    <div class="media-item media-item-video">
+                        <img src="../imagenes/vj/LyS%203%20video.webp" alt="Media 3" class="media-image media-video">
+                        <div class="play-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
                         </div>
                     </div>
+                    <div class="media-item">
+                        <img src="../imagenes/vj/lysjugandopagsolitaire.jpg" alt="Media 4" class="media-image">
+                    </div>
                 </div>
-            </section>
-    </section>
-        <!-- Comments Section -->
+            </div>
+        </section>
         <section class="content-section comments-section">
             <div class="section-header">
-                        <span class="section-icon">
-                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M22 2H2v14h2V4h16v12h-8v2h-2v2H8v-4H2v2h4v4h4v-2h2v-2h10V2z" fill="currentColor"/> </svg>
-                        </span>
+                                <span class="section-icon">
+                                    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M22 2H2v14h2V4h16v12h-8v2h-2v2H8v-4H2v2h4v4h4v-2h2v-2h10V2z" fill="currentColor"/> </svg>
+                                </span>
                 <h3 class="section-title">COMENTARIOS</h3>
             </div>
             <hr class="section-line">
             <div class="section-content container-comments" >
 
-                <!-- Comment Input -->
                 <div class="comment-input-container">
                     <div class="comment-input-header">
                         <div class="user-avatar">
-                            <!-- poné la ruta de tu avatar -->
                             <img src="../imagenes/Goku%20de%20boca.jpg" alt="Tu avatar" class="avatar-image">
                         </div>
                         <span class="current-user-name">Tú</span>
@@ -354,9 +337,7 @@
                 </div>
                 <br>
 
-                <!-- Comments List -->
                 <div class="comments-list">
-                    <!-- Comment Item 1 -->
                     <div class="comment-item">
                         <div class="comment-header">
                             <div class="comment-user-info">
@@ -375,7 +356,6 @@
                         <p class="comment-text">Este juego está nashe</p>
                     </div>
 
-                    <!-- Comment Item 2 -->
                     <div class="comment-item">
                         <div class="comment-header">
                             <div class="comment-user-info">
@@ -396,7 +376,7 @@
                 </div>
             </div>
         </section>
-    <!-- Featured Games Section -->
+    </section>
     <div class="featured-games-section">
         <h4 class="featured-games-title">JUEGOS DESTACADOS</h4>
         <div class="cards-container">
@@ -495,7 +475,6 @@
     });
 </script>
 <script src="/menu.js" defer></script>
-<!-- Cargar en orden: Modelo → Vista → Controlador → Main -->
 <script src="models/Ficha.js"></script>
 <script src="models/GameModel.js"></script>
 <script src="views/GameView.js"></script>
