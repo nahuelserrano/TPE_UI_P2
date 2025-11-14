@@ -1462,3 +1462,7 @@ button.primary:hover {
 .reset-button:active {
     transform: translateY(-1px);
 }
+
+.description-section, .multimedia-section{
+    margin-bottom: 16px;
+}
