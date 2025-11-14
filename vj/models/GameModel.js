@@ -200,8 +200,14 @@ class GameModel {
      * @returns {boolean} - True si está vacía
      */
     posicionVacia(fila, col) {
-        // Primero verificar que sea una posición válida del tablero
-        if (fila < 0 || fila >= 9 || col < 0 || col >= 9) return false;
+        const numFilas = this.matrizTablero.length;
+        const numColumnas = this.matrizTablero[0].length;
+
+        // Validar con las dimensiones correctas
+        if (fila < 0 || fila >= numFilas || col < 0 || col >= numColumnas) {
+            return false;
+        }
+
         if (this.matrizTablero[fila][col] === 0) return false;
 
         // Verificar que no haya ficha en esa posición
