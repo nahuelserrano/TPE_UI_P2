@@ -14,6 +14,7 @@ class GameController {
         this.view = view;
         this.canvas = canvas;
         this.intervalo = null;
+        this.intervaloAnimacion=null;
         this.jueguegoActivo = true;
 
         // Estado de interacción
@@ -66,6 +67,7 @@ class GameController {
 
             this.view.dibujar();
             console.log(`Ficha seleccionada en (${ficha.fila}, ${ficha.col})`);
+            this.iniciarAnimacion();
         }
     }
 
@@ -145,6 +147,7 @@ class GameController {
             this.view.dibujar();
 
             this.validarJuegoTerminado();
+            this.finalizarAnimacion();
         }
     }
 
@@ -157,6 +160,7 @@ class GameController {
             this.onMouseUp(e);
             this.model.limpiarResaltado();
         }
+        this.finalizarAnimacion();
     }
 
     /**
@@ -224,5 +228,20 @@ class GameController {
         setTimeout(() => {  
             this.reiniciarJuego();
         }, tiempoMs);
+    }
+
+    iniciarAnimacion() {
+
+    this.intervaloAnimacion = setInterval(() => {
+        this.view.actualizarPulso();
+        this.view.dibujar();
+    }, 40); // 25 FPS
+    }
+
+    finalizarAnimacion(){
+        clearInterval(this.intervaloAnimacion);
+        this.intervaloAnimacion=null;
+        this.view.pulso=0;
+        this.view.direccionPulso=1;
     }
 }

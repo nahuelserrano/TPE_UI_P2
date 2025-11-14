@@ -12,6 +12,9 @@ class GameView {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.model = model;
+        
+        this.pulso = 0
+        this.direccionPulso = 1
     }
 
     /**
@@ -153,14 +156,19 @@ class GameView {
     }
 
 
-    dibujarCelda(colorCentro, colorBorde, fila, col){
+    dibujarCelda(colorCentro, colorBorde, fila, col, animada = false ){
         const matriz = this.model.matrizTablero;
         const startX = this.model.START_X;
         const startY = this.model.START_Y;
         const espaciado = this.model.ESPACIADO;
 
         // 1. Radio para HUECOS NORMALES
-        const radio = this.model.TAMANIO_FICHA ;
+        let radio = this.model.TAMANIO_FICHA ;
+
+        if (animada) {
+            let extra = 2 + this.pulso * 3; 
+            radio += extra;
+        }
 
         // 2. Radio para HUECOS RESALTADOS (más grande que el normal)
         const x = startX + col * espaciado;
@@ -268,11 +276,7 @@ class GameView {
 
 
     resaltarCeldas(){
-        let x = 0, y = 0, radio = 0;
         const ficha = this.model.fichaSeleccionada;
-        const startX = this.model.START_X;
-        const startY = this.model.START_Y;
-        const espaciado = this.model.ESPACIADO;
 
         if(ficha){
         const lugares=[[ficha.fila-2, ficha.col ], 
@@ -284,23 +288,26 @@ class GameView {
                 
                 if(this.model.sePuedeMoverFicha(ficha, lugares[i][0] , lugares[i][1]) &&
                 this.model.posicionVacia(lugares[i][0] , lugares[i][1])){
-                    
+                    this.dibujarCelda('rgba(255, 217, 0, 0.34)','#FFFFFF',lugares[i][0],lugares[i][1], true );
 
-                    x = startX + lugares[i][1]  * espaciado;
-                    y = startY + lugares[i][0]  * espaciado;
-                    radio = this.model.TAMANIO_FICHA ; 
-                    this.ctx.fillStyle = 'rgba(255, 217, 0, 0.34)'; // Amarillo
-                    this.ctx.strokeStyle = '#FFFFFF'; // Borde Blanco
-                    this.ctx.lineWidth = 3;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, radio, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.stroke();
+
                 }
             }
         }
     }
 
 
+    actualizarPulso() {
+    this.pulso += 0.07 * this.direccionPulso;
+
+    if (this.pulso >= 1) {
+        this.pulso = 1;
+        this.direccionPulso = -1;
+    }
+    if (this.pulso <= 0) {
+        this.pulso = 0;
+        this.direccionPulso = 1;
+    }
+}
 
 }
