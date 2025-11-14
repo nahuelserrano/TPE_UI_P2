@@ -21,6 +21,7 @@ class GameView {
         this.limpiarCanvas();
         this.dibujarTablero();
         this.dibujarFichas();
+        this.resaltarCeldas();
         this.dibujarTemporizador();
     }
 
@@ -73,30 +74,16 @@ class GameView {
         } else {
             this.dibujarTableroCodigo();
         }
+
+        this.infomacionCeldas();
+        
     }
 
     /**
      * Dibuja el tablero usando código (versión temporal)
      */
-    dibujarTableroCodigo() {
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, '#87CEEB');
-        gradient.addColorStop(0.5, '#4682B4');
-        gradient.addColorStop(1, '#1E90FF');
-        this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // --- Definiciones de dibujado ---
+    infomacionCeldas(){
         const matriz = this.model.matrizTablero;
-        const startX = this.model.START_X;
-        const startY = this.model.START_Y;
-        const espaciado = this.model.ESPACIADO;
-
-        // 1. Radio para HUECOS NORMALES
-        const radioNormal = this.model.TAMANIO_FICHA + 5; // 40 + 5 = 45px
-
-        // 2. Radio para HUECOS RESALTADOS (más grande que el normal)
-        const radioResaltado = radioNormal + 5; // 45 + 5 = 50px
 
         // Bucle de dibujado ---
         for (let fila = 0; fila < matriz.length; fila++) {
@@ -104,8 +91,6 @@ class GameView {
 
                 // Solo dibujar si es una posición válida (1)
                 if (matriz[fila][col] === 1) {
-                    const x = startX + col * espaciado;
-                    const y = startY + fila * espaciado;
 
                     let filaCeldaResaltada;
                     let colCeldaResaltada;
@@ -127,52 +112,69 @@ class GameView {
                         colCeldaResaltada === col;
 
                     if (esCeldaResaltada && !esMovimientoValido) {
-                        this.ctx.fillStyle = '#FF1111'; // Rojo
-                        this.ctx.strokeStyle = '#FF5500'; // Borde Blanco
-                        this.ctx.lineWidth = 3;
-
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y, radioResaltado, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
+                        this.dibujarCelda('#FF1111','#FF5500', fila, col)
+  
                     }
                     else if (esCeldaResaltada) {
                         // DIBUJAR HUECO RESALTADO ---
-                        // (Centrado en x, y, con el radio GRANDE)
-                        this.ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Amarillo
-                        this.ctx.strokeStyle = '#FFFFFF'; // Borde Blanco
-                        this.ctx.lineWidth = 3;
-
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y, radioResaltado, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
-
-                    } else {
-                        // --- DIBUJAR HUECO NORMAL ---
-
-                        // Sombra del hueco (descentrada a propósito)
-                        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y , radioNormal, 0, Math.PI * 2);
-                        this.ctx.fill();
-
-                        // Hueco principal (centrado)
-                        this.ctx.fillStyle = '#2C5F7C';
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y, radioNormal, 0, Math.PI * 2);
-                        this.ctx.fill();
-
-                        // Borde del hueco (centrado)
-                        this.ctx.strokeStyle = '#1E3A5F';
-                        this.ctx.lineWidth = 3;
-                        this.ctx.stroke(); // Dibuja el borde del último path (el de x,y)
+                        this.dibujarCelda('rgba(255, 215, 0, 0.7)','#FFFFFF', fila, col)
                     }
                 }
             }
         }
     }
 
+
+
+    dibujarTableroCodigo() {
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, '#87CEEB');
+        gradient.addColorStop(0.5, '#4682B4');
+        gradient.addColorStop(1, '#1E90FF');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // --- Definiciones de dibujado ---
+        const matriz = this.model.matrizTablero;
+
+
+        // 1. Radio para HUECOS NORMALES
+
+        // Bucle de dibujado ---
+        for (let fila = 0; fila < matriz.length; fila++) {
+            for (let col = 0; col < matriz[fila].length; col++) {
+
+                // Solo dibujar si es una posición válida (1)
+                if (matriz[fila][col] === 1) {
+                        this.dibujarCelda('#2C5F7C', '#1E3A5F', fila, col)
+                }
+            }
+        }
+    }
+
+
+    dibujarCelda(colorCentro, colorBorde, fila, col){
+        const matriz = this.model.matrizTablero;
+        const startX = this.model.START_X;
+        const startY = this.model.START_Y;
+        const espaciado = this.model.ESPACIADO;
+
+        // 1. Radio para HUECOS NORMALES
+        const radio = this.model.TAMANIO_FICHA ;
+
+        // 2. Radio para HUECOS RESALTADOS (más grande que el normal)
+        const x = startX + col * espaciado;
+        const y = startY + fila * espaciado;
+
+
+        this.ctx.fillStyle = colorCentro; // Amarillo
+        this.ctx.strokeStyle = colorBorde; // Borde Blanco
+        this.ctx.lineWidth = 3;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, radio, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.stroke();
+    }
     /**
      * Dibuja todas las fichas en el tablero
      */
@@ -263,4 +265,42 @@ class GameView {
         this.ctx.font = "bold 24px 'Baloo 2', sans-serif";
         this.ctx.fillText("Reiniciando Juego...", this.canvas.width / 2, this.canvas.height / 2 + 30);
     }
+
+
+    resaltarCeldas(){
+        let x = 0, y = 0, radio = 0;
+        const ficha = this.model.fichaSeleccionada;
+        const startX = this.model.START_X;
+        const startY = this.model.START_Y;
+        const espaciado = this.model.ESPACIADO;
+
+        if(ficha){
+        const lugares=[[ficha.fila-2, ficha.col ], 
+                    [ficha.fila+2, ficha.col ],
+                    [ficha.fila, ficha.col-2 ],
+                    [ficha.fila, ficha.col+2 ]];
+
+            for (let i = 0; i < lugares.length; i++) {
+                
+                if(this.model.sePuedeMoverFicha(ficha, lugares[i][0] , lugares[i][1]) &&
+                this.model.posicionVacia(lugares[i][0] , lugares[i][1])){
+                    
+
+                    x = startX + lugares[i][1]  * espaciado;
+                    y = startY + lugares[i][0]  * espaciado;
+                    radio = this.model.TAMANIO_FICHA ; 
+                    this.ctx.fillStyle = 'rgba(255, 217, 0, 0.34)'; // Amarillo
+                    this.ctx.strokeStyle = '#FFFFFF'; // Borde Blanco
+                    this.ctx.lineWidth = 3;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, radio, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                }
+            }
+        }
+    }
+
+
+
 }

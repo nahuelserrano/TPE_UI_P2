@@ -384,26 +384,24 @@ class GameModel {
     tieneMovimientosPosibles(ficha){
         let tieneMovimientoPosibles = false;
 
+
          this.fichas.forEach(fichaActual => {
             // Ficha izquierda
             if (ficha.fila === fichaActual.fila && fichaActual.col === ficha.col - 1) {
                 if (this.posicionVacia(ficha.fila, fichaActual.col - 1)){
                     tieneMovimientoPosibles = true;
-                    return;
                 }
             }
             // Ficha derecha
             if (ficha.fila === fichaActual.fila && fichaActual.col === ficha.col + 1) {
                 if (this.posicionVacia(ficha.fila, fichaActual.col + 1)){
                     tieneMovimientoPosibles = true;
-                    return;
                 }
             }
             // Ficha arriba
             if (ficha.col === fichaActual.col && fichaActual.fila === ficha.fila - 1) {
                 if (this.posicionVacia(fichaActual.fila - 1, ficha.col)) {
                     tieneMovimientoPosibles = true;
-                    return;
                 }
             }
             // Ficha abajo
@@ -450,6 +448,10 @@ class GameModel {
         this.inicializarFichas();
         this.deseleccionarFicha();
         this.limpiarResaltado();
+    }
+
+    posiblesMovimientos(){
+
     }
 
 }
