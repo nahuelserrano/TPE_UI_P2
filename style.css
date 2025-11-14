@@ -1463,6 +1463,10 @@ button.primary:hover {
     transform: translateY(-1px);
 }
 
-.description-section, .multimedia-section{
+.multimedia-section {
+    margin-bottom: 16px;
+}
+
+.description-section {
     margin-bottom: 16px;
 }
