@@ -172,7 +172,7 @@ class GameView {
 
         // 2. Radio para HUECOS RESALTADOS (más grande que el normal)
         const x = startX + col * espaciado;
-        const y = startY + fila * espaciado;
+        const y = startY + fila * espaciado + 4;
 
 
         this.ctx.fillStyle = colorCentro; // Amarillo
