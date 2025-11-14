@@ -10,6 +10,10 @@ class GameModel {
     constructor(boardId, boardSrc, pieceSrc) {
         this.celdaResaltada = null;
 
+
+        this.config = {
+
+        }
         // Constantes de dibujado
         this.TAMANIO_FICHA = 20;
         this.ESPACIADO = 51;
@@ -26,9 +30,6 @@ class GameModel {
         this.tableroImg = new Image();
         this.imagenesCargadas = 0;
 
-        // --- ¡NUEVA LÓGICA DE MATRICES! ---
-        // Almacenamos todas las matrices lógicas disponibles
-        // Usamos exactamente las matrices que tú proporcionaste.
         const boardLayouts = {
             "board_cross": [
                 [0, 0, 0, 1, 1, 1, 0, 0, 0],
