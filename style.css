@@ -1462,11 +1462,3 @@ button.primary:hover {
 .reset-button:active {
     transform: translateY(-1px);
 }
-
-.multimedia-section {
-    margin-bottom: 16px;
-}
-
-.description-section {
-    margin-bottom: 16px;
-}
