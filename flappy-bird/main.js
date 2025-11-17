@@ -211,7 +211,7 @@ class Game {
         const tuboLayer = this.parallax.layers[1];
         if (!tuboLayer.image || tuboLayer.image.width === 0) return;
 
-        const porcentajeTuboSuperior = 0.42;
+        const porcentajeTuboSuperior = 0.365;
         const porcentajeHueco = 0.23;
 
         const dibujarLineasTubo = (tuboX, tuboY) => {
