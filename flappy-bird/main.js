@@ -4,10 +4,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Tamaño del canvas (Full HD como pide el TP)
-canvas.width = 1920;
-canvas.height = 1080;
-
 // ============================================
 // CLASE PRINCIPAL DEL JUEGO
 // ============================================

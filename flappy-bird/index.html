@@ -75,96 +75,95 @@
 
     <div class="game-container">
         <div class="welcome-screen" id="welcome-screen">
-            <h2>¡Elige tu Aventura Hawaiana!</h2>
-            <p>
-                Selecciona tu ficha y el tablero para comenzar a jugar.
-            </p>
+<!--            <h2>¡Elige tu Aventura Hawaiana!</h2>-->
+<!--            <p>-->
+<!--                Selecciona tu ficha y el tablero para comenzar a jugar.-->
+<!--            </p>-->
 
-            <div class="choice-group">
-                <h3>Elige tu Ficha</h3>
-                <div class="options">
-                    <input type="radio" id="piece1" name="piece-select" value="../imagenes/vj/Stich Elvis 2.jpeg" checked>
-                    <label for="piece1"><img src="../imagenes/vj/Stich Elvis 2.jpeg" alt="Stitch Elvis"></label>
+<!--            <div class="choice-group">-->
+<!--                <h3>Elige tu Ficha</h3>-->
+<!--                <div class="options">-->
+<!--                    <input type="radio" id="piece1" name="piece-select" value="../imagenes/vj/Stich Elvis 2.jpeg" checked>-->
+<!--                    <label for="piece1"><img src="../imagenes/vj/Stich Elvis 2.jpeg" alt="Stitch Elvis"></label>-->
 
-                    <input type="radio" id="piece2" name="piece-select" value="../imagenes/vj/stich-vj-ejecucion.jpeg">
-                    <label for="piece2"><img src="../imagenes/vj/stich-vj-ejecucion.jpeg" alt="Stitch Ejecución"></label>
+<!--                    <input type="radio" id="piece2" name="piece-select" value="../imagenes/vj/stich-vj-ejecucion.jpeg">-->
+<!--                    <label for="piece2"><img src="../imagenes/vj/stich-vj-ejecucion.jpeg" alt="Stitch Ejecución"></label>-->
 
-                    <input type="radio" id="piece3" name="piece-select" value="../imagenes/vj/LiloStitch-web.jpg">
-                    <label for="piece3"><img src="../imagenes/vj/LiloStitch-web.jpg" alt="Lilo y Stitch"></label>
-                </div>
+<!--                    <input type="radio" id="piece3" name="piece-select" value="../imagenes/vj/LiloStitch-web.jpg">-->
+<!--                    <label for="piece3"><img src="../imagenes/vj/LiloStitch-web.jpg" alt="Lilo y Stitch"></label>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="choice-group">-->
+<!--                <h3>Elige tu Tablero</h3>-->
+<!--                <div class="options">-->
+
+<!--                    <input type="radio" id="board1" name="board-select"-->
+<!--                           value="board_cross"-->
+<!--                           data-image-src="../imagenes/vj/tablero-peg-solitaire1.png"-->
+<!--                           checked>-->
+<!--                    <label for="board1">-->
+<!--                        <img src="../imagenes/vj/tablero-peg-solitaire1.png" alt="Tablero Clásico">-->
+<!--                    </label>-->
+
+<!--                    <input type="radio" id="board2" name="board-select"-->
+<!--                           value="board_diamond"-->
+<!--                           data-image-src="../imagenes/vj/peg-tablero-2.png">-->
+<!--                    <label for="board2">-->
+<!--                        <img src="../imagenes/vj/peg-tablero-2.png" alt="Tablero Diamante">-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <button class="game-btn game-btn-primary" id="start-button">-->
+<!--                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">-->
+<!--                        <path d="M8 5v14l11-7z"/>-->
+<!--                    </svg>-->
+<!--                    <span>Comenzar Juego</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+
+            <div id="game-content">
+                <canvas id="gameCanvas" width="550" height="550"></canvas>
             </div>
 
-            <div class="choice-group">
-                <h3>Elige tu Tablero</h3>
-                <div class="options">
+<!--            <div class="juegoGandado hidden" id="juego-gandado">-->
+<!--                <h2>GANASTE</h2>-->
+<!--                <p>¡¡¡FELICIDADES!!!! lograste completar el juego</p>-->
 
-                    <input type="radio" id="board1" name="board-select"
-                           value="board_cross"
-                           data-image-src="../imagenes/vj/tablero-peg-solitaire1.png"
-                           checked>
-                    <label for="board1">
-                        <img src="../imagenes/vj/tablero-peg-solitaire1.png" alt="Tablero Clásico">
-                    </label>
+<!--                <div class="controls">-->
+<!--                    <button id="reset-button2" class="game-btn game-btn-primary reset-button">-->
+<!--                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>-->
+<!--                        </svg>-->
+<!--                        <span>Reiniciar</span>-->
+<!--                    </button>-->
 
-                    <input type="radio" id="board2" name="board-select"
-                           value="board_diamond"
-                           data-image-src="../imagenes/vj/peg-tablero-2.png">
-                    <label for="board2">
-                        <img src="../imagenes/vj/peg-tablero-2.png" alt="Tablero Diamante">
-                    </label>
-                </div>
-            </div>
-            <div>
-                <button class="game-btn game-btn-primary" id="start-button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <span>Comenzar Juego</span>
-                </button>
-            </div>
+<!--                    <button id="menu-button2" class="game-btn game-btn-secondary menu-button">-->
+<!--                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                            <path d="M3 12h18M3 6h18M3 18h18"/>-->
+<!--                        </svg>-->
+<!--                        <span>Volver al Menú</span>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="controls" id="controles">-->
+<!--                <button id="reset-button" class="game-btn game-btn-primary reset-button">-->
+<!--                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>-->
+<!--                    </svg>-->
+<!--                    <span>Reiniciar</span>-->
+<!--                </button>-->
+
+<!--                <button id="menu-button" class="game-btn game-btn-secondary menu-button">-->
+<!--                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                        <path d="M3 12h18M3 6h18M3 18h18"/>-->
+<!--                    </svg>-->
+<!--                    <span>Volver al Menú</span>-->
+<!--                </button>-->
         </div>
-
-        <div class="game-content" id="game-content">
-            <canvas id="gameCanvas" width="550" height="550"></canvas>
-
-            <div class="juegoGandado hidden" id="juego-gandado">
-                <h2>GANASTE</h2>
-                <p>¡¡¡FELICIDADES!!!! lograste completar el juego</p>
-
-                <div class="controls">
-                    <button id="reset-button2" class="game-btn game-btn-primary reset-button">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                        </svg>
-                        <span>Reiniciar</span>
-                    </button>
-
-                    <button id="menu-button2" class="game-btn game-btn-secondary menu-button">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12h18M3 6h18M3 18h18"/>
-                        </svg>
-                        <span>Volver al Menú</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="controls" id="controles">
-                <button id="reset-button" class="game-btn game-btn-primary reset-button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                    </svg>
-                    <span>Reiniciar</span>
-                </button>
-
-                <button id="menu-button" class="game-btn game-btn-secondary menu-button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12h18M3 6h18M3 18h18"/>
-                    </svg>
-                    <span>Volver al Menú</span>
-                </button>
-            </div>
-        </div>
-
     </div>
 
     <div class="action-buttons">
