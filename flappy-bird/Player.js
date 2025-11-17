@@ -20,7 +20,7 @@ export class Player {
         this.maxVelocity = 15;   // Velocidad máxima de caída (evita caer muy rápido)
 
         // === VISUAL ===
-        this.radius = 25;        // Tamaño del círculo
+        this.radius = 20;        // Tamaño del círculo
         this.color = '#FF0000';  // Color rojo
 
         // === LÍMITES ===

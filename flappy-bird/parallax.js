@@ -23,13 +23,12 @@ export class Parallax {
              {
                  name: 'tubos',
                  speed: 0.8, // 20% de la velocidad base
-                 x: 0,
+                 x: canvasWidth,
                  y: 0,
                  next_y: 0,
                  image: new Image(),
                  scaledWidth: 500,
                  scaledHeight: 0
-
              }
          ];
          this.layers.forEach((layer, index) => {

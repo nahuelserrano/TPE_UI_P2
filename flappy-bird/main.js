@@ -1,105 +1,246 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 import {Parallax} from './parallax.js';
-import { Player } from './player.js';  // ← NUEVO
+import { Player } from './player.js';
 
 class Game {
     constructor() {
         this.isRunning = false;
         this.score = 0;
-        this.gameSpeed = 3; // Velocidad base del juego
+        this.gameSpeed = 3;
 
-        // Inicializar sistemas
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
-        this.player = new Player( 30 , canvas.height / 2, canvas.height);
+        this.player = new Player(30, canvas.height / 2, canvas.height);
 
-        console.log('🎮 Juego inicializado');
+        // Sistema de colisión temporal
+        this.collisionDetected = false;
+        this.collisionTimer = 0;
+        this.collisionDuration = 2000; // Duración en milisegundos (2 segundos)
+
+        console.log('Juego inicializado');
     }
 
     async loadAssets() {
-        console.log('⏳ Cargando imágenes del parallax...');
+        console.log('Cargando imágenes del parallax...');
         try {
             await this.parallax.load();
-            console.log('✅ Imágenes cargadas.');
-            // (Aquí también cargarías sprites de jugador, sonidos, etc.)
+            console.log('Imágenes cargadas.');
         } catch (error) {
             console.error('No se pudieron cargar los assets:', error);
-            throw new Error('Error al cargar assets'); // Detiene el juego si falla
+            throw new Error('Error al cargar assets');
         }
     }
 
-    /**
-     * Inicia el juego
-     */
     start() {
         this.isRunning = true;
-        console.log('▶️ Juego iniciado');
-        this.gameLoop(); // Arrancar el loop
+        console.log('Juego iniciado');
+        this.gameLoop();
     }
 
-    /**
-     * GAME LOOP PRINCIPAL
-     * Se ejecuta ~60 veces por segundo gracias a requestAnimationFrame
-     */
     gameLoop() {
-        if (!this.isRunning) return; // Si el juego está pausado, no hacer nada
+        if (!this.isRunning) return;
 
-        // 1️⃣ ACTUALIZAR: Calcular nueva posición de todo
         this.update();
-
-        // 2️⃣ DIBUJAR: Renderizar todo en el canvas
         this.draw();
 
-        // 3️⃣ REPETIR: Llamar al loop nuevamente en el próximo frame
         requestAnimationFrame(() => this.gameLoop());
     }
 
-    /**
-     * Actualiza la lógica del juego (física, colisiones, etc)
-     */
     update() {
-        // Actualizar el parallax (fondo en movimiento)
         this.parallax.update();
         this.player.update();
 
-        // Aquí luego agregarás:
-        // - obstacles.update();
-        // - checkCollisions();
+        if (this.checkCollision()) {
+            // Activar el estado de colisión temporal
+            if (!this.collisionDetected) {
+                this.collisionDetected = true;
+                this.collisionTimer = Date.now();
+                console.log('Colisión detectada');
+            }
+        }
+
+        // Desactivar el mensaje después del tiempo establecido
+        if (this.collisionDetected) {
+            if (Date.now() - this.collisionTimer > this.collisionDuration) {
+                this.collisionDetected = false;
+            }
+        }
     }
 
-    /**
-     * Dibuja todos los elementos en el canvas
-     */
     draw() {
-        // Limpiar canvas completo
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Dibujar el parallax (fondo)
         this.parallax.draw(ctx);
-
         this.player.draw(ctx);
-        // Aquí luego agregarás:
-        // - player.draw(ctx);
-        // - obstacles.draw(ctx);
-        // - drawUI();
+
+        // Mostrar mensaje de colisión temporal
+        if (this.collisionDetected) {
+            this.showCollisionMessage();
+        }
+
+        this.debugDrawHole();
     }
 
-    /**
-     * Pausa el juego
-     */
     pause() {
         this.isRunning = false;
-        console.log('⏸️ Juego pausado');
+        console.log('Juego pausado');
     }
 
-    /**
-     * Reinicia el juego
-     */
     restart() {
         this.score = 0;
         this.parallax.reset();
-        // Aquí resetearás el jugador y obstáculos
+        this.player.reset();
+        this.collisionDetected = false;
         this.start();
+    }
+
+    checkCollision() {
+        let posJugador = this.player.y;
+        let tamanioJugador = this.player.radius;
+
+        // Colisión con techo
+        if (posJugador - tamanioJugador <= 0) {
+            return true;
+        }
+
+        // Colisión con suelo
+        if (posJugador + tamanioJugador >= canvas.height) {
+            return true;
+        }
+
+        const tuboLayer = this.parallax.layers[1];
+
+        if (!tuboLayer.image || tuboLayer.image.width === 0) {
+            return false;
+        }
+
+        // Verificar tubo principal
+        if (this.checkTubeCollision(tuboLayer, tuboLayer.x, tuboLayer.y)) {
+            return true;
+        }
+
+        // Verificar tubo copia
+        if (this.checkTubeCollision(tuboLayer, tuboLayer.x + canvas.width, tuboLayer.next_y)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    checkTubeCollision(tuboLayer, tuboX, tuboY) {
+        const player = this.player;
+
+        // Verificar si el jugador está en el rango horizontal del tubo
+        const enRangoX =
+            player.x + player.radius > tuboX &&
+            player.x - player.radius < tuboX + tuboLayer.scaledWidth;
+
+        if (!enRangoX) {
+            return false;
+        }
+
+        const porcentajeTuboSuperior = 0.42;
+        const porcentajeHueco = 0.23;
+        const imagenCompleta = tuboLayer.scaledHeight;
+
+        // Calcular límites del hueco
+        const finTuboSuperior = tuboY + (imagenCompleta * porcentajeTuboSuperior);
+        const inicioTuboInferior = finTuboSuperior + (imagenCompleta * porcentajeHueco);
+
+        const bordeSupJugador = player.y - player.radius;
+        const bordeInfJugador = player.y + player.radius;
+
+        // Verificar si está dentro del hueco
+        const dentroDelHueco =
+            bordeSupJugador >= finTuboSuperior &&
+            bordeInfJugador <= inicioTuboInferior;
+
+        if (dentroDelHueco) {
+            return false;
+        }
+
+        console.log('Colisión con tubo');
+        return true;
+    }
+
+    showCollisionMessage() {
+        // Fondo semi-transparente
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Texto de colisión
+        ctx.font = 'bold 80px Arial';
+        ctx.fillStyle = '#FF0000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('COLISION', canvas.width / 2, canvas.height / 2);
+
+        // Tiempo restante
+        const tiempoRestante = Math.ceil((this.collisionDuration - (Date.now() - this.collisionTimer)) / 1000);
+        ctx.font = '40px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`Continua en ${tiempoRestante}s`, canvas.width / 2, canvas.height / 2 + 60);
+    }
+
+    gameOver() {
+        this.isRunning = false;
+        console.log('GAME OVER - Puntaje final:', this.score);
+        this.showGameOverScreen();
+    }
+
+    showGameOverScreen() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = 'bold 100px Arial';
+        ctx.fillStyle = '#FF0000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 50);
+
+        ctx.font = '50px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`Puntaje: ${this.score}`, canvas.width / 2, canvas.height / 2 + 50);
+
+        ctx.font = '30px Arial';
+        ctx.fillStyle = '#AAAAAA';
+        ctx.fillText('Presiona R para reiniciar', canvas.width / 2, canvas.height / 2 + 120);
+    }
+
+    debugDrawHole() {
+        const tuboLayer = this.parallax.layers[1];
+        if (!tuboLayer.image || tuboLayer.image.width === 0) return;
+
+        const porcentajeTuboSuperior = 0.42;
+        const porcentajeHueco = 0.23;
+
+        const dibujarLineasTubo = (tuboX, tuboY) => {
+            // Solo dibujar si el tubo está visible
+            if (tuboX > -tuboLayer.scaledWidth && tuboX < canvas.width) {
+                const imagenCompleta = tuboLayer.scaledHeight;
+
+                const finTuboSuperior = tuboY + (imagenCompleta * porcentajeTuboSuperior);
+                const inicioTuboInferior = finTuboSuperior + (imagenCompleta * porcentajeHueco);
+
+                ctx.strokeStyle = '#00FF00';
+                ctx.lineWidth = 3;
+
+                // Línea superior del hueco
+                ctx.beginPath();
+                ctx.moveTo(tuboX, finTuboSuperior);
+                ctx.lineTo(tuboX + tuboLayer.scaledWidth, finTuboSuperior);
+                ctx.stroke();
+
+                // Línea inferior del hueco
+                ctx.beginPath();
+                ctx.moveTo(tuboX, inicioTuboInferior);
+                ctx.lineTo(tuboX + tuboLayer.scaledWidth, inicioTuboInferior);
+                ctx.stroke();
+            }
+        };
+
+        dibujarLineasTubo(tuboLayer.x, tuboLayer.y);
+        dibujarLineasTubo(tuboLayer.x + canvas.width, tuboLayer.next_y);
     }
 }
 
@@ -110,15 +251,16 @@ async function main() {
     game.start();
 }
 
-/**
- * Detectar cuando se presiona la tecla ESPACIO
- */
 document.addEventListener('keydown', (event) => {
-    // Si presionan ESPACIO y el juego está corriendo
     if (event.code === 'Space' && game.isRunning) {
-        event.preventDefault(); // Evitar que la página haga scroll
-        game.player.jump(); // Hacer saltar al jugador
+        event.preventDefault();
+        game.player.jump();
+    }
+
+    if (event.code === 'KeyR' && !game.isRunning) {
+        event.preventDefault();
+        location.reload();
     }
 });
-// INICIALIZAR JUEGO
+
 main();
