@@ -1,102 +1,163 @@
 // ============================================
 // SISTEMA DE PARALLAX SCROLLING
 // ============================================
-class Parallax {
-    constructor(canvasWidth, canvasHeight, baseSpeed) {
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
-        this.baseSpeed = baseSpeed;
+ export class Parallax {
+     constructor(canvasWidth, canvasHeight, baseSpeed) {
+         this.canvasWidth = canvasWidth;
+         this.canvasHeight = canvasHeight;
+         this.baseSpeed = baseSpeed;
 
-        // Array de capas (de atrás hacia adelante)
-        this.layers = [
-            {
-                name: 'Cielo',
-                color: '#87CEEB', // Color temporal (luego será imagen)
-                speed: 0, // No se mueve
-                x: 0
-            },
-            {
-                name: 'Montañas lejanas',
-                color: '#8B7355',
-                speed: 0.2, // 20% de la velocidad base
-                x: 0
-            },
-            {
-                name: 'Árboles medios',
-                color: '#6B8E23',
-                speed: 0.5, // 50% de la velocidad base
-                x: 0
-            },
-            {
-                name: 'Arbustos cercanos',
-                color: '#228B22',
-                speed: 0.8, // 80% de la velocidad base
-                x: 0
-            },
-            {
-                name: 'Suelo',
-                color: '#8B4513',
-                speed: 1.0, // 100% de la velocidad base
-                x: 0
-            }
-        ];
 
-        console.log('🌄 Parallax creado con', this.layers.length, 'capas');
-    }
+         const layerImage = [
+             "../imagenes/vj/fondo_playa_flappy.jpg", //fondo completo
+             "../imagenes/vj/tubo.png"//tubos
+         ]
+         // Array de capas (de atrás hacia adelante)
+         this.layers = [
+             {
+                 name: 'playa',
+                 speed: 0, // No se mueve
+                 x: 0,
+                 image: new Image()
+             },
+             {
+                 name: 'tubos',
+                 speed: 0.8, // 20% de la velocidad base
+                 x: 0,
+                 y: 0,
+                 next_y: 0,
+                 image: new Image(),
+                 scaledWidth: 500,
+                 scaledHeight: 0
 
-    /**
-     * Actualiza la posición de todas las capas
-     */
-    update() {
-        this.layers.forEach(layer => {
-            if (layer.speed > 0) {
-                // Mover la capa hacia la izquierda
-                layer.x -= this.baseSpeed * layer.speed;
+             }
+         ];
+         this.layers.forEach((layer, index) => {
+             layer.image.src = layerImage[index];
+         });
 
-                // Si la capa salió completamente, resetear posición (loop infinito)
-                if (layer.x <= -this.canvasWidth) {
-                    layer.x = 0;
-                }
-            }
-        });
-    }
+         console.log('🌄 Parallax creado con', this.layers.length, 'capas');
+     }
 
-    /**
-     * Dibuja todas las capas del parallax
-     * @param {CanvasRenderingContext2D} ctx - Contexto del canvas
-     */
-    draw(ctx) {
-        this.layers.forEach((layer, index) => {
-            // Altura de cada capa según su posición
-            const layerHeight = this.canvasHeight / this.layers.length;
-            const y = index * layerHeight;
+     async load() {
+         // Creamos un array de promesas, una por cada imagen
+         const promises = this.layers.map(layer => {
+             return new Promise((resolve, reject) => {
+                 // Si ya está cargada (caché)
+                 if (layer.image.complete) {
+                     this.calculateScaledHeight(layer); // <-- (NUEVO)
+                     return resolve(layer.image);
+                 }
+                 // Si no, esperamos a que cargue
+                 layer.image.onload = () => {
+                     this.calculateScaledHeight(layer); // <-- (NUEVO)
+                     resolve(layer.image);
+                 };
+                 layer.image.onerror = (e) => reject(new Error(`Error cargando ${layer.image.src}: ${e}`));
+             });
+         });
+         await Promise.all(promises);
+         console.log('✅ Todas las capas del parallax han cargado.');
+     }
 
-            ctx.fillStyle = layer.color;
+     calculateScaledHeight(layer) {
+         // Solo lo hacemos para capas que tengan 'scaledWidth' (los tubos)
+         if (layer.scaledWidth && layer.image.width > 0) {
+             const originalWidth = layer.image.width;
+             const originalHeight = layer.image.height;
+             const ratio = originalHeight / originalWidth;
+             layer.scaledHeight = layer.scaledWidth * ratio;
+         }
+     }
+     /**
+      * Actualiza la posición de todas las capas
+      */
+     update() {
+         this.layers.forEach(layer => {
+             if (layer.speed > 0) {
 
-            // Dibujar la capa 2 veces para hacer el loop infinito
-            ctx.fillRect(layer.x, y, this.canvasWidth, layerHeight);
-            ctx.fillRect(layer.x + this.canvasWidth, y, this.canvasWidth, layerHeight);
+                 layer.x -= this.baseSpeed * layer.speed;
 
-            // DEBUG: Mostrar nombre de la capa (opcional, borrar después)
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText(layer.name, 20, y + 30);
-        });
-    }
+                 if (layer.x <= -this.canvasWidth) { //
 
-    /**
-     * Reinicia todas las capas a su posición inicial
-     */
-    reset() {
-        this.layers.forEach(layer => {
-            layer.x = 0;
-        });
-    }
+                     layer.x = 0; // <-- (IMPORTANTE) Vuelve a poner 0
 
-    /**
-     * Cambia la velocidad del parallax (útil para acelerar el juego)
-     */
-    setSpeed(newSpeed) {
-        this.baseSpeed = newSpeed;
-    }
-}
+                     if (layer.name === 'tubos') {
+                         // La 'y' actual toma el valor de la 'y' siguiente
+                         layer.y = layer.next_y;
+
+                         // Y calculamos una nueva 'y' siguiente
+                         const tubeHeight = layer.scaledHeight;
+                         const canvasHeight = this.canvasHeight;
+                         const padding = 80;
+
+                         const max_y = -padding;
+                         const min_y = -(tubeHeight - canvasHeight - padding);
+
+                         layer.next_y = Math.floor(Math.random() * (max_y - min_y + 1)) + min_y;
+                     }
+                 }
+             }
+         });
+     }
+
+
+     /**
+      * Dibuja todas las capas del parallax
+      * @param {CanvasRenderingContext2D} ctx - Contexto del canvas
+      */
+     draw(ctx) {
+         this.layers.forEach((layer, index) => {
+             if (layer.name === 'playa') {
+                 // ... (código del fondo, sin cambios) ...
+                 ctx.drawImage(
+                     layer.image, layer.x, 0,
+                     this.canvasWidth, this.canvasHeight
+                 );
+                 ctx.drawImage(
+                     layer.image, layer.x + this.canvasWidth, 0,
+                     this.canvasWidth, this.canvasHeight
+                 );
+             } else if (layer.name === 'tubos') { //
+                 if (layer.image.width === 0) return;
+
+                 // Tubo 1 (Principal) usa layer.y
+                 ctx.drawImage(
+                     layer.image,
+                     layer.x,
+                     layer.y, // <-- USA 'y'
+                     layer.scaledWidth,
+                     layer.scaledHeight
+                 );
+
+                 // Tubo 2 (Copia) usa layer.next_y
+                 ctx.drawImage(
+                     layer.image,
+                     layer.x + this.canvasWidth,
+                     layer.next_y, // <-- USA 'next_y'
+                     layer.scaledWidth,
+                     layer.scaledHeight
+                 );
+             }
+         });
+     }
+
+     /**
+      * Reinicia todas las capas a su posición inicial
+      */
+     reset() {
+         this.layers.forEach(layer => {
+             layer.x = 0;
+             if (layer.name === 'tubos') {
+                 layer.y = 0;
+                 layer.next_y = 0; // <-- (NUEVO) Añade esto
+             }
+         });
+     }
+     /**
+      * Cambia la velocidad del parallax (útil para acelerar el juego)
+      */
+     setSpeed(newSpeed) {
+         this.baseSpeed = newSpeed;
+     }
+ }

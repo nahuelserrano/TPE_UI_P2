@@ -1,12 +1,8 @@
-// ============================================
-// CONFIGURACIÓN INICIAL
-// ============================================
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+import {Parallax} from './parallax.js';
 
-// ============================================
-// CLASE PRINCIPAL DEL JUEGO
-// ============================================
 class Game {
     constructor() {
         this.isRunning = false;
@@ -17,6 +13,18 @@ class Game {
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
 
         console.log('🎮 Juego inicializado');
+    }
+
+    async loadAssets() {
+        console.log('⏳ Cargando imágenes del parallax...');
+        try {
+            await this.parallax.load();
+            console.log('✅ Imágenes cargadas.');
+            // (Aquí también cargarías sprites de jugador, sonidos, etc.)
+        } catch (error) {
+            console.error('No se pudieron cargar los assets:', error);
+            throw new Error('Error al cargar assets'); // Detiene el juego si falla
+        }
     }
 
     /**
@@ -93,8 +101,16 @@ class Game {
     }
 }
 
-// ============================================
+async function main() {
+    const game = new Game();
+
+    // 1. ESPERAMOS a que cargue todo
+    await game.loadAssets();
+
+    // 2. SOLO ENTONCES, iniciamos el juego
+    game.start();
+}
+
+
 // INICIALIZAR JUEGO
-// ============================================
-const game = new Game();
-game.start();
+main();
