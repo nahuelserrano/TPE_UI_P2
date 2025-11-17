@@ -139,7 +139,7 @@ class Game {
             return false;
         }
 
-        const porcentajeTuboSuperior = 0.42;
+        const porcentajeTuboSuperior = 0.365;
         const porcentajeHueco = 0.23;
         const imagenCompleta = tuboLayer.scaledHeight;
 
