@@ -1,7 +1,7 @@
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 import {Parallax} from './parallax.js';
+import { Player } from './player.js';  // ← NUEVO
 
 class Game {
     constructor() {
@@ -11,6 +11,7 @@ class Game {
 
         // Inicializar sistemas
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
+        this.player = new Player( 30 , canvas.height / 2, canvas.height);
 
         console.log('🎮 Juego inicializado');
     }
@@ -59,9 +60,9 @@ class Game {
     update() {
         // Actualizar el parallax (fondo en movimiento)
         this.parallax.update();
+        this.player.update();
 
         // Aquí luego agregarás:
-        // - player.update();
         // - obstacles.update();
         // - checkCollisions();
     }
@@ -76,6 +77,7 @@ class Game {
         // Dibujar el parallax (fondo)
         this.parallax.draw(ctx);
 
+        this.player.draw(ctx);
         // Aquí luego agregarás:
         // - player.draw(ctx);
         // - obstacles.draw(ctx);
@@ -101,16 +103,22 @@ class Game {
     }
 }
 
+let game = new Game();
+
 async function main() {
-    const game = new Game();
-
-    // 1. ESPERAMOS a que cargue todo
     await game.loadAssets();
-
-    // 2. SOLO ENTONCES, iniciamos el juego
     game.start();
 }
 
-
+/**
+ * Detectar cuando se presiona la tecla ESPACIO
+ */
+document.addEventListener('keydown', (event) => {
+    // Si presionan ESPACIO y el juego está corriendo
+    if (event.code === 'Space' && game.isRunning) {
+        event.preventDefault(); // Evitar que la página haga scroll
+        game.player.jump(); // Hacer saltar al jugador
+    }
+});
 // INICIALIZAR JUEGO
 main();

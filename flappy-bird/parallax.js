@@ -1,17 +1,17 @@
 // ============================================
 // SISTEMA DE PARALLAX SCROLLING
 // ============================================
- export class Parallax {
+export class Parallax {
      constructor(canvasWidth, canvasHeight, baseSpeed) {
          this.canvasWidth = canvasWidth;
          this.canvasHeight = canvasHeight;
          this.baseSpeed = baseSpeed;
 
-
          const layerImage = [
              "../imagenes/vj/fondo_playa_flappy.jpg", //fondo completo
              "../imagenes/vj/tubo.png"//tubos
          ]
+
          // Array de capas (de atrás hacia adelante)
          this.layers = [
              {
