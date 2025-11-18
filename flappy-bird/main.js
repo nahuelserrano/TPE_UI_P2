@@ -132,8 +132,8 @@ class Game {
 
         // Verificar si el jugador está en el rango horizontal del tubo
         const enRangoX =
-            player.x + player.radius > tuboX &&
-            player.x - player.radius < tuboX + tuboLayer.scaledWidth;
+            player.x + player.radius > this.calcularInicioTubos(tuboX) &&
+            player.x - player.radius < this.calcularFinTubos(tuboX, tuboLayer.scaledWidth);
 
         if (!enRangoX) {
             return false;
@@ -214,33 +214,48 @@ class Game {
         const porcentajeTuboSuperior = 0.365;
         const porcentajeHueco = 0.23;
 
+
+
         const dibujarLineasTubo = (tuboX, tuboY) => {
             // Solo dibujar si el tubo está visible
+
             if (tuboX > -tuboLayer.scaledWidth && tuboX < canvas.width) {
                 const imagenCompleta = tuboLayer.scaledHeight;
 
                 const finTuboSuperior = tuboY + (imagenCompleta * porcentajeTuboSuperior);
                 const inicioTuboInferior = finTuboSuperior + (imagenCompleta * porcentajeHueco);
 
+                const inicioTubos = this.calcularInicioTubos(tuboX);
+                const finTubos = this.calcularFinTubos(tuboX, tuboLayer.scaledWidth);
+
                 ctx.strokeStyle = '#00FF00';
                 ctx.lineWidth = 3;
 
                 // Línea superior del hueco
                 ctx.beginPath();
-                ctx.moveTo(tuboX, finTuboSuperior);
-                ctx.lineTo(tuboX + tuboLayer.scaledWidth, finTuboSuperior);
+                ctx.moveTo(inicioTubos, finTuboSuperior);
+                ctx.lineTo(finTubos, finTuboSuperior);
                 ctx.stroke();
 
                 // Línea inferior del hueco
                 ctx.beginPath();
-                ctx.moveTo(tuboX, inicioTuboInferior);
-                ctx.lineTo(tuboX + tuboLayer.scaledWidth, inicioTuboInferior);
+                ctx.moveTo(inicioTubos, inicioTuboInferior);
+                ctx.lineTo(finTubos, inicioTuboInferior);
                 ctx.stroke();
             }
         };
 
         dibujarLineasTubo(tuboLayer.x, tuboLayer.y);
         dibujarLineasTubo(tuboLayer.x + canvas.width, tuboLayer.next_y);
+    }
+
+    calcularInicioTubos(tuboX){
+        const margen = 170
+        return tuboX + margen;
+    }
+
+    calcularFinTubos(tuboX, tuboScaleWidth){
+        return tuboX + tuboScaleWidth * 0.65;
     }
 }
 
