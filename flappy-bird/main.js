@@ -320,8 +320,7 @@ document.addEventListener('keydown', (event) => {
     if (event.code === 'Space' && game.isRunning) {
         event.preventDefault();
         game.player.jump();
-        this.animations.push(new JumpParticlesAnimation(this.player.x, this.player.y));
-
+        game.animations.push(new JumpParticlesAnimation(game.player.x, game.player.y));
     }
 
     if (event.code === 'KeyR' && !game.isRunning) {
