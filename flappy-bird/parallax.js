@@ -26,6 +26,8 @@ export class Parallax {
                  x: canvasWidth,
                  y: 0,
                  next_y: 0,
+                 scored: false,
+                 next_scored: false,
                  image: new Image(),
                  scaledWidth: 500,
                  scaledHeight: 0
@@ -84,6 +86,8 @@ export class Parallax {
                      if (layer.name === 'tubos') {
                          // La 'y' actual toma el valor de la 'y' siguiente
                          layer.y = layer.next_y;
+                         layer.scored = layer.next_scored;
+                         layer.next_scored = false;
 
                          // Y calculamos una nueva 'y' siguiente
                          const tubeHeight = layer.scaledHeight;
@@ -149,7 +153,9 @@ export class Parallax {
              layer.x = 0;
              if (layer.name === 'tubos') {
                  layer.y = 0;
-                 layer.next_y = 0; // <-- (NUEVO) Añade esto
+                 layer.next_y = 0;
+                 layer.scored = false;
+                 layer.next_scored = false;
              }
          });
      }

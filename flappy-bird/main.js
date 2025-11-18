@@ -65,6 +65,8 @@ class Game {
                 this.collisionDetected = false;
             }
         }
+
+        this.checkScore();
     }
 
     draw() {
@@ -78,7 +80,13 @@ class Game {
             this.showCollisionMessage();
         }
 
-        this.debugDrawHole();
+        ctx.font = 'bold 30px Arial';
+        ctx.fillStyle = '#FF00FF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText("Puntos " + this.score, 75, 35, 200)
+
+        // this.debugDrawHole();
     }
 
     pause() {
@@ -214,8 +222,6 @@ class Game {
         const porcentajeTuboSuperior = 0.365;
         const porcentajeHueco = 0.23;
 
-
-
         const dibujarLineasTubo = (tuboX, tuboY) => {
             // Solo dibujar si el tubo está visible
 
@@ -249,13 +255,37 @@ class Game {
         dibujarLineasTubo(tuboLayer.x + canvas.width, tuboLayer.next_y);
     }
 
+
     calcularInicioTubos(tuboX){
-        const margen = 170
-        return tuboX + margen;
+        return tuboX + 170;
     }
 
     calcularFinTubos(tuboX, tuboScaleWidth){
         return tuboX + tuboScaleWidth * 0.65;
+    }
+
+    /**
+     * Verifica si el jugador pasó completamente un tubo y actualiza el puntaje
+     */
+    checkScore() {
+        const tuboLayer = this.parallax.layers[1];
+        if (!tuboLayer.image || tuboLayer.image.width === 0) return;
+
+        const playerX = this.player.x;
+        const finTuboPrincipal = this.calcularFinTubos(tuboLayer.x, tuboLayer.scaledWidth);
+        const finTuboCopia = this.calcularFinTubos(tuboLayer.x + canvas.width, tuboLayer.scaledWidth);
+
+        if (playerX > finTuboPrincipal && !tuboLayer.scored) {
+            this.score++;
+            tuboLayer.scored = true;
+            console.log('Punto! Score:', this.score);
+        }
+
+        if (playerX > finTuboCopia && !tuboLayer.next_scored) {
+            this.score++;
+            tuboLayer.next_scored = true;
+            console.log('Punto! Score:', this.score);
+        }
     }
 }
 
