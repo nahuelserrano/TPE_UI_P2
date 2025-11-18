@@ -1,3 +1,5 @@
+import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation} from "./animations.js";
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 import {Parallax} from './parallax.js';
@@ -8,6 +10,8 @@ class Game {
         this.isRunning = false;
         this.score = 0;
         this.gameSpeed = 3;
+
+        this.animations = [];
 
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
         this.player = new Player(30, canvas.height / 2, canvas.height);
@@ -66,6 +70,12 @@ class Game {
             }
         }
 
+        // Actualizar todas las animaciones activas
+        this.animations.forEach(anim => anim.update());
+
+        // Eliminar animaciones terminadas
+        this.animations = this.animations.filter(anim => !anim.isFinished);
+
         this.checkScore();
     }
 
@@ -79,6 +89,9 @@ class Game {
         if (this.collisionDetected) {
             this.showCollisionMessage();
         }
+
+        this.animations.forEach(anim => anim.draw(ctx));
+
 
         ctx.font = 'bold 30px Arial';
         ctx.fillStyle = '#FF00FF';
@@ -108,27 +121,32 @@ class Game {
 
         // Colisión con techo
         if (posJugador - tamanioJugador <= 0) {
+            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
         // Colisión con suelo
         if (posJugador + tamanioJugador >= canvas.height) {
+            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
         const tuboLayer = this.parallax.layers[1];
 
         if (!tuboLayer.image || tuboLayer.image.width === 0) {
+            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
             return false;
         }
 
         // Verificar tubo principal
         if (this.checkTubeCollision(tuboLayer, tuboLayer.x, tuboLayer.y)) {
+            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
         // Verificar tubo copia
         if (this.checkTubeCollision(tuboLayer, tuboLayer.x + canvas.width, tuboLayer.next_y)) {
+            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
@@ -278,12 +296,14 @@ class Game {
         if (playerX > finTuboPrincipal && !tuboLayer.scored) {
             this.score++;
             tuboLayer.scored = true;
+            this.animations.push(new StarAnimation(this.player.x + 50, this.player.y));
             console.log('Punto! Score:', this.score);
         }
 
         if (playerX > finTuboCopia && !tuboLayer.next_scored) {
             this.score++;
             tuboLayer.next_scored = true;
+            this.animations.push(new StarAnimation(this.player.x + 50, this.player.y));
             console.log('Punto! Score:', this.score);
         }
     }
@@ -300,6 +320,8 @@ document.addEventListener('keydown', (event) => {
     if (event.code === 'Space' && game.isRunning) {
         event.preventDefault();
         game.player.jump();
+        this.animations.push(new JumpParticlesAnimation(this.player.x, this.player.y));
+
     }
 
     if (event.code === 'KeyR' && !game.isRunning) {
