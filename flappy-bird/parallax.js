@@ -8,28 +8,43 @@ export class Parallax {
          this.baseSpeed = baseSpeed;
 
          const layerImage = [
-             "../imagenes/vj/fondo_playa_flappy.jpg", //fondo completo
-             "../imagenes/vj/tubo.png"//tubos
+             "../imagenes/flappy-bird/fondo_playa.jpg", //fondo completo
+             "../imagenes/flappy-bird/nubes.png",
+             "../imagenes/flappy-bird/viento.png",
+             "../imagenes/flappy-bird/tubo.png"//tubos
+
          ]
 
-         // Array de capas (de atrás hacia adelante)
          this.layers = [
              {
                  name: 'playa',
-                 speed: 0, // No se mueve
+                 speed: 0,
+                 x: 0,
+                 image: new Image()
+             },
+
+             {
+                 name: 'nubes',
+                 speed: 0.5,
+                 x: 0,
+                 image: new Image()
+             },
+             {
+                 name: 'viento',
+                 speed: 2.5  ,
                  x: 0,
                  image: new Image()
              },
              {
                  name: 'tubos',
-                 speed: 0.8, // 20% de la velocidad base
+                 speed: 0.9,
                  x: canvasWidth,
                  y: 0,
                  next_y: 0,
                  scored: false,
                  next_scored: false,
                  image: new Image(),
-                 scaledWidth: 500,
+                 scaledWidth: 500, // Ajusta esto a tu gusto (ej. 55)
                  scaledHeight: 0
              }
          ];
@@ -111,17 +126,8 @@ export class Parallax {
       */
      draw(ctx) {
          this.layers.forEach((layer, index) => {
-             if (layer.name === 'playa') {
-                 // ... (código del fondo, sin cambios) ...
-                 ctx.drawImage(
-                     layer.image, layer.x, 0,
-                     this.canvasWidth, this.canvasHeight
-                 );
-                 ctx.drawImage(
-                     layer.image, layer.x + this.canvasWidth, 0,
-                     this.canvasWidth, this.canvasHeight
-                 );
-             } else if (layer.name === 'tubos') { //
+
+             if (layer.name === 'tubos') { //
                  if (layer.image.width === 0) return;
 
                  // Tubo 1 (Principal) usa layer.y
@@ -141,7 +147,30 @@ export class Parallax {
                      layer.scaledWidth,
                      layer.scaledHeight
                  );
+             }else {
+                 // Estas capas son fondos simples.
+                 // Las dibujamos ocupando todo el ancho y alto del canvas.
+
+                 // Copia 1
+                 ctx.drawImage(
+                     layer.image,
+                     layer.x,
+                     0,
+                     this.canvasWidth,
+                     this.canvasHeight
+                 );
+
+                 // Copia 2 (Loop infinito)
+                 ctx.drawImage(
+                     layer.image,
+                     layer.x + this.canvasWidth,
+                     0,
+                     this.canvasWidth,
+                     this.canvasHeight
+                 );
              }
+
+
          });
      }
 
