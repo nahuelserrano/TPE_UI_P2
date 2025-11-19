@@ -17,7 +17,7 @@ export class Player {
         this.velocityY = 0;      // Velocidad actual en Y (empieza en 0)
         this.gravity = 0.5;      // Fuerza de gravedad (cuánto acelera la caída)
         this.jumpForce = -8;    // Fuerza del salto (negativo = hacia arriba)
-        this.maxVelocity = 15;   // Velocidad máxima de caída (evita caer muy rápido)
+        this.maxVelocity = 25;   // Velocidad máxima de caída (evita caer muy rápido)
 
         // === VISUAL ===
         this.radius = 20;        // Tamaño del círculo

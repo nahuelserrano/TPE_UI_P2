@@ -1,4 +1,5 @@
 import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation} from "./animations.js";
+import { Timer } from './timer.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -9,9 +10,15 @@ class Game {
     constructor() {
         this.isRunning = false;
         this.score = 0;
-        this.gameSpeed = 3;
+
+        this.gameSpeed = 3;           // Velocidad inicial
+        this.speedIncrement = 0.5;    // Cuánto aumenta
+        this.maxSpeed = 8;            // Límite máximo
 
         this.animations = [];
+
+        // (incrementa 0.5 cada 10 segundos)
+        this.timer = new Timer(10);
 
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
         this.player = new Player(30, canvas.height / 2, canvas.height);
@@ -37,6 +44,7 @@ class Game {
 
     start() {
         this.isRunning = true;
+        this.timer.reset(); // Resetear el timer al iniciar
         console.log('Juego iniciado');
         this.gameLoop();
     }
@@ -51,6 +59,14 @@ class Game {
     }
 
     update() {
+        // El timer solo notifica intervalos
+
+        const intervalReached = this.timer.update();
+        // Si el timer indica que debe aumentar la dificultad
+        if (intervalReached) {
+            this.increaseDifficulty();
+        }
+
         this.parallax.update();
         this.player.update();
 
@@ -79,6 +95,21 @@ class Game {
         this.checkScore();
     }
 
+    increaseDifficulty() {
+        if (this.gameSpeed >= this.maxSpeed) {
+            console.log('Velocidad máxima alcanzada');
+            return;
+        }
+
+        // Incrementar velocidad
+        this.gameSpeed += this.speedIncrement;
+
+        // Sincronizar con Parallax
+        this.parallax.setSpeed(this.gameSpeed);
+
+        console.log(`Dificultad aumentada! Velocidad: ${this.gameSpeed.toFixed(1)}`);
+    }
+
     draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -92,6 +123,8 @@ class Game {
 
         this.animations.forEach(anim => anim.draw(ctx));
 
+        this.drawTimer();
+
 
         ctx.font = 'bold 30px Arial';
         ctx.fillStyle = '#FF00FF';
@@ -102,6 +135,31 @@ class Game {
         // this.debugDrawHole();
     }
 
+    /**
+     * Dibuja el timer en pantalla
+     */
+    drawTimer() {
+        const time = this.timer.getFormattedTime();
+        const increments = this.speedIncrement;
+
+        // Timer principal
+        ctx.font = 'bold 40px Arial';
+        ctx.fillStyle = '#00FFFF';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillText(time, canvas.width - 30, 20);
+
+        // Nivel de dificultad
+        ctx.font = '20px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`Nivel ${increments + 1}`, canvas.width - 30, 70);
+
+        // Velocidad actual (opcional, para debug)
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#AAAAAA';
+        ctx.fillText(`Vel: ${this.gameSpeed.toFixed(1)}`, canvas.width - 30, 100);
+    }
+
     pause() {
         this.isRunning = false;
         console.log('Juego pausado');
@@ -110,6 +168,9 @@ class Game {
     restart() {
         this.score = 0;
         this.parallax.reset();
+        this.gameSpeed = 3; // Resetear velocidad a la inicial
+        this.timer.reset(); // Resetear el timer
+        this.parallax.setSpeed(this.gameSpeed); // Aplicar velocidad inicial
         this.player.reset();
         this.collisionDetected = false;
         this.start();
@@ -131,7 +192,7 @@ class Game {
             return true;
         }
 
-        const tuboLayer = this.parallax.layers[1];
+        const tuboLayer = this.parallax.layers[3];
 
         if (!tuboLayer.image || tuboLayer.image.width === 0) {
             this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
@@ -234,7 +295,7 @@ class Game {
     }
 
     debugDrawHole() {
-        const tuboLayer = this.parallax.layers[1];
+        const tuboLayer = this.parallax.layers[3];
         if (!tuboLayer.image || tuboLayer.image.width === 0) return;
 
         const porcentajeTuboSuperior = 0.365;
@@ -286,7 +347,7 @@ class Game {
      * Verifica si el jugador pasó completamente un tubo y actualiza el puntaje
      */
     checkScore() {
-        const tuboLayer = this.parallax.layers[1];
+        const tuboLayer = this.parallax.layers[3];
         if (!tuboLayer.image || tuboLayer.image.width === 0) return;
 
         const playerX = this.player.x;
