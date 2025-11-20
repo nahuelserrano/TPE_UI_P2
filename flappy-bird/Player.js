@@ -38,7 +38,7 @@ export class Player {
         // === ESTADOS ===
         this.isSpinning = false;     // ¿Está en voltereta?
         this.fallTime = 0;           // Tiempo cayendo (para activar voltereta)
-        this.spinThreshold = 0.5;    // Segundos cayendo antes de voltereta (ajustable)
+        this.spinThreshold = 0.2;    // Segundos cayendo antes de voltereta (ajustable)
 
         this.currentSprite = this.normalSprite;
         this.spriteLoaded = false;
@@ -56,15 +56,7 @@ export class Player {
      * Puedes usar el mismo sprite rotado o 4-6 sprites diferentes
      */
     loadSpinSprites() {
-        // OPCIÓN A: Si tienes sprites diferentes de voltereta
-        // const spritePaths = [
-        //     '../imagenes/flappy-bird/stich-spin-1.png',
-        //     '../imagenes/flappy-bird/stich-spin-2.png',
-        //     '../imagenes/flappy-bird/stich-spin-3.png',
-        //     '../imagenes/flappy-bird/stich-spin-4.png',
-        // ];
 
-        // OPCIÓN B: Usar el sprite de voltereta 6 veces (para testing)
         const spritePaths = Array(6).fill('../imagenes/flappy-bird/stich-sp-voltereta.png');
 
         return spritePaths.map((path, index) => {
@@ -124,7 +116,7 @@ export class Player {
         const targetRotation = this.velocityY * (this.maxRotation / 15);
 
         // Suavizar la rotación (interpolación)
-        const rotationSpeed = 0.1; // Qué tan rápido rota (0.1 = suave)
+        const rotationSpeed = 0.2; // Qué tan rápido rota (0.1 = suave)
         this.rotation += (targetRotation - this.rotation) * rotationSpeed;
 
         // Limitar rotación máxima
