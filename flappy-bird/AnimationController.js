@@ -1,47 +1,44 @@
-import { Timer } from './timer.js';
-
+/**
+ * Controlador de animaciones por frames
+ */
 export class AnimationController {
     /**
-     * Controlador de animaciones por frames
      * @param {Array<Image>} sprites - Array de imágenes para la animación
-     * @param {number} frameDuration - Duración de cada frame en SEGUNDOS
-     * @param {boolean} loop - Si la animación se repite (true) o se detiene al final (false)
+     * @param {number} duracionFrame - Duración de cada frame en SEGUNDOS
+     * @param {boolean} loop - Si la animación se repite
      */
-    constructor(sprites, frameDuration = 0.1, loop = false) {
+    constructor(sprites, duracionFrame = 0.1, loop = false) {
         // Sprites de la animación
         this.sprites = sprites;
 
         // Configuración
-        this.frameDuration = frameDuration; // Duración de cada frame (en segundos)
-        this.loop = loop;                   // ¿Se repite la animación?
+        this.duracionFrame = duracionFrame;  // Duración de cada frame (segundos)
+        this.loop = loop;
 
         // Control de frames
-        this.currentFrame = 0;              // Frame actual (índice del array)
-        this.isPlaying = false;             // ¿Está reproduciéndose?
-        this.hasFinished = false;           // ¿Terminó la animación?
+        this.frameActual = 0;
+        this.estaReproduciendo = false;
+        this.haTerminado = false;
 
-        // Timer interno para controlar el tiempo entre frames
-        this.timer = new Timer(frameDuration);
-
-        console.log(`AnimationController creado: ${sprites.length} frames, ${frameDuration}s por frame, loop: ${loop}`);
+        // Control de tiempo
+        this.tiempoAcumulado = 0;            // Tiempo transcurrido desde el último cambio de frame
     }
 
     /**
      * Inicia la animación desde el principio
      */
     play() {
-        this.isPlaying = true;
-        this.hasFinished = false;
-        this.currentFrame = 0;
-        this.timer.reset();
-        console.log('Animación iniciada');
+        this.estaReproduciendo = true;
+        this.haTerminado = false;
+        this.frameActual = 0;
+        this.tiempoAcumulado = 0;
     }
 
     /**
      * Pausa la animación
      */
     pause() {
-        this.isPlaying = false;
+        this.estaReproduciendo = false;
         console.log('Animación pausada');
     }
 
@@ -49,37 +46,39 @@ export class AnimationController {
      * Detiene y resetea la animación
      */
     stop() {
-        this.isPlaying = false;
-        this.hasFinished = false;
-        this.currentFrame = 0;
-        this.timer.reset();
+        this.estaReproduciendo = false;
+        this.haTerminado = false;
+        this.frameActual = 0;
+        this.tiempoAcumulado = 0;
         console.log('Animación detenida');
     }
 
     /**
      * Actualiza la animación (llamar en cada frame del juego)
+     * @param {number} deltaTime - Tiempo transcurrido desde el último frame (en segundos)
      */
-    update() {
+    update(deltaTime = 1/60) {
         // Si no está reproduciéndose, no hacer nada
-        if (!this.isPlaying) return;
+        if (!this.estaReproduciendo) return;
 
-        // Actualizar el timer
-        const shouldAdvance = this.timer.update();
+        // Acumular tiempo
+        this.tiempoAcumulado += deltaTime;
 
-        // Si el timer notifica, avanzar al siguiente frame
-        if (shouldAdvance) {
-            this.currentFrame++;
+        // ¿Es momento de avanzar al siguiente frame?
+        if (this.tiempoAcumulado >= this.duracionFrame) {
+            this.tiempoAcumulado = 0; // Resetear contador
+            this.frameActual++;
 
             // ¿Llegamos al final de la secuencia?
-            if (this.currentFrame >= this.sprites.length) {
+            if (this.frameActual >= this.sprites.length) {
                 if (this.loop) {
                     // Si hace loop, volver al principio
-                    this.currentFrame = 0;
+                    this.frameActual = 0;
                 } else {
-                    // Si no hace loop, detener la animación
-                    this.currentFrame = this.sprites.length - 1; // Quedarse en el último frame
-                    this.isPlaying = false;
-                    this.hasFinished = true;
+                    // Si no hace loop, quedarse en el último frame y detener
+                    this.frameActual = this.sprites.length - 1;
+                    this.estaReproduciendo = false;
+                    this.haTerminado = true;
                     console.log('Animación completada');
                 }
             }
@@ -90,23 +89,23 @@ export class AnimationController {
      * Obtiene el sprite actual que debe dibujarse
      * @returns {Image} - Imagen del frame actual
      */
-    getCurrentSprite() {
-        return this.sprites[this.currentFrame];
+    getSpriteActual() {
+        return this.sprites[this.frameActual];
     }
 
     /**
      * Verifica si la animación terminó (solo relevante si loop = false)
      * @returns {boolean}
      */
-    isFinished() {
-        return this.hasFinished;
+    haFinalizado() {
+        return this.haTerminado;
     }
 
     /**
      * Obtiene el progreso de la animación (0.0 a 1.0)
      * @returns {number}
      */
-    getProgress() {
-        return this.currentFrame / (this.sprites.length - 1);
+    obtenerProgreso() {
+        return this.frameActual / (this.sprites.length - 1);
     }
 }

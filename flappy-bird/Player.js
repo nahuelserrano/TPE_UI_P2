@@ -132,7 +132,7 @@ export class Player {
      * Gestiona el estado de caída y activa la voltereta
      */
     updateFallState() {
-        const isFalling = this.velocityY > 1; // Cayendo rápido
+        const isFalling = this.velocityY > 3; // Cayendo rápido
 
         if (isFalling) {
             // Incrementar tiempo de caída
@@ -188,7 +188,7 @@ export class Player {
         if (this.isSpinning) {
             // Si está en voltereta, actualizar animación
             this.spinAnimation.update();
-            this.currentSprite = this.spinAnimation.getCurrentSprite();
+            this.currentSprite = this.spinAnimation.getSpriteActual();
         } else {
             // Si no, usar sprite normal
             this.currentSprite = this.normalSprite;
