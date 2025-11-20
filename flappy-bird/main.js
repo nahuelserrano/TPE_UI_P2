@@ -12,13 +12,12 @@ class Game {
         this.score = 0;
 
         this.gameSpeed = 3;           // Velocidad inicial
-        this.speedIncrement = 0.5;    // Cuánto aumenta
-        this.maxSpeed = 8;            // Límite máximo
+        this.speedIncrement = 1;    // Cuánto aumenta
+        this.maxSpeed = 10;            // Límite máximo
 
         this.animations = [];
 
-        // (incrementa 0.5 cada 10 segundos)
-        this.timer = new Timer(10);
+        this.timer = new Timer(8);
 
         this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
         this.player = new Player(30, canvas.height / 2, canvas.height);
@@ -140,7 +139,6 @@ class Game {
      */
     drawTimer() {
         const time = this.timer.getFormattedTime();
-        const increments = this.speedIncrement;
 
         // Timer principal
         ctx.font = 'bold 40px Arial';
@@ -148,11 +146,6 @@ class Game {
         ctx.textAlign = 'right';
         ctx.textBaseline = 'top';
         ctx.fillText(time, canvas.width - 30, 20);
-
-        // Nivel de dificultad
-        ctx.font = '20px Arial';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`Nivel ${increments + 1}`, canvas.width - 30, 70);
 
         // Velocidad actual (opcional, para debug)
         ctx.font = '16px Arial';

@@ -7,12 +7,13 @@ export class Parallax {
          this.canvasHeight = canvasHeight;
          this.baseSpeed = baseSpeed;
 
+         // this.tubeDistance = canvasWidth / 2;
+
          const layerImage = [
              "../imagenes/flappy-bird/fondo_playa.jpg", //fondo completo
              "../imagenes/flappy-bird/nubes.png",
              "../imagenes/flappy-bird/viento.png",
              "../imagenes/flappy-bird/tubo.png"//tubos
-
          ]
 
          this.layers = [
@@ -112,12 +113,52 @@ export class Parallax {
                          const max_y = -padding;
                          const min_y = -(tubeHeight - canvasHeight - padding);
 
-                         layer.next_y = Math.floor(Math.random() * (max_y - min_y + 1)) + min_y;
+                         layer.next_y = this.generateRandomTubePosition(layer);
                      }
                  }
              }
          });
      }
+
+    /**
+     * Genera una posición Y aleatoria para el tubo
+     * @param {Object} layer - La capa del tubo
+     * @returns {number} - Posición Y calculada
+     */
+    generateRandomTubePosition(layer) {
+        const tubeHeight = layer.scaledHeight;
+        const canvasHeight = this.canvasHeight;
+
+        // Porcentajes de la imagen del tubo
+        const porcentajeTuboSuperior = 0.365;  // 36.5% tubo superior
+        const porcentajeHueco = 0.23;          // 23% hueco
+
+        // Calcular altura del hueco en píxeles
+        const alturaHueco = tubeHeight * porcentajeHueco;
+
+        // Definir margen de seguridad (para que el hueco nunca salga del canvas)
+        const margenSuperior = 100;  // Píxeles mínimos desde el techo
+        const margenInferior = 100;  // Píxeles mínimos desde el suelo
+
+        // Calcular posición más alta permitida (hueco cerca del techo)
+        // El hueco debe empezar al menos a 'margenSuperior' del techo
+        const posicionMasAlta = -(tubeHeight * porcentajeTuboSuperior) + margenSuperior;
+
+        // Calcular posición más baja permitida (hueco cerca del suelo)
+        // El hueco debe terminar al menos a 'margenInferior' del suelo
+        const alturaTuboSuperior = tubeHeight * porcentajeTuboSuperior;
+        const posicionMasBaja = -(alturaTuboSuperior - (canvasHeight - margenInferior - alturaHueco));
+
+        // Generar posición aleatoria en el rango completo
+        const rango = posicionMasAlta - posicionMasBaja;
+        const posicionAleatoria = posicionMasBaja + (Math.random() * rango);
+
+        // Debug (opcional)
+        console.log(`Rango Y: [${posicionMasBaja.toFixed(0)}, ${posicionMasAlta.toFixed(0)}]`);
+        console.log(`Nueva posición: ${posicionAleatoria.toFixed(0)}`);
+
+        return posicionAleatoria;
+    }
 
 
      /**

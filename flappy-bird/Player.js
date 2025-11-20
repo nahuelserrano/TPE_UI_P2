@@ -1,115 +1,251 @@
-// ============================================
-// CLASE JUGADOR
-// ============================================
+import { AnimationController } from './animationController.js';
+
 export class Player {
-    /**
-     * Constructor del jugador
-     * @param {number} x - Posición inicial en X
-     * @param {number} y - Posición inicial en Y
-     * @param {number} canvasHeight - Altura del canvas (para límites)
-     */
     constructor(x, y, canvasHeight) {
         // === POSICIÓN ===
-        this.x = x;              // Posición horizontal (fija, no se mueve)
-        this.y = y;              // Posición vertical (cambia con gravedad)
+        this.x = x;
+        this.y = y;
 
         // === FÍSICA ===
-        this.velocityY = 0;      // Velocidad actual en Y (empieza en 0)
-        this.gravity = 0.5;      // Fuerza de gravedad (cuánto acelera la caída)
-        this.jumpForce = -8;    // Fuerza del salto (negativo = hacia arriba)
-        this.maxVelocity = 25;   // Velocidad máxima de caída (evita caer muy rápido)
+        this.velocityY = 0;
+        this.gravity = 0.5;
+        this.jumpForce = -8;
+        this.maxVelocity = 25;
 
         // === VISUAL ===
-        this.radius = 20;        // Tamaño del círculo
-        this.color = '#FF0000';  // Color rojo
-
-        this.sprite = new Image();
-        this.sprite.src = '../imagenes/flappy-bird/stich-sp-default.png';
-        this.spriteLoaded = false; // Flag para saber si ya cargó
-
-        this.sprite.onload = () => {
-            this.spriteLoaded = true;
-            console.log('Sprite de Stitch cargado correctamente');
-        };
-
-        this.sprite.onerror = () => {
-            console.error('Error al cargar el sprite de Stitch');
-        };
-
-        // === LÍMITES ===
+        this.radius = 25;
+        this.color = '#FF0000';
         this.canvasHeight = canvasHeight;
 
-        console.log('🔴 Jugador creado en posición:', this.x, this.y);
+        // === ROTACIÓN ===
+        this.rotation = 0;           // Ángulo actual en radianes
+        this.maxRotation = Math.PI / 3; // 45 grados máximo hacia arriba/abajo
+
+        // === SPRITES ===
+        this.normalSprite = new Image();
+        this.normalSprite.src = '../imagenes/flappy-bird/stich-sp-default.png';
+
+        // Sprites de voltereta (usar 4-6 frames para efecto rápido)
+        this.spinSprites = this.loadSpinSprites();
+
+        // === CONTROLADOR DE VOLTERETA ===
+        this.spinAnimation = new AnimationController(
+            this.spinSprites,
+            0.05,  // 50ms por frame = MUY RÁPIDO (voltereta veloz)
+            true   // Loop = se repite mientras cae
+        );
+
+        // === ESTADOS ===
+        this.isSpinning = false;     // ¿Está en voltereta?
+        this.fallTime = 0;           // Tiempo cayendo (para activar voltereta)
+        this.spinThreshold = 0.5;    // Segundos cayendo antes de voltereta (ajustable)
+
+        this.currentSprite = this.normalSprite;
+        this.spriteLoaded = false;
+
+        this.normalSprite.onload = () => {
+            this.spriteLoaded = true;
+            console.log('✅ Sprite normal cargado');
+        };
+
+        console.log('🎮 Jugador con sistema de rotación creado');
     }
 
     /**
-     * Actualiza la física del jugador cada frame
+     * Carga los sprites de la voltereta
+     * Puedes usar el mismo sprite rotado o 4-6 sprites diferentes
      */
+    loadSpinSprites() {
+        // OPCIÓN A: Si tienes sprites diferentes de voltereta
+        // const spritePaths = [
+        //     '../imagenes/flappy-bird/stich-spin-1.png',
+        //     '../imagenes/flappy-bird/stich-spin-2.png',
+        //     '../imagenes/flappy-bird/stich-spin-3.png',
+        //     '../imagenes/flappy-bird/stich-spin-4.png',
+        // ];
+
+        // OPCIÓN B: Usar el sprite de voltereta 6 veces (para testing)
+        const spritePaths = Array(6).fill('../imagenes/flappy-bird/stich-sp-voltereta.png');
+
+        return spritePaths.map((path, index) => {
+            const sprite = new Image();
+            sprite.src = path;
+            sprite.onload = () => {
+                console.log(`Sprite de voltereta ${index + 1} cargado`);
+            };
+            return sprite;
+        });
+    }
+
     update() {
-        // En cada frame, la gravedad suma velocidad hacia abajo
+        // === FÍSICA ===
         this.velocityY += this.gravity;
 
-        // LIMITAR VELOCIDAD MÁXIMA
-        // Si cae muy rápido, limitamos la velocidad
         if (this.velocityY > this.maxVelocity) {
             this.velocityY = this.maxVelocity;
         }
 
-        // La velocidad cambia la posición
         this.y += this.velocityY;
 
-        // COLISIÓN CON EL SUELO
-        // Si toca el fondo del canvas, detenerlo
+        // Colisión con suelo
         if (this.y + this.radius > this.canvasHeight) {
-            this.y = this.canvasHeight - this.radius; // Pegarlo al suelo
-            this.velocityY = 0; // Detener la caída
+            this.y = this.canvasHeight - this.radius;
+            this.velocityY = 0;
+            this.resetFallState(); // Resetear estado de caída
         }
 
-        // COLISIÓN CON EL TECHO
-        // Si toca el techo del canvas, detenerlo
+        // Colisión con techo
         if (this.y - this.radius < 0) {
-            this.y = this.radius; // Pegarlo al techo
-            this.velocityY = 0; // Detener el movimiento hacia arriba
+            this.y = this.radius;
+            this.velocityY = 0;
+        }
+
+        // === ACTUALIZAR ROTACIÓN Y ANIMACIÓN ===
+        this.updateRotation();
+        this.updateFallState();
+        this.updateSprite();
+    }
+
+    /**
+     * Actualiza la rotación del sprite según la velocidad
+     * Rotación suave basada en velocidad Y
+     */
+    updateRotation() {
+        // Si está en voltereta, la rotación la maneja la animación
+        if (this.isSpinning) {
+            return;
+        }
+
+        // Calcular rotación deseada según velocidad
+        // velocityY negativa (subiendo) → rotación negativa (hacia arriba)
+        // velocityY positiva (bajando) → rotación positiva (hacia abajo)
+
+        // Mapear velocidad a rotación (-8 a +15 → -45° a +45°)
+        const targetRotation = this.velocityY * (this.maxRotation / 15);
+
+        // Suavizar la rotación (interpolación)
+        const rotationSpeed = 0.1; // Qué tan rápido rota (0.1 = suave)
+        this.rotation += (targetRotation - this.rotation) * rotationSpeed;
+
+        // Limitar rotación máxima
+        if (this.rotation > this.maxRotation) {
+            this.rotation = this.maxRotation;
+        }
+        if (this.rotation < -this.maxRotation) {
+            this.rotation = -this.maxRotation;
         }
     }
 
     /**
-     * Hace que el jugador salte (impulso hacia arriba)
+     * Gestiona el estado de caída y activa la voltereta
      */
-    jump() {
-        // Aplicar una velocidad negativa (hacia arriba)
-        this.velocityY = this.jumpForce;
+    updateFallState() {
+        const isFalling = this.velocityY > 1; // Cayendo rápido
 
-        console.log('⬆️ Salto! velocityY:', this.velocityY);
+        if (isFalling) {
+            // Incrementar tiempo de caída
+            this.fallTime += 1 / 60; // Asumiendo 60 FPS
+
+            // Si llevamos suficiente tiempo cayendo, activar voltereta
+            if (this.fallTime >= this.spinThreshold && !this.isSpinning) {
+                this.startSpin();
+            }
+        } else {
+            // Si no está cayendo rápido, resetear
+            if (this.isSpinning) {
+                this.stopSpin();
+            }
+            this.fallTime = 0;
+        }
     }
 
     /**
-     * Dibuja el jugador en el canvas
-     * @param {CanvasRenderingContext2D} ctx - Contexto del canvas
+     * Inicia la voltereta loca
+     */
+    startSpin() {
+        this.isSpinning = true;
+        this.spinAnimation.play();
+        this.rotation = 0; // Resetear rotación suave
+        console.log('¡Voltereta activada!');
+    }
+
+    /**
+     * Detiene la voltereta
+     */
+    stopSpin() {
+        this.isSpinning = false;
+        this.spinAnimation.stop();
+        this.currentSprite = this.normalSprite;
+        console.log('Voltereta detenida');
+    }
+
+    /**
+     * Resetea el estado de caída (al tocar suelo o saltar)
+     */
+    resetFallState() {
+        this.fallTime = 0;
+        if (this.isSpinning) {
+            this.stopSpin();
+        }
+    }
+
+    /**
+     * Gestiona qué sprite mostrar
+     */
+    updateSprite() {
+        if (this.isSpinning) {
+            // Si está en voltereta, actualizar animación
+            this.spinAnimation.update();
+            this.currentSprite = this.spinAnimation.getCurrentSprite();
+        } else {
+            // Si no, usar sprite normal
+            this.currentSprite = this.normalSprite;
+        }
+    }
+
+    jump() {
+        this.velocityY = this.jumpForce;
+        this.resetFallState(); // Resetear estado de caída al saltar
+        console.log('Salto - velocityY:', this.velocityY);
+    }
+
+    /**
+     * Dibuja el jugador con rotación
      */
     draw(ctx) {
-        // Si el sprite ya cargó, dibujarlo
         if (this.spriteLoaded) {
-            const size = 100; // Tamaño del sprite
+            const size = 125;
             const half = size / 2;
 
-            // Dibuja la imagen CENTRADA en la posición del jugador
-            // Restamos la mitad del tamaño para que el centro esté en (this.x, this.y)
+            // Guardar el estado del contexto
+            ctx.save();
+
+            // Mover el origen al centro del jugador
+            ctx.translate(this.x, this.y);
+
+            // Aplicar rotación (solo si NO está en voltereta)
+            if (!this.isSpinning) {
+                ctx.rotate(this.rotation);
+            } else {
+                // En voltereta, rotar según el frame actual
+                const spinRotation = (this.spinAnimation.currentFrame / this.spinAnimation.sprites.length) * Math.PI * 2;
+                ctx.rotate(spinRotation);
+            }
+
+            // Dibujar sprite centrado en el origen
             ctx.drawImage(
-                this.sprite,           // Imagen a dibujar
-                this.x - half,         // Posición X (centrada)
-                this.y - half,         // Posición Y (centrada)
-                size,                  // Ancho
-                size                   // Alto
+                this.currentSprite,
+                -half,  // Centrado en X
+                -half,  // Centrado en Y
+                size,
+                size
             );
 
-            // ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
-            // ctx.beginPath();
-            // ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            // ctx.stroke();
+            // Restaurar el estado del contexto
+            ctx.restore();
 
         } else {
-            // Mientras carga, mostrar el círculo rojo temporal
+            // Círculo temporal
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
