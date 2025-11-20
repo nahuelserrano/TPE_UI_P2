@@ -1,63 +1,66 @@
+/**
+ * Timer para medir tiempo transcurrido y notificar en intervalos
+ */
 export class Timer {
-    constructor(notificationInterval = 10) {
+    constructor(intervaloNotificacion = 10) {
         // Tiempo transcurrido en segundos
-        this.elapsedTime = 0;
+        this.tiempoTranscurrido = 0;
 
         // Última vez que se registró un frame
-        this.lastFrameTime = Date.now();
+        this.ultimoFrame = Date.now();
 
         // Cada cuántos segundos notifica
-        this.notificationInterval = notificationInterval;
+        this.intervaloNotificacion = intervaloNotificacion;
 
         // Próximo momento de notificación
-        this.nextNotificationAt = notificationInterval;
+        this.proximaNotificacion = intervaloNotificacion;
 
-        console.log(`Timer creado: notifica cada ${notificationInterval}s`);
+        console.log(`Timer creado: notifica cada ${intervaloNotificacion}s`);
     }
 
     /**
-     * Actualiza el timer
+     * Actualiza el timer y calcula deltaTime
      * @returns {boolean} - True si llegó al intervalo de notificación
      */
     update() {
-        const currentTime = Date.now();
-        const deltaTime = (currentTime - this.lastFrameTime) / 1000;
-        this.lastFrameTime = currentTime;
+        const tiempoActual = Date.now();
+        const deltaTime = (tiempoActual - this.ultimoFrame) / 1000;
+        this.ultimoFrame = tiempoActual;
 
-        this.elapsedTime += deltaTime;
+        this.tiempoTranscurrido += deltaTime;
 
-        // ¿Llegamos al intervalo?
-        if (this.elapsedTime >= this.nextNotificationAt) {
-            this.nextNotificationAt += this.notificationInterval;
-            return true; // Notificar al Game
+        // Verificar si llegamos al intervalo
+        if (this.tiempoTranscurrido >= this.proximaNotificacion) {
+            this.proximaNotificacion += this.intervaloNotificacion;
+            return true;
         }
 
         return false;
     }
 
     /**
-     * Obtiene el tiempo en segundos (entero)
+     * Obtiene el tiempo en segundos
      */
-    getTimeInSeconds() {
-        return Math.floor(this.elapsedTime);
+    getTiempoSegundos() {
+        return Math.floor(this.tiempoTranscurrido);
     }
 
     /**
      * Obtiene el tiempo formateado MM:SS
      */
-    getFormattedTime() {
-        const totalSeconds = Math.floor(this.elapsedTime);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    getTiempoFormateado() {
+        const totalSegundos = Math.floor(this.tiempoTranscurrido);
+        const minutos = Math.floor(totalSegundos / 60);
+        const segundos = totalSegundos % 60;
+        return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
     }
 
     /**
-     * Reinicia el timer
+     * Reinicia el timer a cero
      */
     reset() {
-        this.elapsedTime = 0;
-        this.lastFrameTime = Date.now();
-        this.nextNotificationAt = this.notificationInterval;
+        this.tiempoTranscurrido = 0;
+        this.ultimoFrame = Date.now();
+        this.proximaNotificacion = this.intervaloNotificacion;
     }
 }

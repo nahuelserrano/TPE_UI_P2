@@ -1,31 +1,53 @@
 import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation} from "./animations.js";
-import { Timer } from './timer.js';
+import { Timer } from './Timer.js';
+import {Parallax} from './Parallax.js';
+import { Player } from './Player.js';
+
+// ====================================
+// CONSTANTES DE CONFIGURACIÓN
+// ====================================
+
+// Calibración de colisiones (específico para la imagen 'tubo.png')
+const COLISION = {
+    PORCENTAJE_TUBO_SUPERIOR: 0.365,  // 36.5% de la imagen es el tubo superior
+    PORCENTAJE_HUECO: 0.23,            // 23% de la imagen es el espacio libre
+    OFFSET_INICIO_TUBO: 170,           // Píxeles desde el borde izquierdo donde empieza la colisión
+    PORCENTAJE_ANCHO_COLISION: 0.65    // 65% del ancho del tubo es colisionable
+};
+
+// Configuración del juego
+const CONFIG = {
+    VELOCIDAD_INICIAL: 3,
+    INCREMENTO_VELOCIDAD: 1,
+    VELOCIDAD_MAXIMA: 10,
+    INTERVALO_DIFICULTAD: 8,           // Segundos entre incrementos
+    DURACION_MENSAJE_COLISION: 2000    // Milisegundos
+};
+
+// ====================================
+// CLASE GAME
+// ====================================
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-import {Parallax} from './parallax.js';
-import { Player } from './player.js';
 
 class Game {
     constructor() {
-        this.isRunning = false;
-        this.score = 0;
+        this.estaEnEjecucion = false;
+        this.puntos = 0;
 
-        this.gameSpeed = 3;           // Velocidad inicial
-        this.speedIncrement = 1;    // Cuánto aumenta
-        this.maxSpeed = 10;            // Límite máximo
+        // Sistema de velocidad
+        this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
 
-        this.animations = [];
-
-        this.timer = new Timer(8);
-
-        this.parallax = new Parallax(canvas.width, canvas.height, this.gameSpeed);
+        // Sistemas del juego
+        this.animaciones = [];
+        this.timer = new Timer(CONFIG.INTERVALO_DIFICULTAD);
+        this.parallax = new Parallax(canvas.width, canvas.height, this.velocidadActual);
         this.player = new Player(30, canvas.height / 2, canvas.height);
 
         // Sistema de colisión temporal
-        this.collisionDetected = false;
-        this.collisionTimer = 0;
-        this.collisionDuration = 2000; // Duración en milisegundos (2 segundos)
+        this.colisionDetectada = false;
+        this.tiempoColision = 0;
 
         console.log('Juego inicializado');
     }
@@ -42,14 +64,14 @@ class Game {
     }
 
     start() {
-        this.isRunning = true;
-        this.timer.reset(); // Resetear el timer al iniciar
+        this.estaEnEjecucion = true;
+        this.timer.reset();
         console.log('Juego iniciado');
         this.gameLoop();
     }
 
     gameLoop() {
-        if (!this.isRunning) return;
+        if (!this.estaEnEjecucion) return;
 
         this.update();
         this.draw();
@@ -58,184 +80,192 @@ class Game {
     }
 
     update() {
-        // El timer solo notifica intervalos
+        // Calcular deltaTime para animaciones precisas
+        const deltaTime = 1/60;
 
-        const intervalReached = this.timer.update();
-        // Si el timer indica que debe aumentar la dificultad
-        if (intervalReached) {
-            this.increaseDifficulty();
+        // Verificar si es momento de aumentar dificultad
+        const intervaloAlcanzado = this.timer.update();
+        if (intervaloAlcanzado) {
+            this.aumentarDificultad();
         }
 
+        // Actualizar sistemas principales
         this.parallax.update();
-        this.player.update();
+        this.player.update(deltaTime);
 
-        if (this.checkCollision()) {
-            // Activar el estado de colisión temporal
-            if (!this.collisionDetected) {
-                this.collisionDetected = true;
-                this.collisionTimer = Date.now();
+        // Sistema de colisión temporal
+        if (this.verificarColisiones()) {
+            if (!this.colisionDetectada) {
+                this.colisionDetectada = true;
+                this.tiempoColision = Date.now();
                 console.log('Colisión detectada');
             }
         }
 
-        // Desactivar el mensaje después del tiempo establecido
-        if (this.collisionDetected) {
-            if (Date.now() - this.collisionTimer > this.collisionDuration) {
-                this.collisionDetected = false;
+        // Desactivar mensaje de colisión después del tiempo establecido
+        if (this.colisionDetectada) {
+            if (Date.now() - this.tiempoColision > CONFIG.DURACION_MENSAJE_COLISION) {
+                this.colisionDetectada = false;
             }
         }
 
-        // Actualizar todas las animaciones activas
-        this.animations.forEach(anim => anim.update());
+        // Actualizar animaciones activas
+        this.animaciones.forEach(anim => anim.update());
+        this.animaciones = this.animaciones.filter(anim => !anim.isFinished);
 
-        // Eliminar animaciones terminadas
-        this.animations = this.animations.filter(anim => !anim.isFinished);
-
-        this.checkScore();
+        // Verificar puntaje
+        this.verificarPuntos();
     }
 
-    increaseDifficulty() {
-        if (this.gameSpeed >= this.maxSpeed) {
+    aumentarDificultad() {
+        if (this.velocidadActual >= CONFIG.VELOCIDAD_MAXIMA) {
             console.log('Velocidad máxima alcanzada');
             return;
         }
 
-        // Incrementar velocidad
-        this.gameSpeed += this.speedIncrement;
+        this.velocidadActual += CONFIG.INCREMENTO_VELOCIDAD;
+        this.parallax.setSpeed(this.velocidadActual);
 
-        // Sincronizar con Parallax
-        this.parallax.setSpeed(this.gameSpeed);
-
-        console.log(`Dificultad aumentada! Velocidad: ${this.gameSpeed.toFixed(1)}`);
+        console.log(`Dificultad aumentada - Velocidad: ${this.velocidadActual.toFixed(1)}`);
     }
 
     draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Dibujar sistemas principales
         this.parallax.draw(ctx);
         this.player.draw(ctx);
 
-        // Mostrar mensaje de colisión temporal
-        if (this.collisionDetected) {
-            this.showCollisionMessage();
+        // Mensaje de colisión temporal
+        if (this.colisionDetectada) {
+            this.mostrarMensajeColision();
         }
 
-        this.animations.forEach(anim => anim.draw(ctx));
+        // Animaciones activas
+        this.animaciones.forEach(anim => anim.draw(ctx));
 
-        this.drawTimer();
+        // UI
+        this.dibujarTimer();
+        this.dibujarPuntos();
 
-
-        ctx.font = 'bold 30px Arial';
-        ctx.fillStyle = '#FF00FF';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText("Puntos " + this.score, 75, 35, 200)
-
-        // this.debugDrawHole();
+        // Debug (descomentar si es necesario)
+        // this.dibujarDebugHueco();
     }
 
-    /**
-     * Dibuja el timer en pantalla
-     */
-    drawTimer() {
-        const time = this.timer.getFormattedTime();
+    dibujarTimer() {
+        const tiempo = this.timer.getTiempoFormateado();
 
         // Timer principal
         ctx.font = 'bold 40px Arial';
         ctx.fillStyle = '#00FFFF';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'top';
-        ctx.fillText(time, canvas.width - 30, 20);
+        ctx.fillText(tiempo, canvas.width - 30, 20);
 
-        // Velocidad actual (opcional, para debug)
+        // Velocidad actual
         ctx.font = '16px Arial';
         ctx.fillStyle = '#AAAAAA';
-        ctx.fillText(`Vel: ${this.gameSpeed.toFixed(1)}`, canvas.width - 30, 100);
+        ctx.fillText(`Vel: ${this.velocidadActual.toFixed(1)}`, canvas.width - 30, 100);
+    }
+
+    dibujarPuntos() {
+        ctx.font = 'bold 30px Arial';
+        ctx.fillStyle = '#FF00FF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`Puntos: ${this.puntos}`, 75, 35);
     }
 
     pause() {
-        this.isRunning = false;
+        this.estaEnEjecucion = false;
         console.log('Juego pausado');
     }
 
     restart() {
-        this.score = 0;
+        this.puntos = 0;
+        this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
         this.parallax.reset();
-        this.gameSpeed = 3; // Resetear velocidad a la inicial
-        this.timer.reset(); // Resetear el timer
-        this.parallax.setSpeed(this.gameSpeed); // Aplicar velocidad inicial
+        this.parallax.setSpeed(this.velocidadActual);
+        this.timer.reset();
         this.player.reset();
-        this.collisionDetected = false;
+        this.colisionDetectada = false;
+        this.animaciones = [];
         this.start();
     }
 
-    checkCollision() {
-        let posJugador = this.player.y;
-        let tamanioJugador = this.player.radius;
+    // ====================================
+    // SISTEMA DE COLISIONES
+    // ====================================
+
+    verificarColisiones() {
+        const posJugador = this.player.y;
+        const radioJugador = this.player.radio;
 
         // Colisión con techo
-        if (posJugador - tamanioJugador <= 0) {
-            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
+        if (posJugador - radioJugador <= 0) {
+            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
         // Colisión con suelo
-        if (posJugador + tamanioJugador >= canvas.height) {
-            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
+        if (posJugador + radioJugador >= canvas.height) {
+            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
-        const tuboLayer = this.parallax.layers[3];
+        // Colisión con tubos
+        const capasTubos = this.parallax.layers[3];
 
-        if (!tuboLayer.image || tuboLayer.image.width === 0) {
-            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
+        if (!capasTubos.image || capasTubos.image.width === 0) {
             return false;
         }
 
         // Verificar tubo principal
-        if (this.checkTubeCollision(tuboLayer, tuboLayer.x, tuboLayer.y)) {
-            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
+        if (this.verificarColisionTubo(capasTubos, capasTubos.x, capasTubos.y)) {
+            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
-        // Verificar tubo copia
-        if (this.checkTubeCollision(tuboLayer, tuboLayer.x + canvas.width, tuboLayer.next_y)) {
-            this.animations.push(new ExplosionAnimation(this.player.x, this.player.y));
+        // Verificar tubo secundario
+        if (this.verificarColisionTubo(capasTubos, capasTubos.x + canvas.width, capasTubos.next_y)) {
+            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
             return true;
         }
 
         return false;
     }
 
-    checkTubeCollision(tuboLayer, tuboX, tuboY) {
-        const player = this.player;
+    verificarColisionTubo(capaTubo, tuboX, tuboY) {
+        const jugador = this.player;
+
+        // Calcular límites del tubo
+        const inicioTubo = tuboX + COLISION.OFFSET_INICIO_TUBO;
+        const finTubo = tuboX + (capaTubo.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
 
         // Verificar si el jugador está en el rango horizontal del tubo
-        const enRangoX =
-            player.x + player.radius > this.calcularInicioTubos(tuboX) &&
-            player.x - player.radius < this.calcularFinTubos(tuboX, tuboLayer.scaledWidth);
+        const estaEnRangoHorizontal =
+            jugador.x + jugador.radio > inicioTubo &&
+            jugador.x - jugador.radio < finTubo;
 
-        if (!enRangoX) {
+        if (!estaEnRangoHorizontal) {
             return false;
         }
 
-        const porcentajeTuboSuperior = 0.365;
-        const porcentajeHueco = 0.23;
-        const imagenCompleta = tuboLayer.scaledHeight;
-
         // Calcular límites del hueco
-        const finTuboSuperior = tuboY + (imagenCompleta * porcentajeTuboSuperior);
-        const inicioTuboInferior = finTuboSuperior + (imagenCompleta * porcentajeHueco);
+        const alturaImagenCompleta = capaTubo.scaledHeight;
+        const finTuboSuperior = tuboY + (alturaImagenCompleta * COLISION.PORCENTAJE_TUBO_SUPERIOR);
+        const inicioTuboInferior = finTuboSuperior + (alturaImagenCompleta * COLISION.PORCENTAJE_HUECO);
 
-        const bordeSupJugador = player.y - player.radius;
-        const bordeInfJugador = player.y + player.radius;
+        // Bordes del jugador
+        const bordeSupJugador = jugador.y - jugador.radio;
+        const bordeInfJugador = jugador.y + jugador.radio;
 
-        // Verificar si está dentro del hueco
-        const dentroDelHueco =
+        // Verificar si está dentro del hueco (seguro)
+        const estaDentroDelHueco =
             bordeSupJugador >= finTuboSuperior &&
             bordeInfJugador <= inicioTuboInferior;
 
-        if (dentroDelHueco) {
+        if (estaDentroDelHueco) {
             return false;
         }
 
@@ -243,8 +273,8 @@ class Game {
         return true;
     }
 
-    showCollisionMessage() {
-        // Fondo semi-transparente
+    mostrarMensajeColision() {
+        // Fondo rojo semi-transparente
         ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -256,19 +286,19 @@ class Game {
         ctx.fillText('COLISION', canvas.width / 2, canvas.height / 2);
 
         // Tiempo restante
-        const tiempoRestante = Math.ceil((this.collisionDuration - (Date.now() - this.collisionTimer)) / 1000);
+        const tiempoRestante = Math.ceil((CONFIG.DURACION_MENSAJE_COLISION - (Date.now() - this.tiempoColision)) / 1000);
         ctx.font = '40px Arial';
         ctx.fillStyle = '#FFFFFF';
         ctx.fillText(`Continua en ${tiempoRestante}s`, canvas.width / 2, canvas.height / 2 + 60);
     }
 
     gameOver() {
-        this.isRunning = false;
-        console.log('GAME OVER - Puntaje final:', this.score);
-        this.showGameOverScreen();
+        this.estaEnEjecucion = false;
+        console.log('GAME OVER - Puntaje final:', this.puntos);
+        this.mostrarPantallaGameOver();
     }
 
-    showGameOverScreen() {
+    mostrarPantallaGameOver() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -280,88 +310,89 @@ class Game {
 
         ctx.font = '50px Arial';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`Puntaje: ${this.score}`, canvas.width / 2, canvas.height / 2 + 50);
+        ctx.fillText(`Puntaje: ${this.puntos}`, canvas.width / 2, canvas.height / 2 + 50);
 
         ctx.font = '30px Arial';
         ctx.fillStyle = '#AAAAAA';
         ctx.fillText('Presiona R para reiniciar', canvas.width / 2, canvas.height / 2 + 120);
     }
 
-    debugDrawHole() {
-        const tuboLayer = this.parallax.layers[3];
-        if (!tuboLayer.image || tuboLayer.image.width === 0) return;
+    // ====================================
+    // SISTEMA DE PUNTUACIÓN
+    // ====================================
 
-        const porcentajeTuboSuperior = 0.365;
-        const porcentajeHueco = 0.23;
+    verificarPuntos() {
+        const capaTubo = this.parallax.layers[3];
+        if (!capaTubo.image || capaTubo.image.width === 0) return;
 
+        const posXJugador = this.player.x;
+
+        // Calcular fin de cada tubo
+        const finTuboPrincipal = capaTubo.x + (capaTubo.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
+        const finTuboSecundario = (capaTubo.x + canvas.width) + (capaTubo.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
+
+        // Verificar tubo principal
+        if (posXJugador > finTuboPrincipal && !capaTubo.scored) {
+            this.puntos++;
+            capaTubo.scored = true;
+            this.animaciones.push(new StarAnimation(this.player.x + 50, this.player.y));
+            console.log('Punto! Score:', this.puntos);
+        }
+
+        // Verificar tubo secundario
+        if (posXJugador > finTuboSecundario && !capaTubo.next_scored) {
+            this.puntos++;
+            capaTubo.next_scored = true;
+            this.animaciones.push(new StarAnimation(this.player.x + 50, this.player.y));
+            console.log('Punto! Score:', this.puntos);
+        }
+    }
+
+    // ====================================
+    // DEBUG - Visualización del hueco
+    // ====================================
+
+    dibujarDebugHueco() {
+        const capaTubo = this.parallax.layers[3];
+        if (!capaTubo.image || capaTubo.image.width === 0) return;
+
+        // Función auxiliar para dibujar líneas de un tubo
         const dibujarLineasTubo = (tuboX, tuboY) => {
-            // Solo dibujar si el tubo está visible
+            // Solo dibujar si el tubo está visible en pantalla
+            if (tuboX <= -capaTubo.scaledWidth || tuboX >= canvas.width) return;
 
-            if (tuboX > -tuboLayer.scaledWidth && tuboX < canvas.width) {
-                const imagenCompleta = tuboLayer.scaledHeight;
+            const alturaCompleta = capaTubo.scaledHeight;
+            const finTuboSuperior = tuboY + (alturaCompleta * COLISION.PORCENTAJE_TUBO_SUPERIOR);
+            const inicioTuboInferior = finTuboSuperior + (alturaCompleta * COLISION.PORCENTAJE_HUECO);
 
-                const finTuboSuperior = tuboY + (imagenCompleta * porcentajeTuboSuperior);
-                const inicioTuboInferior = finTuboSuperior + (imagenCompleta * porcentajeHueco);
+            const inicioX = tuboX + COLISION.OFFSET_INICIO_TUBO;
+            const finX = tuboX + (capaTubo.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
 
-                const inicioTubos = this.calcularInicioTubos(tuboX);
-                const finTubos = this.calcularFinTubos(tuboX, tuboLayer.scaledWidth);
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 3;
 
-                ctx.strokeStyle = '#00FF00';
-                ctx.lineWidth = 3;
+            // Línea superior del hueco
+            ctx.beginPath();
+            ctx.moveTo(inicioX, finTuboSuperior);
+            ctx.lineTo(finX, finTuboSuperior);
+            ctx.stroke();
 
-                // Línea superior del hueco
-                ctx.beginPath();
-                ctx.moveTo(inicioTubos, finTuboSuperior);
-                ctx.lineTo(finTubos, finTuboSuperior);
-                ctx.stroke();
-
-                // Línea inferior del hueco
-                ctx.beginPath();
-                ctx.moveTo(inicioTubos, inicioTuboInferior);
-                ctx.lineTo(finTubos, inicioTuboInferior);
-                ctx.stroke();
-            }
+            // Línea inferior del hueco
+            ctx.beginPath();
+            ctx.moveTo(inicioX, inicioTuboInferior);
+            ctx.lineTo(finX, inicioTuboInferior);
+            ctx.stroke();
         };
 
-        dibujarLineasTubo(tuboLayer.x, tuboLayer.y);
-        dibujarLineasTubo(tuboLayer.x + canvas.width, tuboLayer.next_y);
-    }
-
-
-    calcularInicioTubos(tuboX){
-        return tuboX + 170;
-    }
-
-    calcularFinTubos(tuboX, tuboScaleWidth){
-        return tuboX + tuboScaleWidth * 0.65;
-    }
-
-    /**
-     * Verifica si el jugador pasó completamente un tubo y actualiza el puntaje
-     */
-    checkScore() {
-        const tuboLayer = this.parallax.layers[3];
-        if (!tuboLayer.image || tuboLayer.image.width === 0) return;
-
-        const playerX = this.player.x;
-        const finTuboPrincipal = this.calcularFinTubos(tuboLayer.x, tuboLayer.scaledWidth);
-        const finTuboCopia = this.calcularFinTubos(tuboLayer.x + canvas.width, tuboLayer.scaledWidth);
-
-        if (playerX > finTuboPrincipal && !tuboLayer.scored) {
-            this.score++;
-            tuboLayer.scored = true;
-            this.animations.push(new StarAnimation(this.player.x + 50, this.player.y));
-            console.log('Punto! Score:', this.score);
-        }
-
-        if (playerX > finTuboCopia && !tuboLayer.next_scored) {
-            this.score++;
-            tuboLayer.next_scored = true;
-            this.animations.push(new StarAnimation(this.player.x + 50, this.player.y));
-            console.log('Punto! Score:', this.score);
-        }
+        // Dibujar líneas para ambos tubos
+        dibujarLineasTubo(capaTubo.x, capaTubo.y);
+        dibujarLineasTubo(capaTubo.x + canvas.width, capaTubo.next_y);
     }
 }
+
+// ====================================
+// INICIALIZACIÓN Y CONTROLES
+// ====================================
 
 let game = new Game();
 
@@ -371,13 +402,13 @@ async function main() {
 }
 
 document.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && game.isRunning) {
+    if (event.code === 'Space' && game.estaEnEjecucion) {
         event.preventDefault();
         game.player.jump();
-        game.animations.push(new JumpParticlesAnimation(game.player.x, game.player.y));
+        game.animaciones.push(new JumpParticlesAnimation(game.player.x, game.player.y));
     }
 
-    if (event.code === 'KeyR' && !game.isRunning) {
+    if (event.code === 'KeyR' && !game.estaEnEjecucion) {
         event.preventDefault();
         location.reload();
     }
