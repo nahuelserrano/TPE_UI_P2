@@ -96,7 +96,7 @@ export class Parallax {
 
                  if (layer.x <= -this.canvasWidth) { //
 
-                     layer.x = 0; // <-- (IMPORTANTE) Vuelve a poner 0
+                     layer.x = 0;
 
                      if (layer.name === 'tubos') {
                          // La 'y' actual toma el valor de la 'y' siguiente
