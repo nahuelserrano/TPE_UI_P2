@@ -1,6 +1,6 @@
 import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation} from "./animations.js";
 import { Timer } from './Timer.js';
-import {Parallax} from './Parallax.js';
+import {Parallax} from './parallax.js';
 import { Player } from './Player.js';
 
 // ====================================
