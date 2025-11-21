@@ -1,20 +1,15 @@
-// ====================================
-// SISTEMA DE ANIMACIONES
-// ====================================
-
 /**
  * Clase base para todas las animaciones
- * Define la estructura común que compartirán todas las animaciones
+ * Define la estructura común
  */
 class Animation {
     constructor(x, y) {
-        this.x = x;              // Posición horizontal
-        this.y = y;              // Posición vertical
-        this.isFinished = false; // Indica si la animación terminó
-        this.frame = 0;          // Frame actual de la animación
+        this.x = x;
+        this.y = y;
+        this.isFinished = false;
+        this.frame = 0;
     }
 
-    // Métodos que cada animación debe implementar
     update() {
         throw new Error('El método update() debe ser implementado');
     }
@@ -25,70 +20,61 @@ class Animation {
 }
 
 // ====================================
-// ANIMACIÓN 1: EXPLOSIÓN
+// ANIMACIÓN: EXPLOSIÓN
 // ====================================
-/**
- * Simula una explosión con círculos que se expanden y desvanecen
- * Perfecta para cuando el jugador choca con un obstáculo
- */
+
 class ExplosionAnimation extends Animation {
     constructor(x, y) {
         super(x, y);
 
-        // Configuración de la explosión
-        this.maxRadius = 60;        // Radio máximo que alcanzará
-        this.currentRadius = 0;     // Radio actual (empieza en 0)
-        this.expansionSpeed = 4;    // Qué tan rápido crece
-        this.opacity = 1;           // Opacidad (1 = opaco, 0 = invisible)
-        this.fadeSpeed = 0.04;      // Qué tan rápido se desvanece
+        // Configuración
+        this.radioMaximo = 60;
+        this.radioActual = 0;
+        this.velocidadExpansion = 4;
+        this.opacidad = 1;
+        this.velocidadDesvanecimiento = 0.04;
 
-        // Colores que va cambiando (de amarillo a rojo a gris)
-        this.colors = ['#FFD700', '#FF6347', '#FF4500', '#8B0000', '#696969'];
-        this.currentColorIndex = 0;
+        // Colores progresivos (amarillo → rojo → gris)
+        this.colores = ['#FFD700', '#FF6347', '#FF4500', '#8B0000', '#696969'];
+        this.indiceColor = 0;
     }
 
-    /**
-     * Actualiza el estado de la explosión en cada frame
-     */
     update() {
-        // Expandir el círculo
-        this.currentRadius += this.expansionSpeed;
+        // Expandir
+        this.radioActual += this.velocidadExpansion;
 
-        // Desvanecer gradualmente
-        this.opacity -= this.fadeSpeed;
+        // Desvanecer
+        this.opacidad -= this.velocidadDesvanecimiento;
 
-        // Cambiar de color cada 5 frames
+        // Cambiar color cada 5 frames
         this.frame++;
-        if (this.frame % 5 === 0 && this.currentColorIndex < this.colors.length - 1) {
-            this.currentColorIndex++;
+        if (this.frame % 5 === 0 && this.indiceColor < this.colores.length - 1) {
+            this.indiceColor++;
         }
 
-        // Terminar cuando sea invisible o demasiado grande
-        if (this.opacity <= 0 || this.currentRadius >= this.maxRadius) {
+        // Terminar cuando sea invisible o muy grande
+        if (this.opacidad <= 0 || this.radioActual >= this.radioMaximo) {
             this.isFinished = true;
         }
     }
 
-    /**
-     * Dibuja la explosión en el canvas
-     */
     draw(ctx) {
-        if (this.opacity <= 0) return;
+        if (this.opacidad <= 0) return;
 
         ctx.save();
 
-        // Círculo principal (grande)
-        ctx.globalAlpha = this.opacity;
-        ctx.fillStyle = this.colors[this.currentColorIndex];
+        // Círculo principal
+        ctx.globalAlpha = this.opacidad;
+        ctx.fillStyle = this.colores[this.indiceColor];
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.currentRadius, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radioActual, 0, Math.PI * 2);
         ctx.fill();
 
-        // Círculo interior (más brillante)
-        ctx.globalAlpha = this.opacity * 0.6;
+        // Círculo interior brillante
+        ctx.globalAlpha = this.opacidad * 0.6;
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.currentRadius * 0.5, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radioActual * 0.5, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
@@ -96,71 +82,62 @@ class ExplosionAnimation extends Animation {
 }
 
 // ====================================
-// ANIMACIÓN 2: PARTÍCULAS DE IMPULSO
+// ANIMACIÓN: PARTÍCULAS DE SALTO
 // ====================================
-/**
- * Genera partículas que salen disparadas hacia abajo
- * Ideal para mostrar cuando el jugador salta
- */
+
 class JumpParticlesAnimation extends Animation {
     constructor(x, y) {
         super(x, y);
 
-        // Crear 8 partículas en diferentes direcciones
-        this.particles = [];
-        const particleCount = 8;
+        // Crear 8 partículas en direcciones radiales
+        this.particulas = [];
+        const cantidadParticulas = 8;
+        const coloresDisponibles = ['#00CED1', '#1E90FF', '#4169E1'];
 
-        for (let i = 0; i < particleCount; i++) {
-            const angle = (Math.PI * 2 / particleCount) * i; // Distribuir en círculo
+        for (let i = 0; i < cantidadParticulas; i++) {
+            const angulo = (Math.PI * 2 / cantidadParticulas) * i;
 
-            this.particles.push({
+            this.particulas.push({
                 x: x,
                 y: y,
-                // Velocidad en X e Y basada en el ángulo
-                vx: Math.cos(angle) * 3,
-                vy: Math.sin(angle) * 3 + 2, // +2 para que caigan más
-                size: Math.random() * 4 + 2, // Tamaño aleatorio entre 2 y 6
-                opacity: 1,
-                color: ['#00CED1', '#1E90FF', '#4169E1'][Math.floor(Math.random() * 3)]
+                vx: Math.cos(angulo) * 3,
+                vy: Math.sin(angulo) * 3 + 2, // Bias hacia abajo
+                tamanio: Math.random() * 4 + 2,
+                opacidad: 1,
+                color: coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)]
             });
         }
 
-        this.lifetime = 30; // Duración en frames
+        this.tiempoVida = 30; // Frames de duración
     }
 
-    /**
-     * Actualiza la posición y opacidad de todas las partículas
-     */
     update() {
         this.frame++;
 
         // Actualizar cada partícula
-        this.particles.forEach(p => {
+        this.particulas.forEach(p => {
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.2; // Gravedad ligera
-            p.opacity -= 0.03; // Desvanecer
+            p.vy += 0.2;        // Gravedad
+            p.opacidad -= 0.03; // Desvanecer
         });
 
-        // Terminar cuando se acabe el tiempo
-        if (this.frame >= this.lifetime) {
+        // Terminar cuando expire el tiempo
+        if (this.frame >= this.tiempoVida) {
             this.isFinished = true;
         }
     }
 
-    /**
-     * Dibuja todas las partículas
-     */
     draw(ctx) {
         ctx.save();
 
-        this.particles.forEach(p => {
-            if (p.opacity <= 0) return;
+        this.particulas.forEach(p => {
+            if (p.opacidad <= 0) return;
 
-            ctx.globalAlpha = p.opacity;
+            ctx.globalAlpha = p.opacidad;
             ctx.fillStyle = p.color;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, p.tamanio, 0, Math.PI * 2);
             ctx.fill();
         });
 
@@ -169,82 +146,72 @@ class JumpParticlesAnimation extends Animation {
 }
 
 // ====================================
-// ANIMACIÓN 3: ESTRELLAS BRILLANTES
+// ANIMACIÓN: ESTRELLA DE PUNTOS
 // ====================================
-/**
- * Estrellas que aparecen, rotan y desaparecen
- * Útil para efectos de bonus o puntos especiales
- */
+
 class StarAnimation extends Animation {
     constructor(x, y) {
         super(x, y);
 
-        this.size = 5;              // Tamaño inicial
-        this.maxSize = 30;          // Tamaño máximo
-        this.growSpeed = 2;         // Velocidad de crecimiento
-        this.rotation = 0;          // Ángulo de rotación
-        this.rotationSpeed = 0.2;   // Velocidad de rotación
-        this.opacity = 1;
-        this.phase = 'growing';     // Fases: 'growing', 'shrinking'
+        this.tamanio = 5;
+        this.tamanioMaximo = 30;
+        this.velocidadCrecimiento = 2;
+        this.rotacion = 0;
+        this.velocidadRotacion = 0.2;
+        this.opacidad = 1;
+        this.fase = 'creciendo'; // 'creciendo' o 'contrayendo'
     }
 
-    /**
-     * Actualiza el tamaño, rotación y fase de la estrella
-     */
     update() {
         // Rotar constantemente
-        this.rotation += this.rotationSpeed;
+        this.rotacion += this.velocidadRotacion;
 
-        if (this.phase === 'growing') {
-            // Fase de crecimiento
-            this.size += this.growSpeed;
-            if (this.size >= this.maxSize) {
-                this.phase = 'shrinking';
+        if (this.fase === 'creciendo') {
+            this.tamanio += this.velocidadCrecimiento;
+            if (this.tamanio >= this.tamanioMaximo) {
+                this.fase = 'contrayendo';
             }
         } else {
-            // Fase de contracción
-            this.size -= this.growSpeed;
-            this.opacity -= 0.05;
+            this.tamanio -= this.velocidadCrecimiento;
+            this.opacidad -= 0.05;
 
-            if (this.size <= 0 || this.opacity <= 0) {
+            if (this.tamanio <= 0 || this.opacidad <= 0) {
                 this.isFinished = true;
             }
         }
     }
 
-    /**
-     * Dibuja una estrella de 5 puntas rotando
-     */
     draw(ctx) {
-        if (this.opacity <= 0) return;
+        if (this.opacidad <= 0) return;
 
         ctx.save();
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.globalAlpha = this.opacity;
+        ctx.rotate(this.rotacion);
+        ctx.globalAlpha = this.opacidad;
 
         // Dibujar estrella de 5 puntas
-        ctx.fillStyle = '#FFD700'; // Dorado
-        ctx.strokeStyle = '#FFA500'; // Naranja
+        ctx.fillStyle = '#FFD700';
+        ctx.strokeStyle = '#FFA500';
         ctx.lineWidth = 2;
 
         ctx.beginPath();
         for (let i = 0; i < 5; i++) {
-            const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-            const x = Math.cos(angle) * this.size;
-            const y = Math.sin(angle) * this.size;
+            // Punto exterior
+            const anguloExterior = (Math.PI * 2 / 5) * i - Math.PI / 2;
+            const xExterior = Math.cos(anguloExterior) * this.tamanio;
+            const yExterior = Math.sin(anguloExterior) * this.tamanio;
 
             if (i === 0) {
-                ctx.moveTo(x, y);
+                ctx.moveTo(xExterior, yExterior);
             } else {
-                ctx.lineTo(x, y);
+                ctx.lineTo(xExterior, yExterior);
             }
 
-            // Punto interior (para forma de estrella)
-            const innerAngle = angle + Math.PI / 5;
-            const innerX = Math.cos(innerAngle) * (this.size * 0.4);
-            const innerY = Math.sin(innerAngle) * (this.size * 0.4);
-            ctx.lineTo(innerX, innerY);
+            // Punto interior
+            const anguloInterior = anguloExterior + Math.PI / 5;
+            const xInterior = Math.cos(anguloInterior) * (this.tamanio * 0.4);
+            const yInterior = Math.sin(anguloInterior) * (this.tamanio * 0.4);
+            ctx.lineTo(xInterior, yInterior);
         }
         ctx.closePath();
         ctx.fill();
@@ -254,7 +221,4 @@ class StarAnimation extends Animation {
     }
 }
 
-// ====================================
-// EXPORTAR LAS CLASES
-// ====================================
 export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation };
