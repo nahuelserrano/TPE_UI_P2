@@ -76,10 +76,28 @@
     <div class="game-container">
         <div class="welcome-screen" id="welcome-screen">
 
-            <div id="game-content">
-                <canvas id="gameCanvas" width="550" height="550"></canvas>
+            <!-- MENÚ DE INICIO (visible al cargar) -->
+            <div id="menu-screen" class="menu-screen">
+                <h2 class="menu-title">🌺 Flappy Stitch 🌺</h2>
+                <p class="menu-subtitle">Aventura en el Cielo de Hawái</p>
+
+                <div class="menu-instructions">
+                    <p>Ayudá a Stitch a volar entre los tubos</p>
+                    <p><strong>ESPACIO</strong> para saltar</p>
+                </div>
+
+                <button id="start-button" class="play-button">JUGAR</button>
+                <p class="click-to-start">Presioná para comenzar</p>
             </div>
 
+            <!-- CONTENIDO DEL JUEGO (oculto inicialmente) -->
+            <div id="game-content" class="game-content">
+                <canvas id="gameCanvas" width="550" height="550"></canvas>
+                <div class="controls">
+                    <button id="restart-button" class="reset-button">Reiniciar</button>
+                    <button id="menu-button" class="menu-button">Menú</button>
+                </div>
+            </div>
 
         </div>
     </div>

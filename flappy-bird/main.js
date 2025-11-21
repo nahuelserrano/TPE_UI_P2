@@ -31,9 +31,17 @@ const CONFIG = {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Referencias a los elementos del DOM
+const menuScreen = document.getElementById('menu-screen');
+const gameContent = document.getElementById('game-content');
+const startButton = document.getElementById('start-button');
+const restartButton = document.getElementById('restart-button');
+const menuButton = document.getElementById('menu-button');
+
 class Game {
     constructor() {
         this.estaEnEjecucion = false;
+        this.assetsLoaded = false;
         this.puntos = 0;
 
         // Sistema de velocidad
@@ -49,14 +57,11 @@ class Game {
         this.colisionDetectada = false;
         this.tiempoColision = 0;
 
-        console.log('Juego inicializado');
     }
 
     async loadAssets() {
-        console.log('Cargando imágenes del parallax...');
         try {
             await this.parallax.load();
-            console.log('Imágenes cargadas.');
         } catch (error) {
             console.error('No se pudieron cargar los assets:', error);
             throw new Error('Error al cargar assets');
@@ -66,7 +71,6 @@ class Game {
     start() {
         this.estaEnEjecucion = true;
         this.timer.reset();
-        console.log('Juego iniciado');
         this.gameLoop();
     }
 
@@ -93,21 +97,21 @@ class Game {
         this.parallax.update();
         this.player.update(deltaTime);
 
-        // Sistema de colisión temporal
         if (this.verificarColisiones()) {
-            if (!this.colisionDetectada) {
-                this.colisionDetectada = true;
-                this.tiempoColision = Date.now();
-                console.log('Colisión detectada');
-            }
+            // if (!this.colisionDetectada) {
+            //     this.colisionDetectada = true;
+            //     this.tiempoColision = Date.now();
+            //     console.log('Colisión detectada');
+            // }
+            this.gameOver();
         }
 
         // Desactivar mensaje de colisión después del tiempo establecido
-        if (this.colisionDetectada) {
-            if (Date.now() - this.tiempoColision > CONFIG.DURACION_MENSAJE_COLISION) {
-                this.colisionDetectada = false;
-            }
-        }
+        // if (this.colisionDetectada) {
+        //     if (Date.now() - this.tiempoColision > CONFIG.DURACION_MENSAJE_COLISION) {
+        //         this.colisionDetectada = false;
+        //     }
+        // }
 
         // Actualizar animaciones activas
         this.animaciones.forEach(anim => anim.update());
@@ -137,9 +141,9 @@ class Game {
         this.player.draw(ctx);
 
         // Mensaje de colisión temporal
-        if (this.colisionDetectada) {
-            this.mostrarMensajeColision();
-        }
+        // if (this.colisionDetectada) {
+        //     this.mostrarMensajeColision();
+        // }
 
         // Animaciones activas
         this.animaciones.forEach(anim => anim.draw(ctx));
@@ -147,6 +151,7 @@ class Game {
         // UI
         this.dibujarTimer();
         this.dibujarPuntos();
+        this.checkWinCondition();
 
         // Debug (descomentar si es necesario)
         // this.dibujarDebugHueco();
@@ -170,10 +175,10 @@ class Game {
 
     dibujarPuntos() {
         ctx.font = 'bold 30px Arial';
-        ctx.fillStyle = '#FF00FF';
+        ctx.fillStyle = '#F ';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`Puntos: ${this.puntos}`, 75, 35);
+        ctx.fillText(`${this.puntos}`, canvas.width / 2, 35);
     }
 
     pause() {
@@ -235,6 +240,21 @@ class Game {
         return false;
     }
 
+    checkWinCondition() {
+        if (this.timer.getTiempoSegundos() >= 60){
+            this.pause();
+            ctx.font = 'bold 80px Arial';
+            ctx.fillStyle = '#00AA00';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            let offsetY = 40;
+            ctx.fillText('Felicitaciones', canvas.width / 2, canvas.height / 2 - offsetY );
+            ctx.fillText('Ganaste', canvas.width / 2, canvas.height / 2 + offsetY);
+
+            setTimeout(this.restart, 3000)
+        }
+    }
+
     verificarColisionTubo(capaTubo, tuboX, tuboY) {
         const jugador = this.player;
 
@@ -293,10 +313,11 @@ class Game {
     }
 
     gameOver() {
+        this.mostrarPantallaGameOver();
         this.estaEnEjecucion = false;
         console.log('GAME OVER - Puntaje final:', this.puntos);
-        this.mostrarPantallaGameOver();
     }
+
 
     mostrarPantallaGameOver() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -401,17 +422,57 @@ async function main() {
     game.start();
 }
 
+/**
+ * Muestra el menú y oculta el juego
+ */
+function mostrarMenu() {
+    menuScreen.classList.remove('hidden');
+    gameContent.classList.remove('active');
+    game.pause();
+}
+
+/**
+ * Oculta el menú e inicia el juego
+ */
+async function iniciarJuego() {
+    menuScreen.classList.add('hidden');
+    gameContent.classList.add('active');
+
+    // Cargar assets solo la primera vez
+    if (!game.assetsLoaded) {
+        await game.loadAssets();
+        game.assetsLoaded = true;
+    }
+
+    game.restart();
+}
+
+// Event Listeners para los botones
+startButton.addEventListener('click', iniciarJuego);
+
+restartButton.addEventListener('click', () => {
+    game.restart();
+});
+
+menuButton.addEventListener('click', mostrarMenu);
+
+// Controles del teclado
 document.addEventListener('keydown', (event) => {
+    // Solo funciona si el juego está corriendo
     if (event.code === 'Space' && game.estaEnEjecucion) {
         event.preventDefault();
         game.player.jump();
         game.animaciones.push(new JumpParticlesAnimation(game.player.x, game.player.y));
     }
 
+    // R para reiniciar (solo si el juego terminó)
     if (event.code === 'KeyR' && !game.estaEnEjecucion) {
         event.preventDefault();
-        location.reload();
+        game.restart();
+    }
+
+    // ESC para volver al menú
+    if (event.code === 'Escape') {
+        mostrarMenu();
     }
 });
-
-main();
