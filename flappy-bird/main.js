@@ -37,15 +37,27 @@ const gameContent = document.getElementById('game-content');
 const startButton = document.getElementById('start-button');
 const restartButton = document.getElementById('restart-button');
 const menuButton = document.getElementById('menu-button');
-
 class Game {
+
     constructor() {
+        this.maxVidas = 3;
+
         this.estaEnEjecucion = false;
         this.assetsLoaded = false;
         this.colisionDetectada = false;
         this.puntos = 0;
+        this.vidas = 3;                 // Empezamos con 3 vidas
+        this.esInvulnerable = false;    // ¿Acaba de chocar?
+        this.duracionInvulnerabilidad = 2000; // 2 segundos de protección tras golpe
+        this.ultimoGolpe = 0;
+        this.corazones = [];           // Aquí guardaremos los corazones activos
+        this.ultimoSpawnCorazon = 0;   // Cuándo creamos el último
+        this.intervaloCorazon = 10000; // Crear uno cada 10 segundos (10000 ms)
 
-        // Sistema de velocidad
+        // Cargar imagen del corazón
+        this.imagenCorazon = new Image();
+        this.imagenCorazon.src = '../imagenes/flappy-bird/vida.png';
+
         this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
 
         // Sistemas del juego
@@ -112,6 +124,8 @@ class Game {
     }
 
     update() {
+
+
         // Calcular deltaTime para animaciones precisas
         const deltaTime = 1/60;
 
@@ -120,10 +134,18 @@ class Game {
         if (intervaloAlcanzado) {
             this.aumentarDificultad();
         }
-
+        // 1. Gestionar el tiempo de invulnerabilidad
+        if (this.esInvulnerable) {
+            if (Date.now() - this.ultimoGolpe > this.duracionInvulnerabilidad) {
+                this.esInvulnerable = false; // Se acabó el escudo
+                console.log("Escudo desactivado");
+            }
+        }
         // Actualizar sistemas principales
         this.parallax.update();
         this.player.update(deltaTime);
+        this.gestionarCorazones();
+        this.verificarColisionCorazones();
 
         this.colisionDetectada = this.verificarColisiones();
 
@@ -133,7 +155,7 @@ class Game {
             //     this.tiempoColision = Date.now();
             //     console.log('Colisión detectada');
             // }
-            this.gameOver();
+            this.recibirDanio();
         }
 
         // Desactivar mensaje de colisión después del tiempo establecido
@@ -149,6 +171,85 @@ class Game {
 
         // Verificar puntaje
         this.verificarPuntos();
+    }
+    verificarColisionCorazones() {
+        // Definir hitbox del jugador (asumiendo que es un círculo/cuadrado centrado)
+        const playerRadio = this.player.radio || 25; // Usamos tu variable radio
+
+        this.corazones.forEach(corazon => {
+            if (corazon.recogido) return;
+
+            // Detectar colisión (Círculo vs Rectángulo simple)
+            // Calculamos la distancia entre el centro del corazón y el jugador
+            const dx = this.player.x - (corazon.x + corazon.width/2);
+            const dy = this.player.y - (corazon.y + corazon.height/2);
+            const distancia = Math.sqrt(dx * dx + dy * dy);
+
+            // Si la distancia es menor a la suma de radios (aprox)
+            if (distancia < playerRadio + (corazon.width / 2)) {
+
+                // ¡CORAZÓN RECOGIDO!
+                this.recogerVida(corazon);
+
+            }
+        });
+    }
+
+    recogerVida(corazon) {
+        corazon.recogido = true; // Marcar para borrar
+
+        if (this.vidas < this.maxVidas) {
+            this.vidas++;
+            console.log("❤️ Vida extra! Total:", this.vidas);
+
+            // Reproducir sonido (opcional)
+            // this.sonidoVida.play();
+        } else {
+            // Opcional: Dar puntos si ya tiene la vida llena
+            this.score += 5;
+            console.log("❤️ Vida llena -> Puntos extra!");
+        }
+    }
+
+    gestionarCorazones() {
+        const tiempoActual = Date.now();
+
+        // 1. SPAWN: ¿Es hora de crear un nuevo corazón?
+        if (tiempoActual - this.ultimoSpawnCorazon > this.intervaloCorazon) {
+
+            // Posición Y aleatoria (evitando el techo y el suelo extremos)
+            const padding = 100;
+            const randomY = Math.floor(Math.random() * (canvas.height - padding * 2)) + padding;
+
+            this.corazones.push({
+                x: canvas.width,      // Empieza a la derecha fuera de pantalla
+                y: randomY,
+                width: 40,            // Tamaño del corazón
+                height: 40,
+                velocidad: this.gameSpeed, // Se mueve con el escenario
+                recogido: false
+            });
+
+            this.ultimoSpawnCorazon = tiempoActual;
+        }
+
+        // 2. MOVER Y LIMPIAR
+        // Recorremos el array al revés para poder borrar elementos sin romper el bucle
+        for (let i = this.corazones.length - 1; i >= 0; i--) {
+            let corazon = this.corazones[i];
+
+            // Mover a la izquierda
+            corazon.x -= this.parallax.baseSpeed * 0.9; // Misma velocidad que los tubos
+
+            // Si sale de la pantalla por la izquierda, lo borramos
+            if (corazon.x + corazon.width < 0) {
+                this.corazones.splice(i, 1);
+            }
+            // Si ya fue recogido, lo borramos
+            else if (corazon.recogido) {
+                this.corazones.splice(i, 1);
+            }
+        }
     }
 
     aumentarDificultad() {
@@ -168,7 +269,15 @@ class Game {
 
         // Dibujar sistemas principales
         this.parallax.draw(ctx);
-        this.player.draw(ctx);
+
+        if (this.esInvulnerable) {
+            // Solo dibuja al player la mitad de las veces (parpadeo rápido)
+            if (Math.floor(Date.now() / 100) % 2 === 0) {
+                this.player.draw(ctx);
+            }
+        } else {
+            this.player.draw(ctx);
+        }
 
         // Mensaje de colisión temporal
         // if (this.colisionDetectada) {
@@ -177,14 +286,38 @@ class Game {
 
         // Animaciones activas
         this.animaciones.forEach(anim => anim.draw(ctx));
-
+        // DIBUJAR CORAZONES (Debajo del jugador, encima del fondo)
+        this.corazones.forEach(corazon => {
+            if (this.imagenCorazon.complete && this.imagenCorazon.naturalWidth !== 0) {
+                // Si la imagen cargó, dibujar imagen
+                ctx.drawImage(this.imagenCorazon, corazon.x, corazon.y, corazon.width, corazon.height);
+            } else {
+                // Si no hay imagen, dibujar un emoji o círculo rojo temporal
+                ctx.font = "30px Arial";
+                ctx.fillText("❤️", corazon.x, corazon.y + 30);
+            }
+        });
         // UI
         this.dibujarTimer();
         this.dibujarPuntos();
         this.checkWinCondition();
+        this.dibujarVidas(ctx);
 
         // Debug (descomentar si es necesario)
         // this.dibujarDebugHueco();
+    }
+
+    dibujarVidas(ctx) {
+        const startX = canvas.width - 500; // Posición X (derecha)
+        const startY = 40;                 // Posición Y (arriba)
+        const size = 30;                   // Tamaño del emoji
+
+        ctx.font = `${size}px Arial`;
+
+        // Dibujamos un corazón por cada vida restante
+        for (let i = 0; i < this.vidas; i++) {
+            ctx.fillText("❤️", startX + (i * 35), startY);
+        }
     }
 
     dibujarTimer() {
@@ -218,6 +351,8 @@ class Game {
 
     restart() {
         this.puntos = 0;
+        this.corazones = []; // Borrar corazones viejos
+        this.ultimoSpawnCorazon = Date.now()
         this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
         this.parallax.reset();
         this.parallax.setSpeed(this.velocidadActual);
@@ -286,6 +421,8 @@ class Game {
     }
 
     verificarColisionTubo(capaTubo, tuboX, tuboY) {
+        if (this.esInvulnerable) return;
+
         const jugador = this.player;
 
         // Calcular límites del tubo
@@ -321,6 +458,24 @@ class Game {
 
         console.log('Colisión con tubo');
         return true;
+    }
+
+    recibirDanio() {
+        this.vidas--; // Restar vida
+        console.log("¡Golpe! Vidas restantes:", this.vidas);
+
+        if (this.vidas <= 0) {
+            // Si no quedan vidas, Game Over
+            this.estaEnEjecucion = false;
+            this.gameOver();
+        } else {
+            // Si quedan vidas, activar escudo temporal
+            this.esInvulnerable = true;
+            this.ultimoGolpe = Date.now();
+
+            // Opcional: Empujar al jugador un poco para que no se quede trabado
+            this.player.fisica.velocidadY = -5;
+        }
     }
 
     mostrarMensajeColision() {
