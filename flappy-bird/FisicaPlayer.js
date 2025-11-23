@@ -58,7 +58,7 @@ export class FisicaPlayer {
     /**
      * Verifica si está cayendo rápidamente
      */
-    estaCayendoRapido(umbral = 1) {
+    estaCayendoRapido(umbral = 0.5) {
         return this.velocidadY > umbral;
     }
 

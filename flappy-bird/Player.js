@@ -24,16 +24,28 @@ export class Player {
         this.spriteNormal = new Image();
         this.spriteNormal.src = '../imagenes/flappy-bird/stich-sp-default.png';
 
-        this.spriteVoltereta = new Image();
-        this.spriteVoltereta.src = '../imagenes/flappy-bird/stich-sp-voltereta.png';
+        // === RUTAS DE SPRITES DE VOLTERETA ===
+        this.rutasVoltereta = [
+            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2 .png"
+        ];
 
-        // === ANIMACIÓN DE VOLTERETA ===
-        this.animacionVoltereta = this.crearAnimacionVoltereta();
+        // === CARGAR IMÁGENES DE VOLTERETA ===
+        this.imagenesVoltereta = [];
+        this.volteretatImagenesCargadas = 0;
+        this.cargarImagenesVoltereta();
+
+        // === ANIMACIÓN (se creará cuando las imágenes estén listas) ===
+        this.animacionVoltereta = null;
 
         // === ESTADOS ===
         this.estaEnVoltereta = false;
         this.tiempoCayendo = 0;
-        this.umbralVoltereta = 0.3;
+        this.umbralVoltereta = 0.1;
 
         // === SISTEMA DE COMBO ===
         this.comboActual = 0;
@@ -55,6 +67,31 @@ export class Player {
     }
 
     /**
+     * Carga todas las imágenes de la voltereta
+     * Solo crea el AnimationController cuando todas estén listas
+     */
+    cargarImagenesVoltereta() {
+        this.rutasVoltereta.forEach((ruta, index) => {
+            const imagen = new Image();
+            imagen.onload = () => {
+                this.volteretatImagenesCargadas++;
+                console.log(`Imagen voltereta ${index + 1}/6 cargada`);
+
+                // Cuando todas las imágenes estén cargadas, crear la animación
+                if (this.volteretatImagenesCargadas === this.rutasVoltereta.length) {
+                    this.crearAnimacionVoltereta();
+                    console.log('Animación de voltereta lista!');
+                }
+            };
+            imagen.onerror = () => {
+                console.error(`Error cargando imagen voltereta: ${ruta}`);
+            };
+            imagen.src = ruta;
+            this.imagenesVoltereta.push(imagen);
+        });
+    }
+
+    /**
      * Registra un callback para cuando se complete una voltereta
      * @param {Function} callback - Función a ejecutar al completar voltereta
      */
@@ -63,9 +100,12 @@ export class Player {
     }
 
     crearAnimacionVoltereta() {
-        const frames = Array(6).fill(this.spriteVoltereta);
-        const animacion = new AnimationController(frames, 0.05, true);
-        return animacion;
+        // Ahora sí tenemos todas las imágenes cargadas
+        this.animacionVoltereta = new AnimationController(
+            this.imagenesVoltereta,  // Array de objetos Image
+            0.05,                     // 0.05 segundos por frame
+            true                      // Loop activado
+        );
     }
 
     update(deltaTime = 1/60) {
@@ -134,12 +174,18 @@ export class Player {
     }
 
     actualizarEstadoCaida(deltaTime) {
-        const estaCayendoRapido = this.fisica.estaCayendoRapido(1);
+        const estaCayendoRapido = this.fisica.estaCayendoRapido(this.umbralVoltereta);
+
+        // 🔍 DEBUG: Ver qué está pasando
+        console.log('Velocidad:', this.fisica.obtenerVelocidad(),
+            'Cayendo rápido:', estaCayendoRapido,
+            'Tiempo cayendo:', this.tiempoCayendo.toFixed(2));
 
         if (estaCayendoRapido) {
             this.tiempoCayendo += deltaTime;
 
             if (this.tiempoCayendo >= this.umbralVoltereta && !this.estaEnVoltereta) {
+                console.log('🎯 ACTIVANDO VOLTERETA');
                 this.iniciarVoltereta();
             }
         } else {
@@ -151,6 +197,12 @@ export class Player {
     }
 
     iniciarVoltereta() {
+        // Solo iniciar si la animación ya está cargada
+        if (!this.animacionVoltereta) {
+            console.warn('Animación de voltereta no está lista aún');
+            return;
+        }
+
         this.estaEnVoltereta = true;
         this.animacionVoltereta.play();
         this.rotacion = 0;
@@ -172,7 +224,7 @@ export class Player {
     }
 
     actualizarSprite(deltaTime) {
-        if (this.estaEnVoltereta) {
+        if (this.estaEnVoltereta && this.animacionVoltereta) {
             this.animacionVoltereta.update(deltaTime);
             this.spriteActual = this.animacionVoltereta.getSpriteActual();
         } else {
