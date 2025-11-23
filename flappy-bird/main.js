@@ -1,4 +1,4 @@
-import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation} from "./animations.js";
+import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation, VolteretaBonusAnimation} from "./animations.js";
 import { Timer } from './Timer.js';
 import {Parallax} from './parallax.js';
 import { Player } from './Player.js';
@@ -42,6 +42,7 @@ class Game {
     constructor() {
         this.estaEnEjecucion = false;
         this.assetsLoaded = false;
+        this.colisionDetectada = false;
         this.puntos = 0;
 
         // Sistema de velocidad
@@ -53,10 +54,37 @@ class Game {
         this.parallax = new Parallax(canvas.width, canvas.height, this.velocidadActual);
         this.player = new Player(30, canvas.height / 2, canvas.height);
 
-        // Sistema de colisión temporal
-        this.colisionDetectada = false;
+        this.configurarEventosPlayer();
+
         this.tiempoColision = 0;
 
+    }
+
+    /**
+     * Configura los eventos/callbacks del player
+     */
+    configurarEventosPlayer() {
+        const game = this;
+        this.player.setOnVolteretaCompletada(() => {
+            this.otorgarBonusVoltereta();
+        });
+    }
+
+    /**
+     * Otorga punto extra por completar una voltereta
+     */
+    otorgarBonusVoltereta() {
+        this.puntos++;
+
+        // Crear animación de bonus (aparece arriba del jugador)
+        this.animaciones.push(
+            new VolteretaBonusAnimation(
+                this.player.x + 50,  // Un poco a la derecha
+                this.player.y - 40   // Arriba del jugador
+            )
+        );
+
+        console.log('BONUS VOLTERETA! Puntos:', this.puntos);
     }
 
     async loadAssets() {
@@ -97,7 +125,9 @@ class Game {
         this.parallax.update();
         this.player.update(deltaTime);
 
-        if (this.verificarColisiones()) {
+        this.colisionDetectada = this.verificarColisiones();
+
+        if (this.colisionDetectada) {
             // if (!this.colisionDetectada) {
             //     this.colisionDetectada = true;
             //     this.tiempoColision = Date.now();
@@ -168,9 +198,9 @@ class Game {
         ctx.fillText(tiempo, canvas.width - 30, 20);
 
         // Velocidad actual
-        ctx.font = '16px Arial';
+        ctx.font = '24px Arial';
         ctx.fillStyle = '#AAAAAA';
-        ctx.fillText(`Vel: ${this.velocidadActual.toFixed(1)}`, canvas.width - 30, 100);
+        ctx.fillText(`Vel: ${this.velocidadActual.toFixed(1)}`, canvas.width - 35, 65);
     }
 
     dibujarPuntos() {
@@ -313,15 +343,14 @@ class Game {
     }
 
     gameOver() {
-        this.mostrarPantallaGameOver();
-        this.estaEnEjecucion = false;
-        console.log('GAME OVER - Puntaje final:', this.puntos);
+        setTimeout(() => {
+            this.pause();
+            this.mostrarPantallaGameOver();
+        }, 300);
     }
 
 
     mostrarPantallaGameOver() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.font = 'bold 100px Arial';
         ctx.fillStyle = '#FF0000';
@@ -461,8 +490,10 @@ document.addEventListener('keydown', (event) => {
     // Solo funciona si el juego está corriendo
     if (event.code === 'Space' && game.estaEnEjecucion) {
         event.preventDefault();
-        game.player.jump();
-        game.animaciones.push(new JumpParticlesAnimation(game.player.x, game.player.y));
+        if (!game.colisionDetectada){
+            game.player.jump();
+            game.animaciones.push(new JumpParticlesAnimation(game.player.x, game.player.y));
+        }
     }
 
     // R para reiniciar (solo si el juego terminó)

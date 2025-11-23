@@ -12,7 +12,6 @@ export class FisicaPlayer {
         // Estado actual
         this.velocidadY = 0;
 
-        console.log('⚙️ FisicaPlayer creada');
     }
 
     /**

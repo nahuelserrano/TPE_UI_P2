@@ -33,86 +33,107 @@ export class Player {
         // === ESTADOS ===
         this.estaEnVoltereta = false;
         this.tiempoCayendo = 0;
-        this.umbralVoltereta = 0.2;
+        this.umbralVoltereta = 0.3;
+
+        // === SISTEMA DE COMBO ===
+        this.comboActual = 0;
+        this.tiempoDesdeUltimaVoltereta = 0;
+        this.tiempoMaximoCombo = 2.0;  // Segundos para mantener el combo
 
         this.spriteActual = this.spriteNormal;
         this.spriteCargado = false;
 
+        // === CALLBACK DE VOLTERETA ===
+        this.onVolteretaCompletada = null;  // Se configura desde Game
+
         this.spriteNormal.onload = () => {
             this.spriteCargado = true;
-            console.log('✅ Sprite normal cargado');
+            console.log('Sprite normal cargado');
         };
 
-        console.log('🎮 Player creado');
+        console.log('Player creado');
+    }
+
+    /**
+     * Registra un callback para cuando se complete una voltereta
+     * @param {Function} callback - Función a ejecutar al completar voltereta
+     */
+    setOnVolteretaCompletada(callback) {
+        this.onVolteretaCompletada = callback;
     }
 
     crearAnimacionVoltereta() {
         const frames = Array(6).fill(this.spriteVoltereta);
         const animacion = new AnimationController(frames, 0.05, true);
-        console.log('🌀 Animación de voltereta creada');
         return animacion;
     }
 
-    /**
-     * Actualiza física, rotación y animaciones
-     */
     update(deltaTime = 1/60) {
-        // Actualizar física
         this.fisica.update();
-
-        // Aplicar velocidad a la posición
         this.y += this.fisica.obtenerVelocidad();
-
-        // Colisiones con bordes
         this.verificarColisionesBordes();
-
-        // Visual
         this.actualizarRotacion();
         this.actualizarEstadoCaida(deltaTime);
         this.actualizarSprite(deltaTime);
+
+        // Actualizar timer del combo
+        this.actualizarCombo(deltaTime);
     }
 
     /**
-     * Verifica colisiones con techo y suelo
+     * Gestiona el tiempo del combo
+     * Si pasa mucho tiempo sin voltereta, se pierde el combo
      */
+    actualizarCombo(deltaTime) {
+        if (this.comboActual > 0) {
+            this.tiempoDesdeUltimaVoltereta += deltaTime;
+
+            // Si pasó el tiempo máximo, romper combo
+            if (this.tiempoDesdeUltimaVoltereta >= this.tiempoMaximoCombo) {
+                this.romperCombo('timeout');
+            }
+        }
+    }
+
+    /**
+     * Rompe el combo actual
+     */
+    romperCombo(razon = 'unknown') {
+        if (this.comboActual > 0) {
+            console.log(`Combo roto (${razon}). Era: x${this.comboActual}`);
+            this.comboActual = 0;
+        }
+        this.tiempoDesdeUltimaVoltereta = 0;
+    }
+
     verificarColisionesBordes() {
         // Colisión con suelo
         if (this.y + this.radio > this.canvasHeight) {
             this.y = this.canvasHeight - this.radio;
             this.fisica.detener();
             this.resetearEstadoCaida();
+            this.romperCombo('suelo');  // Rompe combo al tocar suelo
         }
 
         // Colisión con techo
         if (this.y - this.radio < 0) {
             this.y = this.radio;
             this.fisica.detener();
+            this.romperCombo('techo');  // Rompe combo al tocar techo
         }
     }
 
-    /**
-     * Actualiza la rotación del sprite según la velocidad
-     */
     actualizarRotacion() {
         if (this.estaEnVoltereta) return;
 
-        // Mapear velocidad Y a rotación
         const velocidadActual = this.fisica.obtenerVelocidad();
         const rotacionObjetivo = velocidadActual * (this.rotacionMaxima / 15);
-
-        // Interpolación suave
         const velocidadRotacion = 0.2;
         this.rotacion += (rotacionObjetivo - this.rotacion) * velocidadRotacion;
-
-        // Limitar rotación
         this.rotacion = Math.max(-this.rotacionMaxima, Math.min(this.rotacionMaxima, this.rotacion));
     }
 
-    /**
-     * Gestiona el estado de caída y la voltereta
-     */
     actualizarEstadoCaida(deltaTime) {
-        // Usar el método de la clase de física
         const estaCayendoRapido = this.fisica.estaCayendoRapido(1);
 
         if (estaCayendoRapido) {
@@ -133,14 +154,14 @@ export class Player {
         this.estaEnVoltereta = true;
         this.animacionVoltereta.play();
         this.rotacion = 0;
-        console.log('🌀 Voltereta activada');
+        console.log('Voltereta activada');
     }
 
     detenerVoltereta() {
         this.estaEnVoltereta = false;
         this.animacionVoltereta.stop();
         this.spriteActual = this.spriteNormal;
-        console.log('🛑 Voltereta detenida');
+        console.log('Voltereta detenida');
     }
 
     resetearEstadoCaida() {
@@ -159,13 +180,33 @@ export class Player {
         }
     }
 
+
     /**
-     * Aplica impulso de salto (delegado a la física)
+     * Obtiene el combo actual (para mostrar en UI)
+     */
+    getCombo() {
+        return this.comboActual;
+    }
+
+    /**
+     * Aplica impulso de salto
+     * Si estaba en voltereta, la completa y notifica
      */
     jump() {
+        // Verificar si estaba en voltereta ANTES de saltar
+        const estabaEnVoltereta = this.estaEnVoltereta;
+
+        // Ejecutar el salto
         this.fisica.saltar();
         this.resetearEstadoCaida();
-        console.log('⬆️ Salto');
+
+        // Si estaba en voltereta, notificar que se completó
+        if (estabaEnVoltereta && this.onVolteretaCompletada) {
+            this.onVolteretaCompletada();
+            console.log('VOLTERETA COMPLETADA - Bonus!');
+        }
+
+        console.log('Salto');
     }
 
     draw(ctx) {
@@ -188,7 +229,6 @@ export class Player {
             ctx.restore();
 
         } else {
-            // Círculo temporal
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
@@ -205,5 +245,7 @@ export class Player {
         this.rotacion = 0;
         this.fisica.reset();
         this.resetearEstadoCaida();
+        this.comboActual = 0;
+        this.tiempoDesdeUltimaVoltereta = 0;
     }
 }
