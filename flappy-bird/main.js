@@ -76,27 +76,46 @@ class Game {
      * Configura los eventos/callbacks del player
      */
     configurarEventosPlayer() {
-        const game = this;
+        // Bonus por completar voltereta con salto
         this.player.setOnVolteretaCompletada(() => {
-            this.otorgarBonusVoltereta();
+            this.otorgarBonusVolteretaCompletada();
+        });
+
+        // Puntos continuos durante voltereta (cada 0.1s)
+        this.player.setOnPuntoVoltereta(() => {
+            this.otorgarPuntoVoltereta();
         });
     }
 
     /**
-     * Otorga punto extra por completar una voltereta
+     * Otorga punto por completar voltereta con salto
      */
-    otorgarBonusVoltereta() {
+    otorgarBonusVolteretaCompletada() {
         this.puntos++;
 
-        // Crear animación de bonus (aparece arriba del jugador)
         this.animaciones.push(
             new VolteretaBonusAnimation(
-                this.player.x + 50,  // Un poco a la derecha
-                this.player.y - 40   // Arriba del jugador
+                this.player.x + 50,
+                this.player.y - 40
+            )
+        );
+    }
+
+    /**
+     * Otorga un punto por cada 0.1 segundos en voltereta
+     */
+    otorgarPuntoVoltereta() {
+        this.puntos++;
+
+        // Crear animación más pequeña o diferente para puntos continuos
+        this.animaciones.push(
+            new VolteretaBonusAnimation(
+                this.player.x + 50,
+                this.player.y - 40
             )
         );
 
-        console.log('BONUS VOLTERETA! Puntos:', this.puntos);
+        console.log(`+1 punto voltereta (${this.player.getTiempoVoltereta().toFixed(2)}s) - Total: ${this.puntos}`);
     }
 
     async loadAssets() {
@@ -124,9 +143,6 @@ class Game {
     }
 
     update() {
-
-
-        // Calcular deltaTime para animaciones precisas
         const deltaTime = 1/60;
 
         // Verificar si es momento de aumentar dificultad
@@ -134,36 +150,41 @@ class Game {
         if (intervaloAlcanzado) {
             this.aumentarDificultad();
         }
-        // 1. Gestionar el tiempo de invulnerabilidad
+
+        // Gestionar invulnerabilidad
         if (this.esInvulnerable) {
             if (Date.now() - this.ultimoGolpe > this.duracionInvulnerabilidad) {
-                this.esInvulnerable = false; // Se acabó el escudo
+                this.esInvulnerable = false;
                 console.log("Escudo desactivado");
             }
         }
+
         // Actualizar sistemas principales
         this.parallax.update();
         this.player.update(deltaTime);
         this.gestionarCorazones();
         this.verificarColisionCorazones();
 
+        // LEER PUNTOS DE VOLTERETA
+        const puntosVoltereta = this.player.consumirPuntosVoltereta();
+        if (puntosVoltereta > 0) {
+            this.puntos += puntosVoltereta;
+
+            // Crear animación por cada punto
+            for (let i = 0; i < puntosVoltereta; i++) {
+                this.animaciones.push(
+                    new StarAnimation(this.player.x + 30, this.player.y - 20)
+                );
+            }
+
+            console.log(`+${puntosVoltereta} puntos voltereta - Total: ${this.puntos}`);
+        }
+
         this.colisionDetectada = this.verificarColisiones();
 
         if (this.colisionDetectada) {
-            // if (!this.colisionDetectada) {
-            //     this.colisionDetectada = true;
-            //     this.tiempoColision = Date.now();
-            //     console.log('Colisión detectada');
-            // }
             this.recibirDanio();
         }
-
-        // Desactivar mensaje de colisión después del tiempo establecido
-        // if (this.colisionDetectada) {
-        //     if (Date.now() - this.tiempoColision > CONFIG.DURACION_MENSAJE_COLISION) {
-        //         this.colisionDetectada = false;
-        //     }
-        // }
 
         // Actualizar animaciones activas
         this.animaciones.forEach(anim => anim.update());
@@ -172,6 +193,7 @@ class Game {
         // Verificar puntaje
         this.verificarPuntos();
     }
+
     verificarColisionCorazones() {
         // Definir hitbox del jugador (asumiendo que es un círculo/cuadrado centrado)
         const playerRadio = this.player.radio || 25; // Usamos tu variable radio
@@ -200,14 +222,12 @@ class Game {
 
         if (this.vidas < this.maxVidas) {
             this.vidas++;
-            console.log("❤️ Vida extra! Total:", this.vidas);
 
             // Reproducir sonido (opcional)
             // this.sonidoVida.play();
         } else {
             // Opcional: Dar puntos si ya tiene la vida llena
             this.score += 5;
-            console.log("❤️ Vida llena -> Puntos extra!");
         }
     }
 
@@ -254,14 +274,11 @@ class Game {
 
     aumentarDificultad() {
         if (this.velocidadActual >= CONFIG.VELOCIDAD_MAXIMA) {
-            console.log('Velocidad máxima alcanzada');
             return;
         }
 
         this.velocidadActual += CONFIG.INCREMENTO_VELOCIDAD;
         this.parallax.setSpeed(this.velocidadActual);
-
-        console.log(`Dificultad aumentada - Velocidad: ${this.velocidadActual.toFixed(1)}`);
     }
 
     draw() {
@@ -346,12 +363,12 @@ class Game {
 
     pause() {
         this.estaEnEjecucion = false;
-        console.log('Juego pausado');
     }
 
     restart() {
         this.puntos = 0;
         this.corazones = []; // Borrar corazones viejos
+        this.vidas = this.maxVidas;
         this.ultimoSpawnCorazon = Date.now()
         this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
         this.parallax.reset();
@@ -456,13 +473,11 @@ class Game {
             return false;
         }
 
-        console.log('Colisión con tubo');
         return true;
     }
 
     recibirDanio() {
         this.vidas--; // Restar vida
-        console.log("¡Golpe! Vidas restantes:", this.vidas);
 
         if (this.vidas <= 0) {
             // Si no quedan vidas, Game Over
@@ -541,7 +556,6 @@ class Game {
             this.puntos++;
             capaTubo.scored = true;
             this.animaciones.push(new StarAnimation(this.player.x + 50, this.player.y));
-            console.log('Punto! Score:', this.puntos);
         }
 
         // Verificar tubo secundario
@@ -549,7 +563,6 @@ class Game {
             this.puntos++;
             capaTubo.next_scored = true;
             this.animaciones.push(new StarAnimation(this.player.x + 50, this.player.y));
-            console.log('Punto! Score:', this.puntos);
         }
     }
 

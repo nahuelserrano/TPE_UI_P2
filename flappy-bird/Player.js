@@ -26,12 +26,12 @@ export class Player {
 
         // === RUTAS DE SPRITES DE VOLTERETA ===
         this.rutasVoltereta = [
-            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
-            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
-            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
-            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
-            "../imagenes/flappy-bird/stich-sp-voltereta-2.png",
-            "../imagenes/flappy-bird/stich-sp-voltereta-2 .png"
+            "../imagenes/flappy-bird/stich-sp-voltereta-1-removebg-preview.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-2-removebg-preview.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-3-removebg-preview.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-4-removebg-preview.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-5-removebg-preview.png",
+            "../imagenes/flappy-bird/stich-sp-voltereta-6-removebg-preview.png"
         ];
 
         // === CARGAR IMÁGENES DE VOLTERETA ===
@@ -45,12 +45,17 @@ export class Player {
         // === ESTADOS ===
         this.estaEnVoltereta = false;
         this.tiempoCayendo = 0;
-        this.umbralVoltereta = 0.1;
+        this.umbralVoltereta = 0.3;
+
+        // === SISTEMA DE PUNTOS POR VOLTERETA ===
+        this.tiempoEnVoltereta = 0;           // Tiempo acumulado en voltereta actual
+        this.intervaloPuntosVoltereta = 0.1;  // Cada 0.1 segundos suma un punto
+        this.ultimoPuntoVoltereta = 0;        // Para trackear cuándo dar el siguiente punto
 
         // === SISTEMA DE COMBO ===
         this.comboActual = 0;
         this.tiempoDesdeUltimaVoltereta = 0;
-        this.tiempoMaximoCombo = 2.0;  // Segundos para mantener el combo
+        this.tiempoMaximoCombo = 2.0;
 
         this.spriteActual = this.spriteNormal;
         this.spriteCargado = false;
@@ -79,7 +84,11 @@ export class Player {
 
                 // Cuando todas las imágenes estén cargadas, crear la animación
                 if (this.volteretatImagenesCargadas === this.rutasVoltereta.length) {
-                    this.crearAnimacionVoltereta();
+                    this.animacionVoltereta = new AnimationController(
+                        this.imagenesVoltereta,
+                        0.75,
+                        true
+                    );
                     console.log('Animación de voltereta lista!');
                 }
             };
@@ -99,13 +108,11 @@ export class Player {
         this.onVolteretaCompletada = callback;
     }
 
-    crearAnimacionVoltereta() {
-        // Ahora sí tenemos todas las imágenes cargadas
-        this.animacionVoltereta = new AnimationController(
-            this.imagenesVoltereta,  // Array de objetos Image
-            0.05,                     // 0.05 segundos por frame
-            true                      // Loop activado
-        );
+    /**
+     * Registra un callback para cuando se gane un punto durante voltereta
+     */
+    setOnPuntoVoltereta(callback) {
+        this.onPuntoVoltereta = callback;
     }
 
     update(deltaTime = 1/60) {
@@ -116,19 +123,42 @@ export class Player {
         this.actualizarEstadoCaida(deltaTime);
         this.actualizarSprite(deltaTime);
 
+        // Actualizar puntos por voltereta continua
+        this.actualizarPuntosVoltereta(deltaTime);
+
         // Actualizar timer del combo
         this.actualizarCombo(deltaTime);
     }
 
     /**
+     * Otorga puntos por cada 0.1 segundos en voltereta
+     */
+    actualizarPuntosVoltereta(deltaTime) {
+        if (!this.estaEnVoltereta) return;
+
+        // Acumular tiempo en voltereta
+        this.tiempoEnVoltereta += deltaTime;
+
+        // Verificar si alcanzamos el siguiente intervalo de puntos
+        const puntosActuales = Math.floor(this.tiempoEnVoltereta / this.intervaloPuntosVoltereta);
+        const puntosAnteriores = Math.floor(this.ultimoPuntoVoltereta / this.intervaloPuntosVoltereta);
+
+        // Si cruzamos un umbral de 0.1 segundos, otorgar punto
+        if (puntosActuales > puntosAnteriores && this.onPuntoVoltereta) {
+            this.onPuntoVoltereta();
+            console.log(`Punto voltereta! Tiempo: ${this.tiempoEnVoltereta.toFixed(2)}s`);
+        }
+
+        this.ultimoPuntoVoltereta = this.tiempoEnVoltereta;
+    }
+
+    /**
      * Gestiona el tiempo del combo
-     * Si pasa mucho tiempo sin voltereta, se pierde el combo
      */
     actualizarCombo(deltaTime) {
         if (this.comboActual > 0) {
             this.tiempoDesdeUltimaVoltereta += deltaTime;
 
-            // Si pasó el tiempo máximo, romper combo
             if (this.tiempoDesdeUltimaVoltereta >= this.tiempoMaximoCombo) {
                 this.romperCombo('timeout');
             }
@@ -138,9 +168,8 @@ export class Player {
     /**
      * Rompe el combo actual
      */
-    romperCombo(razon = 'unknown') {
+    romperCombo() {
         if (this.comboActual > 0) {
-            console.log(`Combo roto (${razon}). Era: x${this.comboActual}`);
             this.comboActual = 0;
         }
         this.tiempoDesdeUltimaVoltereta = 0;
@@ -152,14 +181,14 @@ export class Player {
             this.y = this.canvasHeight - this.radio;
             this.fisica.detener();
             this.resetearEstadoCaida();
-            this.romperCombo('suelo');  // Rompe combo al tocar suelo
+            this.romperCombo('suelo');
         }
 
         // Colisión con techo
         if (this.y - this.radio < 0) {
             this.y = this.radio;
             this.fisica.detener();
-            this.romperCombo('techo');  // Rompe combo al tocar techo
+            this.romperCombo('techo');
         }
     }
 
@@ -176,16 +205,11 @@ export class Player {
     actualizarEstadoCaida(deltaTime) {
         const estaCayendoRapido = this.fisica.estaCayendoRapido(this.umbralVoltereta);
 
-        // 🔍 DEBUG: Ver qué está pasando
-        console.log('Velocidad:', this.fisica.obtenerVelocidad(),
-            'Cayendo rápido:', estaCayendoRapido,
-            'Tiempo cayendo:', this.tiempoCayendo.toFixed(2));
-
         if (estaCayendoRapido) {
             this.tiempoCayendo += deltaTime;
 
             if (this.tiempoCayendo >= this.umbralVoltereta && !this.estaEnVoltereta) {
-                console.log('🎯 ACTIVANDO VOLTERETA');
+                console.log('ACTIVANDO VOLTERETA');
                 this.iniciarVoltereta();
             }
         } else {
@@ -197,23 +221,26 @@ export class Player {
     }
 
     iniciarVoltereta() {
-        // Solo iniciar si la animación ya está cargada
         if (!this.animacionVoltereta) {
             console.warn('Animación de voltereta no está lista aún');
             return;
         }
 
         this.estaEnVoltereta = true;
+        this.tiempoEnVoltereta = 0;        // Resetear contador de tiempo
+        this.ultimoPuntoVoltereta = 0;     // Resetear tracker de puntos
         this.animacionVoltereta.play();
         this.rotacion = 0;
-        console.log('Voltereta activada');
     }
 
     detenerVoltereta() {
+        console.log(`Voltereta finalizada - Duración: ${this.tiempoEnVoltereta.toFixed(2)}s`);
+
         this.estaEnVoltereta = false;
+        this.tiempoEnVoltereta = 0;
+        this.ultimoPuntoVoltereta = 0;
         this.animacionVoltereta.stop();
         this.spriteActual = this.spriteNormal;
-        console.log('Voltereta detenida');
     }
 
     resetearEstadoCaida() {
@@ -232,7 +259,6 @@ export class Player {
         }
     }
 
-
     /**
      * Obtiene el combo actual (para mostrar en UI)
      */
@@ -241,24 +267,37 @@ export class Player {
     }
 
     /**
+     * Obtiene el tiempo actual en voltereta
+     */
+    getTiempoVoltereta() {
+        return this.tiempoEnVoltereta;
+    }
+
+    /**
+     * Lee y resetea los puntos ganados por voltereta
+     * Game llama esto cada frame
+     */
+    consumirPuntosVoltereta() {
+        const puntos = this.puntosVolteretaGanados;
+        this.puntosVolteretaGanados = 0;
+        return puntos;
+    }
+
+    /**
      * Aplica impulso de salto
      * Si estaba en voltereta, la completa y notifica
      */
     jump() {
-        // Verificar si estaba en voltereta ANTES de saltar
         const estabaEnVoltereta = this.estaEnVoltereta;
 
-        // Ejecutar el salto
         this.fisica.saltar();
         this.resetearEstadoCaida();
 
-        // Si estaba en voltereta, notificar que se completó
+        // Bonus por completar voltereta con salto
         if (estabaEnVoltereta && this.onVolteretaCompletada) {
             this.onVolteretaCompletada();
-            console.log('VOLTERETA COMPLETADA - Bonus!');
         }
 
-        console.log('Salto');
     }
 
     draw(ctx) {
@@ -299,5 +338,7 @@ export class Player {
         this.resetearEstadoCaida();
         this.comboActual = 0;
         this.tiempoDesdeUltimaVoltereta = 0;
+        this.tiempoEnVoltereta = 0;
+        this.ultimoPuntoVoltereta = 0;
     }
 }
