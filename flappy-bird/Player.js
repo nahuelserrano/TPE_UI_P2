@@ -86,7 +86,7 @@ export class Player {
                 if (this.volteretatImagenesCargadas === this.rutasVoltereta.length) {
                     this.animacionVoltereta = new AnimationController(
                         this.imagenesVoltereta,
-                        0.75,
+                        0.05,
                         true
                     );
                     console.log('Animación de voltereta lista!');
