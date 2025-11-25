@@ -165,7 +165,7 @@ class Game {
         }
 
         this.colisionDetectada = this.verificarColisiones();
-
+        console.log(this.colisionDetectada);
         if (this.colisionDetectada) {
             this.recibirDanio();
         }
@@ -223,10 +223,38 @@ class Game {
 
             // Posición Y aleatoria (evitando el techo y el suelo extremos)
             const padding = 100;
-            
             const randomY = Math.floor(Math.random() * (canvas.height - padding * 2)) + padding;
+            let spawnX = canvas.width;
 
-            let corazon = new HeartSpining(canvas.width, randomY);
+            // Evitar spawnear dentro de los tubos: comprobamos la capa de tubos si existe
+            const capaTubos = this.parallax.layers && this.parallax.layers[3];
+            if (capaTubos && capaTubos.image && capaTubos.image.width > 0) {
+                const calcularRangoTubo = (tuboX) => {
+                    const inicioTubo = tuboX + COLISION.OFFSET_INICIO_TUBO;
+                    const finTubo = tuboX + (capaTubos.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
+                    return { inicioTubo, finTubo };
+                };
+
+                // Rango del tubo principal y del secundario (siguiente)
+                const rangos = [
+                    calcularRangoTubo(capaTubos.x),
+                    calcularRangoTubo(capaTubos.x + canvas.width)
+                ];
+
+                const MARGIN = 100; // pixels extra para evitar solapamientos
+
+                // Si spawnX está dentro de algún rango desplazamos hasta el fin + margin.
+                // Repetimos por si al desplazarlo cae en el siguiente tubo en serie.
+                let safety = 0;
+                while (rangos.some(r => spawnX >= r.inicioTubo && spawnX <= r.finTubo) && safety++ < 10) {
+                    const dentro = rangos.find(r => spawnX >= r.inicioTubo && spawnX <= r.finTubo);
+                    spawnX = dentro.finTubo + MARGIN;
+                }
+            }
+
+
+
+            let corazon = new HeartSpining(spawnX, randomY);
             this.corazones.push(
                 corazon
             );

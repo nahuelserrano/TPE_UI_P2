@@ -232,7 +232,6 @@ class StarAnimation extends Animation {
                 super(x, y);
                 this.width=16;
                 this.height=16;
-                this.currentFrame = 0;
                 this.lastUpdate = 0;
                 this.frameSpeed = 120;
                 this.cantFram = 6;
@@ -250,18 +249,17 @@ class StarAnimation extends Animation {
             update() {
                 let timestamp = Date.now();
                 if (timestamp - this.lastUpdate > this.frameSpeed) {
-                    this.currentFrame = (this.currentFrame + 1) % this.cantFram;
+                    this.frame = (this.frame + 1) % this.cantFram;
                     this.lastUpdate = timestamp;
                 }
             
             }
         //la dibuja en el canvas
             draw(ctx) {
-                console.log("img loaded "+this.loaded)
                 if (!this.loaded && !this.recogido) return;
                 ctx.drawImage(
                     this.sprite,
-                    this.currentFrame * this.width, // x del recorte
+                    this.frame * this.width, // x del recorte
                     0,                          // y del recorte
                     this.width, this.height,    // tamaño del recorte
                     this.x, this.y,                   // posición destino en el canvas
