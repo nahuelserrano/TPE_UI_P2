@@ -3,7 +3,8 @@ import {
     GameOverScreenAnimation,
     JumpParticlesAnimation,
     StarAnimation,
-    VictoryScreenAnimation
+    VictoryScreenAnimation,
+    HeartSpining
 } from "./animations.js";
 import { Timer } from './Timer.js';
 import {Parallax} from './parallax.js';
@@ -127,7 +128,6 @@ class Game {
 
     start() {
         this.estaEnEjecucion = true;
-        this.timer.reset();
         this.gameLoop();
     }
 
@@ -239,15 +239,40 @@ class Game {
             // Posición Y aleatoria (evitando el techo y el suelo extremos)
             const padding = 100;
             const randomY = Math.floor(Math.random() * (canvas.height - padding * 2)) + padding;
+            let spawnX = canvas.width;
 
-            this.corazones.push({
-                x: canvas.width,      // Empieza a la derecha fuera de pantalla
-                y: randomY,
-                width: 40,            // Tamaño del corazón
-                height: 40,
-                velocidad: this.gameSpeed, // Se mueve con el escenario
-                recogido: false
-            });
+            // Evitar spawnear dentro de los tubos: comprobamos la capa de tubos si existe
+            const capaTubos = this.parallax.layers && this.parallax.layers[3];
+            if (capaTubos && capaTubos.image && capaTubos.image.width > 0) {
+                const calcularRangoTubo = (tuboX) => {
+                    const inicioTubo = tuboX + COLISION.OFFSET_INICIO_TUBO;
+                    const finTubo = tuboX + (capaTubos.scaledWidth * COLISION.PORCENTAJE_ANCHO_COLISION);
+                    return { inicioTubo, finTubo };
+                };
+
+                // Rango del tubo principal y del secundario (siguiente)
+                const rangos = [
+                    calcularRangoTubo(capaTubos.x),
+                    calcularRangoTubo(capaTubos.x + canvas.width)
+                ];
+
+                const MARGIN = 100; // pixels extra para evitar solapamientos
+
+                // Si spawnX está dentro de algún rango desplazamos hasta el fin + margin.
+                // Repetimos por si al desplazarlo cae en el siguiente tubo en serie.
+                let safety = 0;
+                while (rangos.some(r => spawnX >= r.inicioTubo && spawnX <= r.finTubo) && safety++ < 10) {
+                    const dentro = rangos.find(r => spawnX >= r.inicioTubo && spawnX <= r.finTubo);
+                    spawnX = dentro.finTubo + MARGIN;
+                }
+            }
+
+
+
+            let corazon = new HeartSpining(spawnX, randomY);
+            this.corazones.push(
+                corazon
+            );
 
             this.ultimoSpawnCorazon = tiempoActual;
         }
@@ -287,6 +312,7 @@ class Game {
         this.parallax.draw(ctx);
 
         if (this.esInvulnerable) {
+            // Solo dibuja al player la mitad de las veces (parpadeo rápido)
             if (Math.floor(Date.now() / 100) % 2 === 0) {
                 this.player.draw(ctx);
             }
@@ -294,20 +320,19 @@ class Game {
             this.player.draw(ctx);
         }
 
+        // Mensaje de colisión temporal
+        // if (this.colisionDetectada) {
+        //     this.mostrarMensajeColision();
+        // }
+
         // Animaciones activas
         this.animaciones.forEach(anim => anim.draw(ctx));
-
-        // Dibujar corazones
+        // DIBUJAR CORAZONES (Debajo del jugador, encima del fondo)
         this.corazones.forEach(corazon => {
-            if (this.imagenCorazon.complete && this.imagenCorazon.naturalWidth !== 0) {
-                ctx.drawImage(this.imagenCorazon, corazon.x, corazon.y, corazon.width, corazon.height);
-            } else {
-                ctx.font = "30px " + FUENTE;
-                ctx.fillText("❤️", corazon.x, corazon.y + 30);
-            }
+            corazon.update();
+            corazon.draw(ctx);
         });
-
-        // UI normal
+        // UI
         this.dibujarTimer();
         this.dibujarPuntos();
         this.dibujarVidas(ctx);
@@ -329,6 +354,7 @@ class Game {
 
         ctx.font = `${size}px ${FUENTE}`;  // ⭐ CAMBIADO
 
+        // Dibujamos un corazón por cada vida restante
         for (let i = 0; i < this.vidas; i++) {
             ctx.fillText("❤️", startX + (i * 35), startY);
         }
@@ -362,6 +388,8 @@ class Game {
         this.ultimoSpawnCorazon = Date.now();
         this.colisionDetectada = false;
         this.animaciones = [];
+        this.esInvulnerable = false;
+        this.ultimoGolpe = 0;
 
         // RESETEAR VELOCIDAD Y TIMER (ANTES de los sistemas)
         this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
@@ -425,9 +453,6 @@ class Game {
 
     checkWinCondition() {
         if (this.timer.getTiempoSegundos() >= 60) {
-            this.pause();
-
-            // Crear la animación solo una vez
             if (!this.pantallaVictoria) {
                 this.estaEnEjecucion = false;
                 this.pantallaVictoria = new VictoryScreenAnimation(

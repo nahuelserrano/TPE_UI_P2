@@ -220,14 +220,24 @@ export class Parallax {
       */
      reset() {
          this.layers.forEach(layer => {
-             layer.x = 0;
              if (layer.name === 'tubos') {
-                 layer.y = 0;
-                 layer.next_y = 0;
+                 // Los tubos deben empezar FUERA de pantalla (derecha)
+                 layer.x = this.canvasWidth;
+
+                 // Generar posiciones Y aleatorias desde el inicio
+                 layer.y = this.generateRandomTubePosition(layer);
+                 layer.next_y = this.generateRandomTubePosition(layer);
+
+                 // Resetear flags de puntuación
                  layer.scored = false;
                  layer.next_scored = false;
+             } else {
+                 // Fondos simples empiezan en x=0
+                 layer.x = 0;
              }
          });
+
+         console.log('🔄 Parallax reset completado - baseSpeed:', this.baseSpeed);
      }
      /**
       * Cambia la velocidad del parallax (útil para acelerar el juego)
