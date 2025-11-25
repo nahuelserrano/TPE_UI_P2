@@ -101,15 +101,8 @@ export class Player {
     }
 
     /**
-     * Registra un callback para cuando se complete una voltereta
-     * @param {Function} callback - Función a ejecutar al completar voltereta
-     */
-    setOnVolteretaCompletada(callback) {
-        this.onVolteretaCompletada = callback;
-    }
-
-    /**
      * Registra un callback para cuando se gane un punto durante voltereta
+     * @param {Function} callback - Función a ejecutar al completar voltereta
      */
     setOnPuntoVoltereta(callback) {
         this.onPuntoVoltereta = callback;
@@ -228,7 +221,10 @@ export class Player {
 
         this.estaEnVoltereta = true;
         this.tiempoEnVoltereta = 0;        // Resetear contador de tiempo
-        this.ultimoPuntoVoltereta = 0;     // Resetear tracker de puntos
+
+        // Inicializar en negativo para que el primer frame SIEMPRE otorgue punto
+        this.ultimoPuntoVoltereta = -this.intervaloPuntosVoltereta; // -0.1
+
         this.animacionVoltereta.play();
         this.rotacion = 0;
     }
@@ -257,20 +253,6 @@ export class Player {
         } else {
             this.spriteActual = this.spriteNormal;
         }
-    }
-
-    /**
-     * Obtiene el combo actual (para mostrar en UI)
-     */
-    getCombo() {
-        return this.comboActual;
-    }
-
-    /**
-     * Obtiene el tiempo actual en voltereta
-     */
-    getTiempoVoltereta() {
-        return this.tiempoEnVoltereta;
     }
 
     /**

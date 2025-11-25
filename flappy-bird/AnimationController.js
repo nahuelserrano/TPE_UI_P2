@@ -92,20 +92,4 @@ export class AnimationController {
     getSpriteActual() {
         return this.sprites[this.frameActual];
     }
-
-    /**
-     * Verifica si la animación terminó (solo relevante si loop = false)
-     * @returns {boolean}
-     */
-    haFinalizado() {
-        return this.haTerminado;
-    }
-
-    /**
-     * Obtiene el progreso de la animación (0.0 a 1.0)
-     * @returns {number}
-     */
-    obtenerProgreso() {
-        return this.frameActual / (this.sprites.length - 1);
-    }
 }

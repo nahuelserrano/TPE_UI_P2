@@ -226,107 +226,108 @@ class StarAnimation extends Animation {
 // ANIMACIÓN: BONUS VOLTERETA
 // ====================================
 
-class VolteretaBonusAnimation extends Animation {
-    constructor(x, y) {
-        super(x, y);
+// class VolteretaBonusAnimation extends Animation {
+//     constructor(x, y) {
+//         super(x, y);
+//
+//         // Guardar posición inicial
+//         this.inicialY = y;
+//
+//         // Configuración de movimiento
+//         this.velocidadY = -1.5;       // Sube más lento para ser visible
+//         this.opacidad = 1;
+//         this.escala = 0.5;            // Empieza pequeño
+//         this.escalaMaxima = 1.3;
+//
+//         // Timing
+//         this.duracion = 90;           // Más tiempo visible (1.5 segundos a 60fps)
+//         this.faseCrecer = 15;         // Frames para crecer
+//
+//         console.log('Animación bonus creada en:', x, y);
+//     }
+//
+//     update() {
+//         this.frame++;
+//
+//         // Fase 1: Crecer (primeros frames)
+//         if (this.frame <= this.faseCrecer) {
+//             // Escala de 0.5 a 1.3 con efecto "pop"
+//             const progreso = this.frame / this.faseCrecer;
+//             this.escala = 0.5 + (progreso * 0.8);
+//
+//             // Efecto de rebote al final del crecimiento
+//             if (this.frame === this.faseCrecer) {
+//                 this.escala = this.escalaMaxima;
+//             }
+//         }
+//         // Fase 2: Volver a tamaño normal
+//         else if (this.frame <= this.faseCrecer + 10) {
+//             this.escala = this.escalaMaxima - ((this.frame - this.faseCrecer) / 10) * 0.3;
+//         }
+//         // Fase 3: Subir y desvanecer
+//         else {
+//             this.escala = 1;
+//             this.y += this.velocidadY;
+//
+//             // Calcular opacidad basada en frames restantes
+//             const framesRestantes = this.duracion - this.frame;
+//             const framesDeDesvanecimiento = 40;
+//
+//             if (framesRestantes < framesDeDesvanecimiento) {
+//                 this.opacidad = framesRestantes / framesDeDesvanecimiento;
+//             }
+//         }
+//
+//         // Finalizar
+//         if (this.frame >= this.duracion) {
+//             this.isFinished = true;
+//             console.log('Animación bonus finalizada');
+//         }
+//     }
+//
+//     draw(ctx) {
+//         if (this.opacidad <= 0) return;
+//
+//         ctx.save();
+//
+//         ctx.globalAlpha = this.opacidad;
+//         ctx.translate(this.x, this.y);
+//         ctx.scale(this.escala, this.escala);
+//
+//         // Fondo semi-transparente (hace el texto más visible)
+//         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+//         ctx.beginPath();
+//         ctx.roundRect(-45, -18, 90, 50, 8);
+//         ctx.fill();
+//
+//         // Texto principal "+1"
+//         ctx.font = 'bold 32px Arial';
+//         ctx.textAlign = 'center';
+//         ctx.textBaseline = 'middle';
+//
+//         // Sombra
+//         ctx.shadowColor = '#000000';
+//         ctx.shadowBlur = 4;
+//         ctx.shadowOffsetX = 2;
+//         ctx.shadowOffsetY = 2;
+//
+//         // Texto dorado
+//         ctx.fillStyle = '#FFD700';
+//         ctx.fillText('+1', 0, 0);
+//
+//         // Quitar sombra para el texto secundario
+//         ctx.shadowBlur = 0;
+//         ctx.shadowOffsetX = 0;
+//         ctx.shadowOffsetY = 0;
+//
+//         // Texto "VOLTERETA"
+//         ctx.font = 'bold 12px Arial';
+//         ctx.fillStyle = '#00FFFF';
+//         ctx.fillText('VOLTERETA', 0, 20);
+//
+//         ctx.restore();
+//     }
+// }
 
-        // Guardar posición inicial
-        this.inicialY = y;
-
-        // Configuración de movimiento
-        this.velocidadY = -1.5;       // Sube más lento para ser visible
-        this.opacidad = 1;
-        this.escala = 0.5;            // Empieza pequeño
-        this.escalaMaxima = 1.3;
-
-        // Timing
-        this.duracion = 90;           // Más tiempo visible (1.5 segundos a 60fps)
-        this.faseCrecer = 15;         // Frames para crecer
-
-        console.log('Animación bonus creada en:', x, y);
-    }
-
-    update() {
-        this.frame++;
-
-        // Fase 1: Crecer (primeros frames)
-        if (this.frame <= this.faseCrecer) {
-            // Escala de 0.5 a 1.3 con efecto "pop"
-            const progreso = this.frame / this.faseCrecer;
-            this.escala = 0.5 + (progreso * 0.8);
-
-            // Efecto de rebote al final del crecimiento
-            if (this.frame === this.faseCrecer) {
-                this.escala = this.escalaMaxima;
-            }
-        }
-        // Fase 2: Volver a tamaño normal
-        else if (this.frame <= this.faseCrecer + 10) {
-            this.escala = this.escalaMaxima - ((this.frame - this.faseCrecer) / 10) * 0.3;
-        }
-        // Fase 3: Subir y desvanecer
-        else {
-            this.escala = 1;
-            this.y += this.velocidadY;
-
-            // Calcular opacidad basada en frames restantes
-            const framesRestantes = this.duracion - this.frame;
-            const framesDeDesvanecimiento = 40;
-
-            if (framesRestantes < framesDeDesvanecimiento) {
-                this.opacidad = framesRestantes / framesDeDesvanecimiento;
-            }
-        }
-
-        // Finalizar
-        if (this.frame >= this.duracion) {
-            this.isFinished = true;
-            console.log('Animación bonus finalizada');
-        }
-    }
-
-    draw(ctx) {
-        if (this.opacidad <= 0) return;
-
-        ctx.save();
-
-        ctx.globalAlpha = this.opacidad;
-        ctx.translate(this.x, this.y);
-        ctx.scale(this.escala, this.escala);
-
-        // Fondo semi-transparente (hace el texto más visible)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.beginPath();
-        ctx.roundRect(-45, -18, 90, 50, 8);
-        ctx.fill();
-
-        // Texto principal "+1"
-        ctx.font = 'bold 32px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Sombra
-        ctx.shadowColor = '#000000';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-
-        // Texto dorado
-        ctx.fillStyle = '#FFD700';
-        ctx.fillText('+1', 0, 0);
-
-        // Quitar sombra para el texto secundario
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        // Texto "VOLTERETA"
-        ctx.font = 'bold 12px Arial';
-        ctx.fillStyle = '#00FFFF';
-        ctx.fillText('VOLTERETA', 0, 20);
-
-        ctx.restore();
-    }
-}
-
-export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation, VolteretaBonusAnimation };
+export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation };
+// export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation, VolteretaBonusAnimation };

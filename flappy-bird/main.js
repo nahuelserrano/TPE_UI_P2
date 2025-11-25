@@ -1,4 +1,4 @@
-import {ExplosionAnimation, JumpParticlesAnimation, StarAnimation, VolteretaBonusAnimation} from "./animations.js";
+import { ExplosionAnimation, JumpParticlesAnimation, StarAnimation } from "./animations.js";
 import { Timer } from './Timer.js';
 import {Parallax} from './parallax.js';
 import { Player } from './Player.js';
@@ -77,28 +77,14 @@ class Game {
      */
     configurarEventosPlayer() {
         // Bonus por completar voltereta con salto
-        this.player.setOnVolteretaCompletada(() => {
-            this.otorgarBonusVolteretaCompletada();
-        });
+        // this.player.setOnVolteretaCompletada(() => {
+        //     this.otorgarBonusVolteretaCompletada();
+        // });
 
         // Puntos continuos durante voltereta (cada 0.1s)
         this.player.setOnPuntoVoltereta(() => {
             this.otorgarPuntoVoltereta();
         });
-    }
-
-    /**
-     * Otorga punto por completar voltereta con salto
-     */
-    otorgarBonusVolteretaCompletada() {
-        this.puntos++;
-
-        this.animaciones.push(
-            new VolteretaBonusAnimation(
-                this.player.x + 50,
-                this.player.y - 40
-            )
-        );
     }
 
     /**
@@ -109,13 +95,11 @@ class Game {
 
         // Crear animación más pequeña o diferente para puntos continuos
         this.animaciones.push(
-            new VolteretaBonusAnimation(
+            new StarAnimation(
                 this.player.x + 50,
                 this.player.y - 40
             )
         );
-
-        console.log(`+1 punto voltereta (${this.player.getTiempoVoltereta().toFixed(2)}s) - Total: ${this.puntos}`);
     }
 
     async loadAssets() {
