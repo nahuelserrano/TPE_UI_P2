@@ -1,4 +1,10 @@
-import { ExplosionAnimation, JumpParticlesAnimation, StarAnimation } from "./animations.js";
+import {
+    ExplosionAnimation,
+    GameOverScreenAnimation,
+    JumpParticlesAnimation,
+    StarAnimation,
+    VictoryScreenAnimation
+} from "./animations.js";
 import { Timer } from './Timer.js';
 import {Parallax} from './parallax.js';
 import { Player } from './Player.js';
@@ -24,6 +30,8 @@ const CONFIG = {
     DURACION_MENSAJE_COLISION: 2000    // Milisegundos
 };
 
+const FUENTE = 'system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+
 // ====================================
 // CLASE GAME
 // ====================================
@@ -45,6 +53,7 @@ class Game {
         this.estaEnEjecucion = false;
         this.assetsLoaded = false;
         this.colisionDetectada = false;
+        this.gameOverActivo = false;
         this.puntos = 0;
         this.vidas = 3;                 // Empezamos con 3 vidas
         this.esInvulnerable = false;    // ¿Acaba de chocar?
@@ -70,6 +79,11 @@ class Game {
 
         this.tiempoColision = 0;
 
+        // Animaciones de pantallas
+        this.pantallaGameOver = null;
+        this.pantallaVictoria = null;
+
+        this.tiempoInicioVictoria = null; // Para el timer de reinicio automático
     }
 
     /**
@@ -118,10 +132,11 @@ class Game {
     }
 
     gameLoop() {
-        if (!this.estaEnEjecucion) return;
-
-        this.update();
         this.draw();
+
+        if (this.estaEnEjecucion) {
+            this.update();
+        }
 
         requestAnimationFrame(() => this.gameLoop());
     }
@@ -272,7 +287,6 @@ class Game {
         this.parallax.draw(ctx);
 
         if (this.esInvulnerable) {
-            // Solo dibuja al player la mitad de las veces (parpadeo rápido)
             if (Math.floor(Date.now() / 100) % 2 === 0) {
                 this.player.draw(ctx);
             }
@@ -280,42 +294,41 @@ class Game {
             this.player.draw(ctx);
         }
 
-        // Mensaje de colisión temporal
-        // if (this.colisionDetectada) {
-        //     this.mostrarMensajeColision();
-        // }
-
         // Animaciones activas
         this.animaciones.forEach(anim => anim.draw(ctx));
-        // DIBUJAR CORAZONES (Debajo del jugador, encima del fondo)
+
+        // Dibujar corazones
         this.corazones.forEach(corazon => {
             if (this.imagenCorazon.complete && this.imagenCorazon.naturalWidth !== 0) {
-                // Si la imagen cargó, dibujar imagen
                 ctx.drawImage(this.imagenCorazon, corazon.x, corazon.y, corazon.width, corazon.height);
             } else {
-                // Si no hay imagen, dibujar un emoji o círculo rojo temporal
-                ctx.font = "30px Arial";
+                ctx.font = "30px " + FUENTE;
                 ctx.fillText("❤️", corazon.x, corazon.y + 30);
             }
         });
-        // UI
+
+        // UI normal
         this.dibujarTimer();
         this.dibujarPuntos();
-        this.checkWinCondition();
         this.dibujarVidas(ctx);
+
+        if (this.gameOverActivo) {
+            this.mostrarPantallaGameOver();
+        } else {
+            this.checkWinCondition();
+        }
 
         // Debug (descomentar si es necesario)
         // this.dibujarDebugHueco();
     }
 
     dibujarVidas(ctx) {
-        const startX = canvas.width - 500; // Posición X (derecha)
-        const startY = 40;                 // Posición Y (arriba)
-        const size = 30;                   // Tamaño del emoji
+        const startX = canvas.width - 500;
+        const startY = 40;
+        const size = 30;
 
-        ctx.font = `${size}px Arial`;
+        ctx.font = `${size}px ${FUENTE}`;  // ⭐ CAMBIADO
 
-        // Dibujamos un corazón por cada vida restante
         for (let i = 0; i < this.vidas; i++) {
             ctx.fillText("❤️", startX + (i * 35), startY);
         }
@@ -325,24 +338,16 @@ class Game {
         const tiempo = this.timer.getTiempoFormateado();
 
         // Timer principal
-        ctx.font = 'bold 40px Arial';
+        ctx.font = `bold 40px ${FUENTE}`;
         ctx.fillStyle = '#00FFFF';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'top';
         ctx.fillText(tiempo, canvas.width - 30, 20);
 
         // Velocidad actual
-        ctx.font = '24px Arial';
+        ctx.font = `24px ${FUENTE}`;
         ctx.fillStyle = '#AAAAAA';
         ctx.fillText(`Vel: ${this.velocidadActual.toFixed(1)}`, canvas.width - 35, 65);
-    }
-
-    dibujarPuntos() {
-        ctx.font = 'bold 30px Arial';
-        ctx.fillStyle = '#F ';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${this.puntos}`, canvas.width / 2, 35);
     }
 
     pause() {
@@ -350,17 +355,29 @@ class Game {
     }
 
     restart() {
+        // RESETEAR ESTADO DEL JUEGO
         this.puntos = 0;
-        this.corazones = []; // Borrar corazones viejos
+        this.corazones = [];
         this.vidas = this.maxVidas;
-        this.ultimoSpawnCorazon = Date.now()
-        this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
-        this.parallax.reset();
-        this.parallax.setSpeed(this.velocidadActual);
-        this.timer.reset();
-        this.player.reset();
+        this.ultimoSpawnCorazon = Date.now();
         this.colisionDetectada = false;
         this.animaciones = [];
+
+        // RESETEAR VELOCIDAD Y TIMER (ANTES de los sistemas)
+        this.velocidadActual = CONFIG.VELOCIDAD_INICIAL;
+        this.timer.reset();
+
+        // RESETEAR SISTEMAS
+        this.parallax.reset();
+        this.parallax.setSpeed(this.velocidadActual);
+        this.player.reset();
+
+        // RESETEAR PANTALLAS
+        this.pantallaGameOver = null;
+        this.pantallaVictoria = null;
+        this.tiempoInicioVictoria = null;
+        this.gameOverActivo = false;
+
         this.start();
     }
 
@@ -407,17 +424,22 @@ class Game {
     }
 
     checkWinCondition() {
-        if (this.timer.getTiempoSegundos() >= 60){
+        if (this.timer.getTiempoSegundos() >= 60) {
             this.pause();
-            ctx.font = 'bold 80px Arial';
-            ctx.fillStyle = '#00AA00';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            let offsetY = 40;
-            ctx.fillText('Felicitaciones', canvas.width / 2, canvas.height / 2 - offsetY );
-            ctx.fillText('Ganaste', canvas.width / 2, canvas.height / 2 + offsetY);
 
-            setTimeout(this.restart, 3000)
+            // Crear la animación solo una vez
+            if (!this.pantallaVictoria) {
+                this.estaEnEjecucion = false;
+                this.pantallaVictoria = new VictoryScreenAnimation(
+                    canvas.width / 2,
+                    canvas.height / 2,
+                    this.puntos
+                );
+            }
+
+            // Actualizar y dibujar
+            this.pantallaVictoria.update();
+            this.pantallaVictoria.draw(ctx);
         }
     }
 
@@ -465,7 +487,6 @@ class Game {
 
         if (this.vidas <= 0) {
             // Si no quedan vidas, Game Over
-            this.estaEnEjecucion = false;
             this.gameOver();
         } else {
             // Si quedan vidas, activar escudo temporal
@@ -497,28 +518,25 @@ class Game {
     }
 
     gameOver() {
-        setTimeout(() => {
-            this.pause();
-            this.mostrarPantallaGameOver();
-        }, 300);
+        this.estaEnEjecucion = false;
+        this.gameOverActivo = true;
     }
 
 
     mostrarPantallaGameOver() {
+        // Crear la animación solo una vez
+        if (!this.pantallaGameOver) {
+            this.pantallaGameOver = new GameOverScreenAnimation(
+                canvas.width / 2,
+                canvas.height / 2,
+                this.puntos,
+                this.timer.getTiempoFormateado()
+            );
+        }
 
-        ctx.font = 'bold 100px Arial';
-        ctx.fillStyle = '#FF0000';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 50);
-
-        ctx.font = '50px Arial';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`Puntaje: ${this.puntos}`, canvas.width / 2, canvas.height / 2 + 50);
-
-        ctx.font = '30px Arial';
-        ctx.fillStyle = '#AAAAAA';
-        ctx.fillText('Presiona R para reiniciar', canvas.width / 2, canvas.height / 2 + 120);
+        // Actualizar y dibujar
+        this.pantallaGameOver.update();
+        this.pantallaGameOver.draw(ctx);
     }
 
     // ====================================
@@ -589,6 +607,14 @@ class Game {
         // Dibujar líneas para ambos tubos
         dibujarLineasTubo(capaTubo.x, capaTubo.y);
         dibujarLineasTubo(capaTubo.x + canvas.width, capaTubo.next_y);
+    }
+
+    dibujarPuntos() {
+        ctx.font = `bold 30px ${FUENTE}`;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${this.puntos}`, canvas.width / 2, 35);
     }
 }
 

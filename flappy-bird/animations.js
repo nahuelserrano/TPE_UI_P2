@@ -2,6 +2,10 @@
  * Clase base para todas las animaciones
  * Define la estructura común
  */
+
+const FUENTE = 'system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+
+
 class Animation {
     constructor(x, y) {
         this.x = x;
@@ -329,5 +333,234 @@ class StarAnimation extends Animation {
 //     }
 // }
 
-export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation };
-// export { ExplosionAnimation, JumpParticlesAnimation, StarAnimation, VolteretaBonusAnimation };
+// ====================================
+// ANIMACIÓN: PANTALLA GAME OVER
+// ====================================
+
+class GameOverScreenAnimation extends Animation {
+    constructor(x, y, puntos, tiempo) {
+        super(x, y); // x e y serán el centro del canvas
+
+        this.puntos = puntos;
+        this.tiempo = tiempo;
+        this.duracionAnimacion = 1000; // 1 segundo
+        this.inicioAnimacion = Date.now();
+    }
+
+    /**
+     * Calcula el progreso de la animación (0 a 1)
+     * con easing ease-out
+     */
+    obtenerProgreso() {
+        const tiempoTranscurrido = Date.now() - this.inicioAnimacion;
+        let progreso = Math.min(tiempoTranscurrido / this.duracionAnimacion, 1);
+
+        // Easing "ease-out" para efecto más natural
+        progreso = 1 - Math.pow(1 - progreso, 3);
+
+        return progreso;
+    }
+
+    update() {
+        // Esta animación nunca termina (se maneja desde Game)
+        // Solo actualiza el frame para el efecto de pulso
+        this.frame++;
+    }
+
+    draw(ctx) {
+        const canvas = ctx.canvas;
+        const progreso = this.obtenerProgreso();
+
+        // === FONDO ANIMADO ===
+        const gradiente = ctx.createRadialGradient(
+            this.x, this.y, 0,
+            this.x, this.y, canvas.width / 2
+        );
+        gradiente.addColorStop(0, `rgba(255, 0, 0, ${0.2 * progreso})`);
+        gradiente.addColorStop(1, `rgba(0, 0, 0, ${0.7 * progreso})`);
+        ctx.fillStyle = gradiente;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // === TRANSFORMACIONES ===
+        const escala = 0.5 + (0.5 * progreso);
+        const opacidad = progreso;
+
+        ctx.save();
+        ctx.globalAlpha = opacidad;
+        ctx.translate(this.x, this.y);
+        ctx.scale(escala, escala);
+        ctx.translate(-this.x, -this.y);
+
+        // === TÍTULO PRINCIPAL ===
+        ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+        ctx.shadowBlur = 20;
+        ctx.font = `bold 70px ${FUENTE}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Contorno negro
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 8;
+        ctx.strokeText('GAME OVER', this.x, this.y - 80);
+
+        // Relleno rojo
+        ctx.fillStyle = '#FF0000';
+        ctx.fillText('GAME OVER', this.x, this.y - 80);
+
+        // === PUNTAJE ===
+        ctx.shadowBlur = 10;
+        ctx.font = `bold 40px ${FUENTE}`;
+
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 6;
+        ctx.strokeText(`🏆 Puntaje: ${this.puntos}`, this.x, this.y + 20);
+
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText(`🏆 Puntaje: ${this.puntos}`, this.x, this.y + 20);
+
+        // === TIEMPO ===
+        ctx.shadowBlur = 8;
+        ctx.font = `25px ${FUENTE}`;
+
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 4;
+        ctx.strokeText(`⏱️ Tiempo: ${this.tiempo}`, this.x, this.y + 90);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`⏱️ Tiempo: ${this.tiempo}`, this.x, this.y + 90);
+
+        // === INSTRUCCIÓN CON PULSO ===
+        const pulso = 0.8 + (Math.sin(this.frame / 5) * 0.2);
+        ctx.globalAlpha = pulso * opacidad;
+
+        ctx.shadowBlur = 5;
+        ctx.font = `20px ${FUENTE}`;
+        ctx.fillStyle = '#AAAAAA';
+        ctx.fillText('Presiona R para reiniciar', this.x, this.y + 160);
+
+        ctx.restore();
+    }
+}
+
+// ====================================
+// ANIMACIÓN: PANTALLA VICTORIA
+// ====================================
+
+class VictoryScreenAnimation extends Animation {
+    constructor(x, y, puntos) {
+        super(x, y); // x e y serán el centro del canvas
+
+        this.puntos = puntos;
+        this.duracionAnimacion = 1000; // 1 segundo
+        this.inicioAnimacion = Date.now();
+    }
+
+    /**
+     * Calcula el progreso de la animación (0 a 1)
+     * con easing ease-out
+     */
+    obtenerProgreso() {
+        const tiempoTranscurrido = Date.now() - this.inicioAnimacion;
+        let progreso = Math.min(tiempoTranscurrido / this.duracionAnimacion, 1);
+
+        // Easing más dramático para la victoria
+        progreso = 1 - Math.pow(1 - progreso, 4);
+
+        return progreso;
+    }
+
+    update() {
+        // Esta animación nunca termina (se maneja desde Game)
+        this.frame++;
+    }
+
+    draw(ctx) {
+        const canvas = ctx.canvas;
+        const progreso = this.obtenerProgreso();
+
+        // === FONDO ANIMADO ===
+        const gradiente = ctx.createRadialGradient(
+            this.x, this.y, 0,
+            this.x, this.y, canvas.width / 2
+        );
+        gradiente.addColorStop(0, `rgba(255, 215, 0, ${0.3 * progreso})`);
+        gradiente.addColorStop(1, `rgba(0, 100, 0, ${0.6 * progreso})`);
+        ctx.fillStyle = gradiente;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // === TRANSFORMACIONES ===
+        const escala = 0.3 + (0.7 * progreso); // Más dramático
+        const opacidad = progreso;
+
+        ctx.save();
+        ctx.globalAlpha = opacidad;
+        ctx.translate(this.x, this.y);
+        ctx.scale(escala, escala);
+        ctx.translate(-this.x, -this.y);
+
+        // === TÍTULO PRINCIPAL ===
+        ctx.shadowColor = 'rgba(255, 215, 0, 0.8)';
+        ctx.shadowBlur = 25;
+        ctx.font = `bold 60px ${FUENTE}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Contorno negro grueso
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 10;
+        ctx.strokeText('🎉 ¡VICTORIA! 🎉', this.x, this.y - 100);
+
+        // Gradiente dorado para el texto
+        const textoGradiente = ctx.createLinearGradient(
+            this.x - 300, this.y,
+            this.x + 300, this.y
+        );
+        textoGradiente.addColorStop(0, '#FFD700');
+        textoGradiente.addColorStop(0.5, '#FFF700');
+        textoGradiente.addColorStop(1, '#FFD700');
+        ctx.fillStyle = textoGradiente;
+        ctx.fillText('¡VICTORIA!', this.x, this.y - 100);
+
+        // === SUBTÍTULO ===
+        ctx.shadowBlur = 15;
+        ctx.font = `bold 30px ${FUENTE}`;
+
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 6;
+        ctx.strokeText('¡Completaste el desafío!', this.x, this.y + 10);
+
+        ctx.fillStyle = '#00FF00';
+        ctx.fillText('¡Completaste el desafío!', this.x, this.y + 10);
+
+        // === PUNTAJE FINAL ===
+        ctx.shadowBlur = 10;
+        ctx.font = `22px ${FUENTE}`;
+
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 4;
+        ctx.strokeText(`🏆 Puntaje Final: ${this.puntos}`, this.x, this.y + 90);
+
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText(`🏆 Puntaje Final: ${this.puntos}`, this.x, this.y + 90);
+
+        // === MENSAJE CON PULSO ===
+        const pulso = 0.7 + (Math.sin(this.frame / 5) * 0.3);
+        ctx.globalAlpha = pulso * opacidad;
+
+        ctx.shadowBlur = 8;
+
+        ctx.restore();
+    }
+}
+
+// ====================================
+// EXPORTS
+// ====================================
+
+export {
+    ExplosionAnimation,
+    JumpParticlesAnimation,
+    StarAnimation,
+    GameOverScreenAnimation,
+    VictoryScreenAnimation
+};
