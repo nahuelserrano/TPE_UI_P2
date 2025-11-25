@@ -53,6 +53,7 @@ class Game {
 
         this.estaEnEjecucion = false;
         this.assetsLoaded = false;
+        this.loopIniciado = false;
         this.colisionDetectada = false;
         this.gameOverActivo = false;
         this.puntos = 0;
@@ -128,7 +129,11 @@ class Game {
 
     start() {
         this.estaEnEjecucion = true;
-        this.gameLoop();
+
+        if (!this.loopIniciado) {
+            this.loopIniciado = true;
+            this.gameLoop();
+        }
     }
 
     gameLoop() {
@@ -147,6 +152,7 @@ class Game {
         // Verificar si es momento de aumentar dificultad
         const intervaloAlcanzado = this.timer.update();
         if (intervaloAlcanzado) {
+            console.log('⏰ Intervalo alcanzado - Tiempo:', this.timer.getTiempoSegundos());
             this.aumentarDificultad();
         }
 
@@ -298,8 +304,12 @@ class Game {
 
     aumentarDificultad() {
         if (this.velocidadActual >= CONFIG.VELOCIDAD_MAXIMA) {
+            console.log('⚠️ Velocidad máxima alcanzada');
             return;
         }
+
+        console.log(`📈 AUMENTANDO DIFICULTAD: ${this.velocidadActual} → ${this.velocidadActual + CONFIG.INCREMENTO_VELOCIDAD}`);
+        console.log(`   Tiempo: ${this.timer.getTiempoSegundos()}s`);
 
         this.velocidadActual += CONFIG.INCREMENTO_VELOCIDAD;
         this.parallax.setSpeed(this.velocidadActual);
@@ -396,8 +406,12 @@ class Game {
         this.timer.reset();
 
         // RESETEAR SISTEMAS
-        this.parallax.reset();
         this.parallax.setSpeed(this.velocidadActual);
+        this.parallax.reset();
+
+        console.log('🔄 Velocidad final después de restart:', this.velocidadActual);
+        console.log('🔄 BaseSpeed final después de restart:', this.parallax.baseSpeed);
+
         this.player.reset();
 
         // RESETEAR PANTALLAS
