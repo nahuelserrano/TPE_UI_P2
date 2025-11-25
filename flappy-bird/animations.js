@@ -221,6 +221,56 @@ class StarAnimation extends Animation {
     }
 }
 
+// ====================================
+// ANIMACIÓN: CORAZON ROTANDO
+// ====================================
+
+
+        export class HeartSpining extends Animation{
+
+            constructor(x, y, velocidadRotacion, gameSpeed){
+                super(x, y);
+                this.width=16;
+                this.height=16;
+                this.currentFrame = 0;
+                this.lastUpdate = 0;
+                this.frameSpeed = 120;
+                this.cantFram = 6;
+                this.velocidadRotacion = velocidadRotacion;
+                this.velocidad = gameSpeed, // Se mueve con el escenario
+                this.recogido=false
+                this.sprite = new Image();
+                this.sprite.src = '../imagenes/flappy-bird/Hearts.png';
+                this.sprite.onload = () => {
+                    this.loaded = true;
+                };
+                
+            }
+        //se encarga de cambiarla la animacion de moverla internamenet 
+            update() {
+                let timestamp = Date.now();
+                if (timestamp - this.lastUpdate > this.frameSpeed) {
+                    this.currentFrame = (this.currentFrame + 1) % this.cantFram;
+                    this.lastUpdate = timestamp;
+                }
+            
+            }
+        //la dibuja en el canvas
+            draw(ctx) {
+                console.log("img loaded "+this.loaded)
+                if (!this.loaded && !this.recogido) return;
+                ctx.drawImage(
+                    this.sprite,
+                    this.currentFrame * this.width, // x del recorte
+                    0,                          // y del recorte
+                    this.width, this.height,    // tamaño del recorte
+                    this.x, this.y,                   // posición destino en el canvas
+                    40, 40
+                );
+
+            }
+        }
+
 
 // ====================================
 // ANIMACIÓN: BONUS VOLTERETA

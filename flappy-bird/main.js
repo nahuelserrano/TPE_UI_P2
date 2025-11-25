@@ -1,4 +1,4 @@
-import { ExplosionAnimation, JumpParticlesAnimation, StarAnimation } from "./animations.js";
+import { ExplosionAnimation, JumpParticlesAnimation, StarAnimation, HeartSpining } from "./animations.js";
 import { Timer } from './Timer.js';
 import {Parallax} from './parallax.js';
 import { Player } from './Player.js';
@@ -223,16 +223,13 @@ class Game {
 
             // Posición Y aleatoria (evitando el techo y el suelo extremos)
             const padding = 100;
+            
             const randomY = Math.floor(Math.random() * (canvas.height - padding * 2)) + padding;
 
-            this.corazones.push({
-                x: canvas.width,      // Empieza a la derecha fuera de pantalla
-                y: randomY,
-                width: 40,            // Tamaño del corazón
-                height: 40,
-                velocidad: this.gameSpeed, // Se mueve con el escenario
-                recogido: false
-            });
+            let corazon = new HeartSpining(canvas.width, randomY);
+            this.corazones.push(
+                corazon
+            );
 
             this.ultimoSpawnCorazon = tiempoActual;
         }
@@ -289,14 +286,8 @@ class Game {
         this.animaciones.forEach(anim => anim.draw(ctx));
         // DIBUJAR CORAZONES (Debajo del jugador, encima del fondo)
         this.corazones.forEach(corazon => {
-            if (this.imagenCorazon.complete && this.imagenCorazon.naturalWidth !== 0) {
-                // Si la imagen cargó, dibujar imagen
-                ctx.drawImage(this.imagenCorazon, corazon.x, corazon.y, corazon.width, corazon.height);
-            } else {
-                // Si no hay imagen, dibujar un emoji o círculo rojo temporal
-                ctx.font = "30px Arial";
-                ctx.fillText("❤️", corazon.x, corazon.y + 30);
-            }
+            corazon.update();
+            corazon.draw(ctx);
         });
         // UI
         this.dibujarTimer();
