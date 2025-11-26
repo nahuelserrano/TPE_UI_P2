@@ -16,26 +16,6 @@ const hashMap = new Map();
 const VUELTAS_DE_RULETA = 3;
 
 // Configuraciones con piezas CUADRADAS
-// formato: {x: columnas, y: filas}
-hashMap.set(4, {x: 2, y: 2});  // 2x2 = 4 piezas
-hashMap.set(6, {x: 2, y: 3});  // 2x3 = 6 piezas
-hashMap.set(8, {x: 2, y: 4});  // 3x3 = 8 piezas
-
-// ===== IMÁGENES Y CONFIGURACIÓN =====
-const images = [
-    "../imagenes/peg-solitaire/lysjugandopagsolitaire.jpg",
-    "../imagenes/peg-solitaire/LyS 3 video.webp",
-    "../imagenes/peg-solitaire/Stich Elvis 2.jpeg",
-    "../imagenes/peg-solitaire/stich-peg-solitaire-ejecucion.jpeg",
-    "../imagenes/peg-solitaire/LiloStitch-web.jpg",
-    "../imagenes/peg-solitaire/ruleta2.webp",
-    "../imagenes/peg-solitaire/lilo-stitch-1920581-2194132495.jpg",
-    "../imagenes/peg-solitaire/LyS-ruleta.jpg",
-];
-
-// ===== VARIABLES DE ESTADO =====
-let nivel = 0;
-let gameWon = false;
 let juegoActivo = false;
 let pieces = [];
 let tileCount = 4;
@@ -95,7 +75,7 @@ async function ejecutarRuleta() {
             };
         });
 
-        imagen.src = "../"+images[i];
+        imagen.src = images[i];
         const cargadaCorrectamente = await loadPromise;
 
         if (cargadaCorrectamente) {
