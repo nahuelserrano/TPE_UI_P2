@@ -1516,3 +1516,31 @@ button.primary:hover {
 .reset-button:active {
     transform: translateY(-1px);
 }
+
+@keyframes explotar {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+        background: radial-gradient(circle, #FFD700 0%, #FF6347 50%, transparent 70%);
+    }
+    50% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 0.8;
+        background: radial-gradient(circle, #FF4500 0%, #8B0000 50%, transparent 70%);
+    }
+    100% {
+        transform: scale(2.5) rotate(360deg);
+        opacity: 0;
+        background: radial-gradient(circle, #696969 0%, transparent 70%);
+    }
+}
+
+.explosion {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    pointer-events: none; /* No interfiere con clics */
+    animation: explotar 0.6s ease-out forwards;
+    z-index: 1000;
+}

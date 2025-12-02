@@ -1,5 +1,4 @@
 import {
-    ExplosionAnimation,
     GameOverScreenAnimation,
     JumpParticlesAnimation,
     StarAnimation,
@@ -304,12 +303,12 @@ class Game {
 
     aumentarDificultad() {
         if (this.velocidadActual >= CONFIG.VELOCIDAD_MAXIMA) {
-            console.log('⚠️ Velocidad máxima alcanzada');
+            console.log('Velocidad máxima alcanzada');
             return;
         }
 
-        console.log(`📈 AUMENTANDO DIFICULTAD: ${this.velocidadActual} → ${this.velocidadActual + CONFIG.INCREMENTO_VELOCIDAD}`);
-        console.log(`   Tiempo: ${this.timer.getTiempoSegundos()}s`);
+        console.log(`AUMENTANDO DIFICULTAD: ${this.velocidadActual} → ${this.velocidadActual + CONFIG.INCREMENTO_VELOCIDAD}`);
+        console.log(`Tiempo: ${this.timer.getTiempoSegundos()}s`);
 
         this.velocidadActual += CONFIG.INCREMENTO_VELOCIDAD;
         this.parallax.setSpeed(this.velocidadActual);
@@ -433,13 +432,13 @@ class Game {
 
         // Colisión con techo
         if (posJugador - radioJugador <= 0) {
-            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
+            this.crearExplosionCSS(this.player.x, this.player.y);
             return true;
         }
 
         // Colisión con suelo
         if (posJugador + radioJugador >= canvas.height) {
-            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
+            this.crearExplosionCSS(this.player.x, this.player.y);
             return true;
         }
 
@@ -452,13 +451,13 @@ class Game {
 
         // Verificar tubo principal
         if (this.verificarColisionTubo(capasTubos, capasTubos.x, capasTubos.y)) {
-            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
+            this.crearExplosionCSS(this.player.x, this.player.y);
             return true;
         }
 
         // Verificar tubo secundario
         if (this.verificarColisionTubo(capasTubos, capasTubos.x + canvas.width, capasTubos.next_y)) {
-            this.animaciones.push(new ExplosionAnimation(this.player.x, this.player.y));
+            this.crearExplosionCSS(this.player.x, this.player.y);
             return true;
         }
 
@@ -654,6 +653,34 @@ class Game {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(`${this.puntos}`, canvas.width / 2, 35);
+    }
+
+    /**
+     * Crea una explosión usando CSS @keyframes
+     * @param {number} x - Posición X en el canvas
+     * @param {number} y - Posición Y en el canvas
+     */
+    crearExplosionCSS(x, y) {
+        // Crear el elemento div
+        const explosion = document.createElement('div');
+        explosion.className = 'explosion';
+
+        // Calcular posición relativa al canvas
+        const canvasRect = canvas.getBoundingClientRect();
+        const posX = canvasRect.left + x - 60; // -60 para centrar (120px / 2)
+        const posY = canvasRect.top + y - 60;
+
+        // Posicionar el div
+        explosion.style.left = posX + 'px';
+        explosion.style.top = posY + 'px';
+
+        // Agregar al DOM
+        document.body.appendChild(explosion);
+
+        // Eliminar automáticamente cuando termine la animación
+        explosion.addEventListener('animationend', () => {
+            explosion.remove();
+        });
     }
 }
 
