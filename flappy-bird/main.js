@@ -667,8 +667,8 @@ class Game {
 
         // Calcular posición relativa al canvas
         const canvasRect = canvas.getBoundingClientRect();
-        const posX = canvasRect.left + x - 60; // -60 para centrar (120px / 2)
-        const posY = canvasRect.top + y - 60;
+        const posX = canvasRect.left + window.scrollX + x - 20;
+        const posY = canvasRect.top + window.scrollY + y - 20;
 
         // Posicionar el div
         explosion.style.left = posX + 'px';
@@ -681,6 +681,51 @@ class Game {
         explosion.addEventListener('animationend', () => {
             explosion.remove();
         });
+    }
+
+    /**
+     * Crea partículas al saltar usando CSS @keyframes
+     * @param {number} x - Posición X en el canvas
+     * @param {number} y - Posición Y en el canvas
+     */
+    crearParticulasSaltoCSS(x, y) {
+        const cantidadParticulas = 8;
+        const colores = ['color-1', 'color-2', 'color-3'];
+
+        // Calcular posición relativa al canvas
+        const canvasRect = canvas.getBoundingClientRect();
+
+        // Crear 8 partículas en direcciones radiales
+        for (let i = 0; i < cantidadParticulas; i++) {
+            const angulo = (Math.PI * 2 / cantidadParticulas) * i;
+
+            // Calcular dirección (hacia dónde vuela la partícula)
+            const distancia = 50; // píxeles que viaja
+            const dx = Math.cos(angulo) * distancia;
+            const dy = Math.sin(angulo) * distancia + 30; // Bias hacia abajo
+
+            // Crear el elemento
+            const particula = document.createElement('div');
+            particula.className = 'particula ' + colores[Math.floor(Math.random() * colores.length)];
+
+            // Posicionar en el origen (donde está el jugador)
+            const posX = canvasRect.left + window.scrollX + x;
+            const posY = canvasRect.top + window.scrollY + y - 4;
+            particula.style.left = posX + 'px';
+            particula.style.top = posY + 'px';
+
+            // Configurar dirección de movimiento (variables CSS)
+            particula.style.setProperty('--dx', dx + 'px');
+            particula.style.setProperty('--dy', dy + 'px');
+
+            // Agregar al DOM
+            document.body.appendChild(particula);
+
+            // Eliminar cuando termine
+            particula.addEventListener('animationend', () => {
+                particula.remove();
+            });
+        }
     }
 }
 
@@ -736,7 +781,7 @@ document.addEventListener('keydown', (event) => {
         event.preventDefault();
         if (!game.colisionDetectada){
             game.player.jump();
-            game.animaciones.push(new JumpParticlesAnimation(game.player.x, game.player.y));
+            game.crearParticulasSaltoCSS(game.player.x, game.player.y);
         }
     }
 
