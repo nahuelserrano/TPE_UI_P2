@@ -17,20 +17,20 @@ const VUELTAS_DE_RULETA = 3;
 
 // Configuraciones con piezas CUADRADAS
 // formato: {x: columnas, y: filas}
-hashMap.set(4, {x: 2, y: 2});  // 2x2 = 4 piezas
-hashMap.set(6, {x: 2, y: 3});  // 2x3 = 6 piezas
-hashMap.set(8, {x: 2, y: 4});  // 3x3 = 8 piezas
+hashMap.set(4, { x: 2, y: 2 });  // 2x2 = 4 piezas
+hashMap.set(6, { x: 2, y: 3 });  // 2x3 = 6 piezas
+hashMap.set(8, { x: 2, y: 4 });  // 3x3 = 8 piezas
 
 // ===== IMÁGENES Y CONFIGURACIÓN =====
 const images = [
-    "../imagenes/peg-solitaire/lysjugandopagsolitaire.jpg",
-    "../imagenes/peg-solitaire/LyS 3 video.webp",
-    "../imagenes/peg-solitaire/Stich Elvis 2.jpeg",
-    "../imagenes/peg-solitaire/stich-peg-solitaire-ejecucion.jpeg",
-    "../imagenes/peg-solitaire/LiloStitch-web.jpg",
-    "../imagenes/peg-solitaire/ruleta2.webp",
-    "../imagenes/peg-solitaire/lilo-stitch-1920581-2194132495.jpg",
-    "../imagenes/peg-solitaire/LyS-ruleta.jpg",
+    "../imagenes/vj/lysjugandopagsolitaire.jpg",
+    "../imagenes/vj/LyS 3 video.webp",
+    "../imagenes/vj/Stich Elvis 2.jpeg",
+    "../imagenes/vj/stich-peg-solitaire-ejecucion.jpeg",
+    "../imagenes/vj/LiloStitch-web.jpg",
+    "../imagenes/vj/ruleta2.webp",
+    "../imagenes/vj/lilo-stitch-1920581-2194132495.jpg",
+    "../imagenes/vj/LyS-ruleta.jpg",
 ];
 
 // ===== VARIABLES DE ESTADO =====
@@ -95,7 +95,7 @@ async function ejecutarRuleta() {
             };
         });
 
-        imagen.src = "../"+images[i];
+        imagen.src = "../" + images[i];
         const cargadaCorrectamente = await loadPromise;
 
         if (cargadaCorrectamente) {
@@ -498,7 +498,7 @@ async function checkWinCondition() {
 
         ruletaActiva = true;
 
-        if(nivel !== images.length)
+        if (nivel !== images.length)
             await ejecutarRuleta();
 
         ruletaActiva = false;
@@ -555,8 +555,8 @@ function setPixel(imageData, x, y) {
     switch (nivel) {
         case 0:
             imageData.data[index] = gray;
-            imageData.data[index+1] = gray;
-            imageData.data[index+2] = gray;
+            imageData.data[index + 1] = gray;
+            imageData.data[index + 2] = gray;
             break;
         case 1:
             imageData.data[index] = Math.min(255, Math.round(r * 1.3));
@@ -564,9 +564,9 @@ function setPixel(imageData, x, y) {
             imageData.data[index + 2] = Math.min(255, Math.round(b * 1.3));
             break;
         case 2:
-            imageData.data[index] = 255-imageData.data[index];
-            imageData.data[index+1] = 255-imageData.data[index+1];
-            imageData.data[index+2] = 255-imageData.data[index+2];
+            imageData.data[index] = 255 - imageData.data[index];
+            imageData.data[index + 1] = 255 - imageData.data[index + 1];
+            imageData.data[index + 2] = 255 - imageData.data[index + 2];
             break;
         case 3:
             imageData.data[index] = Math.min(255, Math.round(r * 1.3));
@@ -575,13 +575,13 @@ function setPixel(imageData, x, y) {
             break;
         case 4:
             imageData.data[index] = gray;
-            imageData.data[index+1] = gray;
-            imageData.data[index+2] = gray;
+            imageData.data[index + 1] = gray;
+            imageData.data[index + 2] = gray;
             break;
         case 5:
-            imageData.data[index] = 255-imageData.data[index];
-            imageData.data[index+1] = 255-imageData.data[index+1];
-            imageData.data[index+2] = 255-imageData.data[index+2];
+            imageData.data[index] = 255 - imageData.data[index];
+            imageData.data[index + 1] = 255 - imageData.data[index + 1];
+            imageData.data[index + 2] = 255 - imageData.data[index + 2];
             break;
         case 6:
             imageData.data[index] = Math.min(255, Math.round(r * 1.3));
@@ -590,8 +590,8 @@ function setPixel(imageData, x, y) {
             break;
         case 7:
             imageData.data[index] = gray;
-            imageData.data[index+1] = gray;
-            imageData.data[index+2] = gray;
+            imageData.data[index + 1] = gray;
+            imageData.data[index + 2] = gray;
             break;
     }
 }
